@@ -5,13 +5,18 @@ BEGIN {
 }
 
 use strict;
+
+use Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT = qw(textdomain);
+
 use YaST::YCP;
 use ycp;
 
-use Locale::gettext;
+use Locale::gettext ("!textdomain");
 use POSIX ();     # Needed for setlocale()
 
-POSIX::setlocale(LC_MESSAGES, "");
+POSIX::setlocale(&POSIX::LC_MESSAGES, "");
 
 our %TYPEINFO;
 my %__error = ();
@@ -87,10 +92,59 @@ sub Error {
     return \%__error;
 }
 
-# Note: functions with _ are automaticaly exported to main::
-sub _ {
-    return gettext ($_[0]);
+=head2 i18n
+
+    use YaPI;
+    textdomain "mydomain";
+
+Just use C<_("my text")> to mark text to be translated.
+
+These must not be used any longer:
+
+ #  use Locale::gettext;
+ #  sub _ { ... }
+
+These don't hurt but aren't necessary:
+
+ #  use POSIX ();
+ #  POSIX::setlocale(LC_MESSAGES, "");    # YaPI calls it itself now
+
+=head3 textdomain
+
+Calls Locale::gettext::textdomain
+and also
+remembers an association between the calling package and the
+domain. Later calls of _ use this domain as an argument to dgettext.
+
+=cut
+
+# See also bug 38613 where untranslated texts were seen because
+# a random textdomain was used instead of the proper one.
+my %textdomains;
+
+sub textdomain
+{
+    my $domain = shift;
+    my $package = caller;
+
+    $textdomains{$package} = $domain;
+    return Locale::gettext::textdomain ($domain);
 }
 
+=head3 _
+
+Calls Locale::gettext::dgettext, supplying the textdomain of the calling
+package (set by calling textdomain).
+
+Note: functions with _ are automaticaly exported to main::
+
+=cut
+
+sub _ {
+    my $msgid = shift;
+    my $package = caller;
+    my $domain = $textdomains{$package};
+    return Locale::gettext::dgettext ($domain, $msgid);
+}
 
 1;
