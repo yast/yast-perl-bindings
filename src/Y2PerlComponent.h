@@ -60,10 +60,6 @@ public:
      * for transparent handling of namespaces (YCP modules)
      * through whole YaST.
      * @param name_space the name of the required namespace
-     * @param timestamp a string containing unique timestamp
-     * if only the given timestamp is requested. If not NULL,
-     * component must provide a namespace with exactly the
-     * same timestamp.
      * @return on errors, NULL should be returned. The
      * error reporting must be done by the component itself
      * (typically using y2log). On success, the method
@@ -72,7 +68,7 @@ public:
      * by the component, any other part of YaST will try to
      * free it. Thus, it's possible to share the instance.
      */
-    Y2Namespace *import (const char* name, const char* timestamp = NULL);
+    Y2Namespace *import (const char* name);
 };
 
 #endif	// Y2PerlComponent_h

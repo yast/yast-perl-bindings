@@ -233,9 +233,8 @@ public:
 };
 
 
-YPerlNamespace::YPerlNamespace (string name, string timestamp)
+YPerlNamespace::YPerlNamespace (string name)
     : m_name (name),
-      m_timestamp (timestamp),
       m_count (0)
 {
     EMBEDDED_PERL_DEFS;
@@ -344,7 +343,7 @@ YPerlNamespace::YPerlNamespace (string name, string timestamp)
 	    // build a function definition
 
 	    // parameter block
-	    YBlock *parblock = new YBlock (m_name, YBlock::b_unknown /*?*/);
+	    YBlock *parblock = new YBlock ((Point *)0);
 	    unsigned lineno = GvLINE (glob); //perl gives us the location, good
 
 	    static const int namesize = 7; // "arg000\0" should be enough
@@ -379,7 +378,7 @@ YPerlNamespace::YPerlNamespace (string name, string timestamp)
 	    fun_f->setDefinition (fun_def);
 
 	    // enter it to the symbol table
-	    m_table->enter (strdup (symbol), fun_se, lineno);
+	    m_table->enter (strdup (symbol), fun_se, 0);
 	    // and to the position index
 	    m_positions.push_back (fun_se);
 	}
@@ -403,13 +402,13 @@ const string YPerlNamespace::filename () const
     return ".../" + m_name;
 }
 
-unsigned int YPerlNamespace::symbolCount ()
+unsigned int YPerlNamespace::symbolCount () const
 {
     y2debug ("PING: %u", m_count);
     return m_count;
 }
 
-SymbolEntry* YPerlNamespace::symbolEntry (unsigned int position)
+SymbolEntry* YPerlNamespace::symbolEntry (unsigned int position) const
 {
     SymbolEntry *ret = (position > m_count)? NULL : m_positions[position];
     y2debug ("PING: %u -> %p", position, ret);
@@ -442,14 +441,9 @@ YCPValue YPerlNamespace::evaluate (bool cse)
     return YCPNull ();
 }
 
-SymbolTable* YPerlNamespace::table ()
+SymbolTable* YPerlNamespace::table () const
 {
     return m_table;
-}
-
-const string YPerlNamespace::timestamp ()
-{
-    return m_timestamp;
 }
 
 // It seems that this is the standard implementation. why would we
