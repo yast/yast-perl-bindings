@@ -2,7 +2,7 @@
 # Makefile.am for perl-bindings/src
 #
 
-AM_CXXFLAGS = -DY2LOG=\"Perl\"
+AM_CXXFLAGS = -DY2LOG=\"Perl\" -DMODULEDIR=\"$(moduledir)\"
 AM_LDFLAGS = -L$(libdir) -L$(plugindir)
 
 perlpmdir = $(PERL_VENDORARCH)/YaST

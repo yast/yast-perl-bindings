@@ -17,6 +17,7 @@
 /-*/
 
 
+#include <stdlib.h>
 #include <list>
 #include <iosfwd>
 #include <sstream>
@@ -54,11 +55,57 @@ EXTERN_C void xs_init( pTHX );
 
 YPerl * YPerl::_yPerl = 0;
 
+// Prepend MODULEDIR (defined on the compiler comand line) to PERL5LIB
+static void PrependModulePath ()
+{
+    static const char * const moduledir = MODULEDIR;
+    static const char * const varname = "PERL5LIB";
+    const char * var = getenv (varname);
+    std::string newvar;
+    // make room for "$MODULEDIR:$PERL5LIB"
+    newvar.reserve ((var == NULL ? 0 :strlen (var)) + strlen (moduledir) + 1);
+    bool seen = false; // if the module path is already there, don't insert it
+
+    // split the var at colons to get the individual search paths
+    const char * end;
+    std::list<std::string> p5l;
+    while (var != NULL)
+    {
+	end = index (var, ':');
+	int n = (end == NULL) ? std::string::npos : end - var;
+	string path = std::string (var, n);
+	seen = path == moduledir;
+	p5l.push_back (path);
+	var = (end == NULL) ? NULL : var + 1; // the character after :
+    }
+
+    if (!seen)
+    {
+	p5l.push_front (moduledir);
+    }
+
+    // join ':', p5l
+    std::list<std::string>::iterator
+	i = p5l.begin (),
+	e = p5l.end ();
+    if (i != e)
+    {
+	newvar += *i++;
+    }
+    for (; i != e; ++i)
+    {
+	newvar += ':' + *i;
+    }
+
+    setenv (varname, newvar.c_str (), 1);
+}
 
 YPerl::YPerl()
     : _perlInterpreter(0)
     , _haveParseTree( false )
 {
+    PrependModulePath ();
+
     _perlInterpreter = perl_alloc();
 
     if ( _perlInterpreter )

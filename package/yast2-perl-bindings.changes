@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 23 13:23:06 CET 2004 - mvidner@suse.cz
+
+- Prepend moduledir to PERL5LIB for the embedded Perl
+- 2.9.9
+
+-------------------------------------------------------------------
 Fri Feb 20 11:21:32 CET 2004 - mvidner@suse.cz
 
 - initialize imported namespaces (kkaempf)
