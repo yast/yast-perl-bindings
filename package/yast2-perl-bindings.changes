@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 10 17:09:55 CET 2004 - mvidner@suse.cz
+
+- reduced logging to make yast2-inetd build
+- 2.9.6
+
+-------------------------------------------------------------------
 Tue Feb 10 14:19:53 CET 2004 - mvidner@suse.cz
 
 - revert the preference of numbers
