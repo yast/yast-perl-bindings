@@ -39,7 +39,7 @@
 
 // The weird Perl macros need a PerlInterpreter of name 'my_perl' (!) almost everywhere.
 #define WEIRD_PERL_MACRO_DEFS PerlInterpreter * my_perl = YPerl::perlInterpreter()
-    
+
 
 
 // Stub for dynamic loading of Perl modules as xs_init function for perl_parse().
@@ -89,7 +89,7 @@ YPerl::destroy()
 	delete _yPerl;
 
     _yPerl = 0;
-    
+
     return YCPVoid();
 }
 
@@ -114,7 +114,7 @@ YPerl::parse( YCPList argList )
 
     if ( argList->size() != 1 || ! argList->value(0)->isString() )
 	return YCPError( "Perl::Parse(): Bad arguments: String expected!" );
-    
+
     if ( yPerl()->haveParseTree() )
 	y2warning( "Perl::Parse() multiply called - memory leak? Try Perl::Destroy() first!" );
 
@@ -131,7 +131,7 @@ YPerl::parse( YCPList argList )
 	return YCPError( "Perl::Parse(): Parse error." );
 
     yPerl()->setHaveParseTree( true );
-    
+
     return YCPVoid();
 }
 
@@ -172,21 +172,25 @@ YPerl::callVoid( YCPList argList )
     }
 
     PUTBACK;		// Make local stack pointer global
-    
+
     int ret_count = call_pv( functionName.c_str(), flags ); // Call the function
-    
+
     SPAGAIN;		// Copy global stack pointer to local one
+
 
     // Pop result from the stack
 
-    if ( ret_count != 0 )
+    if ( ret_count != 1 )
     {
-	y2warning( "Perl function %s returned %d arguments, expecting 0",
-		   functionName.c_str(), ret_count );
+	// Perl always returns something (the last expression calculated),
+	// so let's just make sure we don't get any more than one.
 
-	while ( ret_count-- > 0 )
-	    (void) POPs;
+	y2warning( "Perl function %s returned %d arguments, expecting none",
+		   functionName.c_str(), ret_count );
     }
+
+    while ( ret_count-- > 0 )
+	(void) POPs;
 
     PUTBACK;		// Make local stack pointer global
     FREETMPS;		// Free temporary variables
@@ -229,7 +233,7 @@ SV *
 YPerl::newPerlScalar( const YCPValue & val )
 {
     WEIRD_PERL_MACRO_DEFS;
-    
+
     if ( val->isString()  )	return newSVpv( val->asString()->value_cstr(), 0 );
     if ( val->isList()    )	return newPerlArrayRef( val->asList() );
     if ( val->isMap() )		return newPerlHashRef( val->asMap() );
@@ -246,11 +250,11 @@ SV *
 YPerl::newPerlArrayRef( const YCPList & list )
 {
     WEIRD_PERL_MACRO_DEFS;
-    
+
     //
     // Create array
     //
-	
+
     AV * array = newAV();
 
     if ( ! array )
@@ -259,7 +263,7 @@ YPerl::newPerlArrayRef( const YCPList & list )
     //
     // Fill array
     //
-	
+
     for ( int i = 0; i < list->size(); i++ )
     {
 	SV * scalarVal = newPerlScalar( list->value(i) );
@@ -267,6 +271,12 @@ YPerl::newPerlArrayRef( const YCPList & list )
 	if ( scalarVal )
 	{
 	    av_push( array, scalarVal );
+
+	    if ( SvREFCNT( scalarVal ) != 1 )
+	    {
+		y2error( "Internal error: Reference count is %d (should be 1)",
+			 SvREFCNT( scalarVal ) );
+	    }
 	}
 	else
 	{
@@ -278,7 +288,7 @@ YPerl::newPerlArrayRef( const YCPList & list )
     //
     // Return a reference to the new array
     //
-	
+
     return newRV_noinc( (SV *) array );
 }
 
@@ -287,24 +297,24 @@ SV *
 YPerl::newPerlHashRef( const YCPMap & map )
 {
     WEIRD_PERL_MACRO_DEFS;
-    
+
     //
     // Create hash
     //
-	
+
     HV * hash = newHV();
-    
+
     if ( ! hash )
 	return 0;
 
     //
     // Fill hash
     //
-	
+
     for ( YCPMapIterator it = map->begin(); it != map->end(); ++it )
     {
 	string keyStr;
-	    
+
 	if      ( it.key()->isString() )	keyStr = it.key()->asString()->value();
 	else if ( it.key()->isSymbol() )	keyStr = it.key()->asSymbol()->symbol();
 	else if ( it.key()->isInteger() )	keyStr = it.key()->toString();
@@ -319,7 +329,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 	    //
 	    // Add one key / value pair
 	    //
-		
+
 	    SV * scalarVal = newPerlScalar( it.value() );
 
 	    if ( scalarVal )
@@ -330,8 +340,13 @@ YPerl::newPerlHashRef( const YCPMap & map )
 		{
 		    y2error( "Couldn't insert Perl hash value '%s' => '%s'",
 			     keyStr.c_str(), it.value()->toString().c_str() );
-		    
+
 		    SvREFCNT_dec( scalarVal );	// Free scalar (avoid memory leak)
+		}
+		else if ( SvREFCNT( scalarVal ) != 1 )
+		{
+		    y2error( "Internal error: Reference count is %d (should be 1)",
+			     SvREFCNT( scalarVal ) );
 		}
 	    }
 	    else
@@ -345,6 +360,6 @@ YPerl::newPerlHashRef( const YCPMap & map )
     //
     // Return a reference to the new hash
     //
-	
+
     return newRV_noinc( (SV *) hash );
 }
