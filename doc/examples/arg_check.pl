@@ -99,6 +99,42 @@ sub echoargs_recursive(@)
 }
 
 
+#-----------------------------------------------------------------------------
+
+
+#
+# Return passed arguments
+#
+
+sub copyargs()
+{
+    if ( wantarray )
+    {
+	return @_;
+    }
+    else
+    {
+	return shift;
+    }
+}
+
+
+#-----------------------------------------------------------------------------
+
+
+#
+# Return a static list
+#
+
+sub return_static_list()
+{
+    return ( "this", "is", "a", "static", "list" );
+}
+
+
+#-----------------------------------------------------------------------------
+
+
 
 
 # EOF

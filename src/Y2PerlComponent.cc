@@ -58,14 +58,20 @@ Y2PerlComponent::evaluate( const YCPValue & val )
     YCPList argList = term->args();
 
 
-    y2milestone ("YPerl::evaluate( %s, %s )", function.c_str(), argList->toString().c_str());
+    y2debug("YPerl::evaluate( %s, %s )", function.c_str(), argList->toString().c_str());
 
     // Commands are ordered by how commonly they are called (optimization).
     
-    if ( function == "CallVoid" )	return YPerl::callVoid( argList );
-    if ( function == "Eval" )		return YPerl::eval( argList );
-    if ( function == "Parse" )		return YPerl::parse( argList );
-    if ( function == "Destroy" )	return YPerl::destroy();
+    if ( function == "CallVoid" 	)	return YPerl::callVoid	( argList );
+    if ( function == "CallList" 	)	return YPerl::callList	( argList );
+    if ( function == "CallBool" 	)	return YPerl::callBool	( argList );
+    if ( function == "CallBoolean"	)	return YPerl::callBool	( argList );
+    if ( function == "CallString" 	)	return YPerl::callString( argList );
+    if ( function == "CallInt" 		)	return YPerl::callInt	( argList );
+    if ( function == "CallInteger" 	)	return YPerl::callInt	( argList );
+    if ( function == "Eval" 		)	return YPerl::eval	( argList );
+    if ( function == "Parse" 		)	return YPerl::parse	( argList );
+    if ( function == "Destroy" 		)	return YPerl::destroy();
 	
     return YCPError( string ( "Undefined Perl::" ) + function );
 }

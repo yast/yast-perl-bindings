@@ -17,11 +17,15 @@
 /-*/
 
 
+#include <list>
+
 #include <EXTERN.h>	// Perl stuff
 #include <perl.h>
 
+
 #define y2log_component "Y2Perl"
 #include <ycp/y2log.h>
+
 
 #include <ycp/YCPBoolean.h>
 #include <ycp/YCPFloat.h>
@@ -32,6 +36,7 @@
 #include <ycp/YCPString.h>
 #include <ycp/YCPSymbol.h>
 #include <ycp/YCPVoid.h>
+
 
 #include <YPerl.h>
 
@@ -153,11 +158,42 @@ YPerl::parse( YCPList argList )
 YCPValue
 YPerl::callVoid( YCPList argList )
 {
-    // The Perl macros demand this thing is named 'my_perl'. Yuck.
-    PerlInterpreter * my_perl = YPerl::perlInterpreter();
+    return yPerl()->call( argList, YT_VOID );
+}
 
-    if ( ! my_perl )
-	return YCPNull();
+
+YCPValue
+YPerl::callString( YCPList argList )
+{
+    return yPerl()->call( argList, YT_STRING );
+}
+
+
+YCPValue
+YPerl::callList( YCPList argList )
+{
+    return yPerl()->call( argList, YT_LIST );
+}
+
+
+YCPValue
+YPerl::callBool( YCPList argList )
+{
+    return yPerl()->call( argList, YT_BOOLEAN );
+}
+
+
+YCPValue
+YPerl::callInt( YCPList argList )
+{
+    return yPerl()->call( argList, YT_INTEGER );
+}
+
+
+YCPValue
+YPerl::call( YCPList argList, YCPValueType wanted_result_type )
+{
+    EMBEDDED_PERL_DEFS;
 
     if ( argList->size() < 1 || ! argList->value(0)->isString() )
 	return YCPError( "Perl::Call(): Bad arguments: No function to execute!" );
@@ -166,8 +202,20 @@ YPerl::callVoid( YCPList argList )
 	return YCPError( "Do Perl::Parse() before Perl::Call() !" );
 
     string functionName = argList->value(0)->asString()->value();
-    int flags = G_VOID;
 
+    //
+    // Determine Perl calling context
+    //
+
+    int calling_context;
+
+    switch ( wanted_result_type )
+    {
+	case YT_LIST:	calling_context = G_ARRAY;	break;
+	case YT_VOID:	calling_context = G_VOID;	break;
+	default:	calling_context = G_SCALAR;	break;
+
+    }
 
     // Using the weird embedded-Perl macros as described in
     // man perlembed, man perlcall, man perlapi, man perlguts
@@ -188,30 +236,66 @@ YPerl::callVoid( YCPList argList )
 
     PUTBACK;		// Make local stack pointer global
 
-    int ret_count = call_pv( functionName.c_str(), flags ); // Call the function
+    int ret_count = call_pv( functionName.c_str(), calling_context ); // Call the function
 
     SPAGAIN;		// Copy global stack pointer to local one
 
 
+    //
     // Pop result from the stack
+    //
 
-    if ( ret_count != 1 )
+    YCPValue result = YCPVoid();
+
+    if ( wanted_result_type == YT_LIST )
     {
-	// Perl always returns something (the last expression calculated),
-	// so let's just make sure we don't get any more than one.
+	std::list<SV *> results;
 
-	y2warning( "Perl function %s returned %d arguments, expecting none",
-		   functionName.c_str(), ret_count );
+	// We want a list, but Perl uses a stack, so invert order of return values.
+
+	while ( ret_count-- > 0 )
+	    results.push_front( POPs );
+
+	YCPList result_list;
+
+	for ( std::list<SV *>::iterator it = results.begin(); it != results.end(); ++it )
+	    result_list->add( fromPerlScalar( *it ) );
+
+	result = result_list;
     }
+    else
+    {
+	if ( wanted_result_type == YT_VOID )
+	{
+	    // Perl always returns something - the last expression calculated.
+	    // Ignore this if return type void is desired.
 
-    while ( ret_count-- > 0 )
-	(void) POPs;
+	    result = YCPVoid();
+	}
+	else
+	{
+	    result = fromPerlScalar( POPs );
+	}
+
+	if ( ret_count > 1 )
+	{
+	    // Check for excess return values.
+
+	    y2warning( "Perl function %s returned %d arguments, expecting just one",
+		       functionName.c_str(), ret_count );
+
+	    // Get rid of excess return values.
+
+	    while ( --ret_count > 0 )
+		(void) POPs;
+	}
+    }
 
     PUTBACK;		// Make local stack pointer global
     FREETMPS;		// Free temporary variables
     LEAVE;		// Close the Perl scope
 
-    return YCPVoid();
+    return result;
 }
 
 
@@ -228,7 +312,7 @@ YPerl::eval( YCPList argList )
     if ( ! result )
 	return YCPVoid();
 
-    return fromPerlScalar( result );
+    return yPerl()->fromPerlScalar( result );
 }
 
 
@@ -250,7 +334,7 @@ YPerl::newPerlScalar( const YCPValue & val )
 
 
 SV *
-YPerl::newPerlArrayRef( const YCPList & list )
+YPerl::newPerlArrayRef( const YCPList & yList )
 {
     EMBEDDED_PERL_DEFS;
 
@@ -267,9 +351,9 @@ YPerl::newPerlArrayRef( const YCPList & list )
     // Fill array
     //
 
-    for ( int i = 0; i < list->size(); i++ )
+    for ( int i = 0; i < yList->size(); i++ )
     {
-	SV * scalarVal = newPerlScalar( list->value(i) );
+	SV * scalarVal = newPerlScalar( yList->value(i) );
 
 	if ( scalarVal )
 	{
@@ -284,7 +368,7 @@ YPerl::newPerlArrayRef( const YCPList & list )
 	else
 	{
 	    y2error( "Couldn't convert YCP list item '%s' to Perl array item",
-		     list->value(i)->toString().c_str() );
+		     yList->value(i)->toString().c_str() );
 	}
     }
 
@@ -376,9 +460,9 @@ YPerl::fromPerlScalar( SV * sv, YCPValueType wanted_type )
 
     YCPValue val = YCPVoid();
 
-    if      ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
+    if      ( SvPOK( sv ) )		val = YCPString ( SvPV( sv, len ) );
     else if ( SvNOK( sv ) )		val = YCPFloat  ( SvNV( sv ) );
-    else if ( SvPOK( sv ) )		val = YCPString ( SvPV( sv, len ) );
+    else if ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
     else if ( SvROK( sv ) )
     {
 	SV * ref = SvRV( sv );
@@ -427,16 +511,16 @@ YCPList
 YPerl::fromPerlArray( AV * array )
 {
     EMBEDDED_PERL_DEFS;
-    
-    YCPList list;
+
+    YCPList yList;
     SV * sv;
 
     while ( ( sv = av_shift( array ) ) != &PL_sv_undef )
     {
-	list->add( fromPerlScalar( sv ) );
+	yList->add( fromPerlScalar( sv ) );
     }
 
-    return list;
+    return yList;
 }
 
 
@@ -444,7 +528,7 @@ YCPMap
 YPerl::fromPerlHash( HV * hv )
 {
     EMBEDDED_PERL_DEFS;
-    
+
     YCPMap map;
     I32 count = hv_iterinit( hv );
 
