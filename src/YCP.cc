@@ -19,6 +19,7 @@
 #include "XSUB.h"
 
 #include "YPerl.h"
+#include "PerlLogger.h"
 
 static
 Y2Namespace *
@@ -329,7 +330,7 @@ YCPValue YCP_call_SCR (pTHX_ const char * func_name, const vector<SV *>& args)
 
     // now must check if we got fewer parameters than needed
     // or there was another error while resolving the overload
-    constTypePtr err_tp = bi_call->finalize ();
+    constTypePtr err_tp = bi_call->finalize (PerlLogger::instance ());
     if (err_tp != NULL)
     {
 	// apparently the error was already reported?

@@ -402,6 +402,8 @@ YPerlNamespace::YPerlNamespace (string name)
 		symbol,		// passed to Ustring, no need to strdup
 		SymbolEntry::c_function, 
 		sym_tp);
+		
+	    fun_se->setGlobal (true);
 
 	    // enter it to the symbol table
 	    enterSymbol (fun_se, 0);

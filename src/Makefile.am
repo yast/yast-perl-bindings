@@ -18,7 +18,9 @@ perlso_LTLIBRARIES = libYCP.la
 # binary part of the Perl module
 libYCP_la_SOURCES =				\
 	$(liby2lang_perl_la_SOURCES)		\
-	YCP.cc
+	YCP.cc					\
+	PerlLogger.cc PerlLogger.h
+
 
 # are there enough yast libraries?
 # check with y2base, integrate them like y2pm does
@@ -79,8 +81,7 @@ libpy2lang_perl_la_SOURCES =				\
 	$(liby2lang_perl_la_SOURCES)			\
 	Y2CCPerl.cc Y2CCPerl.h			\
 	YPerlNamespace.cc YPerlNamespace.h	\
-	Y2PerlComponent.cc Y2PerlComponent.h
-
+	Y2PerlComponent.cc Y2PerlComponent.h	
 
 CLEANFILES = \
 	perlxsi.c
