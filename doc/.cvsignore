@@ -3,4 +3,6 @@ Makefile.in
 *.bak
 *.auto
 *~
+pod2htm*
 YCP-builtins-perl.html
+YaST__YCP.html
