@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
-Thu Aug 12 13:11:02 CEST 2004 - mvidner@suse.cz
+Thu Aug 12 14:21:17 CEST 2004 - mvidner@suse.cz
 
-- Broke neededforbuild cycle by copying nfb from yast2-core.
+- Broke neededforbuild cycle by substituting
+  for yast2-devel-packages (msvec).
 - 2.10.3
 
 -------------------------------------------------------------------
