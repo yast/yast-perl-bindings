@@ -18,6 +18,7 @@ sub Interface {
     my $self = shift;
     my @ret = ();
 
+    no strict "refs";
     my %TI = %{"${self}::TYPEINFO"};
 
     foreach my $k (keys %TYPEINFO) {
@@ -40,6 +41,7 @@ sub Interface {
 BEGIN { $TYPEINFO{Version} = ["function", "string"]; }
 sub Version {
     my $self = shift;
+    no strict "refs";
     return ${"${self}::VERSION"};
 }
 
@@ -48,6 +50,7 @@ sub Supports {
     my $self = shift;
     my $cap  = shift;
 
+    no strict "refs";
     my @c = @{"${self}::CAPABILITIES"};
     foreach my $k (@CAPABILITIES) {
         push @c, $k;
