@@ -1,3 +1,7 @@
+# -*- perl -*-
+# @configure_input@
+# $Id$
+
 package YaPI;
 
 =head1 NAME
@@ -6,7 +10,8 @@ YaPI - common functions for modules implementing YaST API
 
 =cut
 
-use lib '/usr/share/YaST2/modules';
+# substituted by configure
+use lib '@yast2dir4perl@/modules';
 
 use strict;
 

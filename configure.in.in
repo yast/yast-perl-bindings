@@ -29,5 +29,11 @@ CXXFLAGS="${CXXFLAGS} ${PERL_CFLAGS}"
 PERL_VENDORARCH=`perl -V:vendorarch | sed "s!.*='!!;s!'.*!!"`
 AC_SUBST(PERL_VENDORARCH)
 
+## make a literal of yast2dir so that it can be used in perl instead
+## of shell
+eval yast2dir4perl='"'$yast2dir'"'
+AC_SUBST(yast2dir4perl)
+
 ## and generate the output
+AC_OUTPUT(src/YaPI.pm)
 @YAST2-OUTPUT@
