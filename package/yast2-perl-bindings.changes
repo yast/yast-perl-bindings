@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Feb 14 19:30:32 CET 2004 - kkaempf@suse.de
+
+- drop timestamp in Y2Namespace
+- 2.9.7
+
+-------------------------------------------------------------------
 Tue Feb 10 17:09:55 CET 2004 - mvidner@suse.cz
 
 - reduced logging to make yast2-inetd build
