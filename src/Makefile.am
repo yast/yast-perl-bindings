@@ -21,14 +21,20 @@ libYCP_la_SOURCES =				\
 
 # are there enough yast libraries?
 # check with y2base, integrate them like y2pm does
+# Originally, of the py2* there was only py2plugin here
+# with the assumption that it would bring in the other plugins.
+# But it does not work.
 libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 		-Xlinker --whole-archive	\
 		-lpy2plugin			\
 		-lpy2program			\
+		-lpy2stdio			\
+		-lpy2scr			\
 		-lpy2wfm			\
 		-lscr -lyui			\
-		-lycp -ly2 -ly2pm -ly2util	\
+		-lycp -ly2			\
 		-Xlinker --no-whole-archive	\
+		-ly2pm -ly2util			\
 		-version-info 2:0
 
 
