@@ -59,7 +59,7 @@ public:
      * next time
      * @return a string value containing the unique timestamp
      */
-    virtual const string timestamp () const;
+    virtual const string timestamp ();
 
     virtual Y2Function* createFunctionCall (const string name);
 };

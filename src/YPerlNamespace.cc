@@ -438,7 +438,7 @@ SymbolTable* YPerlNamespace::table ()
     return m_table;
 }
 
-const string YPerlNamespace::timestamp () const
+const string YPerlNamespace::timestamp ()
 {
     return m_timestamp;
 }
