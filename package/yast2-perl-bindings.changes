@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan  6 17:33:06 CET 2005 - mvidner@suse.cz
+
+- Added $TYPEINFO{ALL_METHODS} (true by default) so that
+  YCP can call plain Perl subs, not only methods.
+- 2.11.2
+
+-------------------------------------------------------------------
 Fri Nov  5 10:02:32 CET 2004 - visnov@suse.cz
 
 - Set exported symbol entries global (#47078) 
