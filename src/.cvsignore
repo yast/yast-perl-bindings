@@ -1,5 +1,6 @@
 Makefile
 Makefile.in
+perlxsi.c
 *.lo
 .deps
 .libs

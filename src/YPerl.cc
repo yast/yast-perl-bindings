@@ -29,6 +29,11 @@
 #define DIM(ARRAY)	( sizeof( ARRAY )/sizeof( ARRAY[0] ) )
 
 
+// Stub for dynamic loading of Perl modules as xs_init function for perl_parse().
+// The code for this is generated in Makefile.am into perlxsi.c
+EXTERN_C void xs_init( pTHX );
+
+
 YPerl * YPerl::_yPerl = 0;
 
 
@@ -110,11 +115,14 @@ YPerl::eval( YCPList argList )
 	return YCPError( "Perl::Eval(): Bad arguments: String expected!" );
 
     string expr = argList->value(0)->asString()->value();
-    const char *argv[] = { "-w", "-e", expr.c_str() };
+    const char *argv[] = { "", "-w", "-e", expr.c_str() };
     int	argc = DIM( argv );
 
     perl_parse( perl,
-		0,	// xsinit function
+		0,	// xs_init function
+#if 0
+		xs_init, // Init function from (generated) perlxsi.c
+#endif
 		argc,
 		const_cast<char **> (argv),
 		0 );	// env
