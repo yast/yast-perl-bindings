@@ -17,6 +17,8 @@
 /-*/
 
 
+#include <EXTERN.h>	// Perl stuff
+#include <perl.h>
 
 #include <ycp/YCPString.h>
 #include <ycp/YCPVoid.h>
@@ -91,7 +93,7 @@ YPerl::call( YCPList argList )
 	return YCPError( "Perl::Call(): Bad arguments: No script to execute!" );
 
     string scriptName = argList->value(0)->asString()->value();
-    
+
     return YCPVoid();
 }
 

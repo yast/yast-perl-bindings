@@ -20,12 +20,14 @@
 #ifndef YPerl_h
 #define YPerl_h
 
-
-#include <EXTERN.h>	// Perl stuff
-#include <perl.h>
-
 #include <ycp/YCPList.h>
 
+
+// Cheat g++ to accept a forward declaration of PerlInterpreter.
+// g++ doesn't accept "class PerlInterpreter" if that "PerlInterpreter" is
+// later typedef'ed to a struct.
+class interpreter;
+typedef struct interpreter PerlInterpreter;
 
 
 class YPerl
