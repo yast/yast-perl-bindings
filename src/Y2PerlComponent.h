@@ -52,7 +52,7 @@ public:
     /**
      * Implements the Perl:: functions.
      **/
-    YCPValue evaluate( string function, YCPList args );
+    YCPValue evaluate( const YCPValue & val );
 };
 
 #endif	// Y2PerlComponent_h

@@ -48,7 +48,7 @@ public:
      */
     Y2Component *create( const char * name ) const
     {
-	if ( ! strcmp( name, "Perl") ) return new Y2PerlComponent();
+	if ( ! strcmp( name, "perl") ) return new Y2PerlComponent();
 	else return 0;
     }
 };

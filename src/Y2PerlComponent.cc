@@ -48,12 +48,20 @@ void Y2PerlComponent::result( const YCPValue & )
 
 
 YCPValue
-Y2PerlComponent::evaluate( string function, YCPList args )
+Y2PerlComponent::evaluate( const YCPValue & val )
 {
-    y2milestone ("YPerl::evaluate (%s, %s)", function.c_str(), args->toString().c_str());
+    if ( ! val->isTerm() )
+	return YCPError( "Syntax error: Term expected" );
 
-    if ( function == "Call" )	return YPerl::call( args );
-    if ( function == "Eval" )	return YPerl::eval( args );
+    YCPTerm term    = val->asTerm();
+    string function = term->symbol()->symbol();
+    YCPList argList = term->args();
+
+
+    y2milestone ("YPerl::evaluate( %s, %s )", function.c_str(), argList->toString().c_str());
+
+    if ( function == "Call" )	return YPerl::call( argList );
+    if ( function == "Eval" )	return YPerl::eval( argList );
 	
     return YCPError( string ( "Undefined Perl::" ) + function );
 }
