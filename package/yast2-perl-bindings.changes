@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 12 16:38:39 CET 2004 - mvidner@suse.cz
+
+- added YaPI.inc
+- 2.9.16
+
+-------------------------------------------------------------------
 Thu Mar 11 19:51:00 CET 2004 - mvidner@suse.cz
 
 - YPerlNamespace: some stuff is now in Y2Namespace, removed (#34207)
