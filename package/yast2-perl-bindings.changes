@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Mar 17 12:44:53 CET 2004 - mvidner@suse.cz
+
+- YCP now calls all perl functions as class methods
+  (so adding $self = shift; etc. is needed)
+- added tests
+- 2.9.17
+
+-------------------------------------------------------------------
 Fri Mar 12 16:38:39 CET 2004 - mvidner@suse.cz
 
 - added YaPI.inc

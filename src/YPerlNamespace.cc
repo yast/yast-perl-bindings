@@ -251,7 +251,7 @@ public:
 	// wanted return type
 	constFunctionTypePtr sig = (constFunctionTypePtr) m_symbolentry->type ();
 	return YPerl::yPerl()->callInner (
-	    m_module_name, m_local_name, false /* everything as methods? */,
+	    m_module_name, m_local_name, true /* everything as methods? */,
 	    call, sig->returnType ());
     }
 };
