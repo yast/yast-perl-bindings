@@ -1,0 +1,6 @@
+// Simplest possible Perl call
+{
+    y2milestone( "Calling Perl" );
+    Perl::Eval( "print 'Hello, world!\n';" );
+    y2milestone( "Done." );
+}

@@ -18,46 +18,42 @@
 
 #define y2log_component "Y2Perl"
 #include <ycp/y2log.h>
+#include <ycp/YCPError.h>
+
 #include "Y2PerlComponent.h"
 #include "YPerl.h"
 
+using std::string;
+
 
 Y2PerlComponent::Y2PerlComponent()
-    , _interpreter(0)
 {
+    // Actual creation of a Perl interpreter is postponed until one of the
+    // YPerl static methods is used. They handle that.
+
+    y2milestone( "Creating Y2PerlComponent" );
 }
 
 
 Y2PerlComponent::~Y2PerlComponent()
 {
-    if ( _interpreter )
-	delete _interpreter;
-}
-
-
-YCPValue Y2PerlComponent::evaluate( const YCPValue & command )
-{
-    if ( ! _interpreter )
-    {
-	_interpreter = new YPerlInterpreter();
-
-	if ( ! _interpreter )
-	    return YCPNull();
-    }
-
-    YCPValue val = _interpreter->evaluate( command );
-
-    return val;
+    YPerl::destroy();
 }
 
 
 void Y2PerlComponent::result( const YCPValue & )
 {
-    if ( _interpreter )
-	delete _interpreter;
-
-    _interpreter = 0;
 }
 
 
 
+YCPValue
+Y2PerlComponent::evaluate( string function, YCPList args )
+{
+    y2milestone ("YPerl::evaluate (%s, %s)", function.c_str(), args->toString().c_str());
+
+    if ( function == "Call" )	return YPerl::call( args );
+    if ( function == "Eval" )	return YPerl::eval( args );
+	
+    return YCPError( string ( "Undefined Perl::" ) + function );
+}

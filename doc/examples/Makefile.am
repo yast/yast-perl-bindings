@@ -5,7 +5,8 @@
 examplesdir = 	$(docdir)/examples
 
 examples_DATA =		\
-	HelloLog.ycp
+	HelloLog.ycp	\
+	Eval.ycp
 
 
 EXTRA_DIST = $(examples_DATA)

@@ -22,23 +22,20 @@
 
 #include "Y2.h"
 
-class YPerlInterpreter;
 
 /**
- * @short YaST2 Component: Qt user interface
- * The YaST2 Component realizes a Qt based user interface with an
- * embedded YCP interpreter. It component name is "qt".
+ * @short YaST2 Component: Perl bindings
  */
 class Y2PerlComponent : public Y2Component
 {
 public:
     /**
-     * Initialize data.
+     * Constructor.
      */
     Y2PerlComponent();
 
     /**
-     * Cleans up.
+     * Destructor.
      */
     ~Y2PerlComponent();
 
@@ -48,22 +45,14 @@ public:
     string name() const { return "perl"; }
 
     /**
-     * Implements the server. The interpreter is created here and not
-     * in the constructor, because in the meantime the server options
-     * may have been set.
-     */
-    YCPValue evaluate( const YCPValue & command );
-
-    /**
-     * Is called by the genericfrontend, when the session is finished.
-     * Close the user interace here.
+     * Is called by the generic frontend when the session is finished.
      */
     void result( const YCPValue & result );
 
-    
-protected:
-    
-    YPerlInterpreter *	_interpreter;
+    /**
+     * Implements the Perl:: functions.
+     **/
+    YCPValue evaluate( string function, YCPList args );
 };
 
 #endif	// Y2PerlComponent_h
