@@ -24,6 +24,7 @@ libYCP_la_SOURCES =				\
 libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 		-Xlinker --whole-archive	\
 		-lpy2plugin			\
+		-lpy2program			\
 		-lpy2wfm			\
 		-lscr -lyui			\
 		-lycp -ly2 -ly2pm -ly2util	\
@@ -32,7 +33,9 @@ libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 
 
 libpy2lang_perl_la_LDFLAGS = -version-info 2:0
+
 liby2lang_perl_la_LDFLAGS = -version-info 2:0
+
 
 # the yast libraries are apparently necessary when we're loaded by perl.
 libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)	\
