@@ -241,9 +241,6 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
     {
 	className = functionName.substr( 0, arrowPos );	// extract class name
 	functionName.erase( 0, arrowPos+2 );		// remove  class name and "->"
-
-	y2milestone( "Calling method '%s' of Perl class '%s'",
-		     functionName.c_str(), className.c_str() );
     }
 
     
