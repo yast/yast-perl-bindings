@@ -13,8 +13,6 @@
 #include <ycp/y2log.h>
 
 #include <ycp/YCPElement.h>
-#include <ycp/YBlock.h>
-#include <ycp/YExpression.h>
 #include <ycp/Type.h>
 #include <ycp/YCPVoid.h>
 //#include <YCP.h>
@@ -212,47 +210,82 @@ static constTypePtr parseTypeinfo (SV *ti)
 /**
  * The definition of a function that is implemented in Perl
  */
-class YPerlFunctionDefinition : public YBlock
+class Y2PerlFunctionCall : public Y2Function
 {
     //! module name
     string m_module_name;
     //! function name, excluding module name
     string m_local_name;
-    //! get at everything we want :-|
-    SymbolEntryPtr m_symbolentry;
+    //! function type
+    constFunctionTypePtr m_type;
+    //! data prepared for the inner call
+    YCPList m_call;
 
 public:
-    YPerlFunctionDefinition (const string &module_name,
-			     const string &local_name,
-			     SymbolEntryPtr se
+    Y2PerlFunctionCall (const string &module_name,
+			 const string &local_name,
+			 constFunctionTypePtr function_type
 	) :
-	YBlock ("TODOfile", YBlock::b_unknown/*?*/),
 	m_module_name (module_name),
 	m_local_name (local_name),
-	m_symbolentry (se)
-	{}
+	m_type (function_type)
+	{
+	    // placeholder, formerly function name
+	    m_call->add (YCPVoid ());
+	}
 
     //! called by YEFunction::evaluate
-    virtual YCPValue evaluate (bool cse=false)
+    virtual YCPValue evaluateCall ()
     {
-	// this should be optimized so that it is fast at runtime. TODO
-	if (cse) return YCPNull ();
-
-	YCPList call;
-	// placeholder, formerly function name
-	call->add (YCPVoid ());
-	// parameters
-	// the static cast actually calls an operator involving a dynamic cast
-	YFunctionPtr m_function = static_cast<YFunctionPtr> (m_symbolentry->code ());
-	for (unsigned i = 0; i < m_function->parameterCount (); ++i)
-	{
-	    call->add (m_function->parameter (i)->value ());
-	}
-	// wanted return type
-	constFunctionTypePtr sig = (constFunctionTypePtr) m_symbolentry->type ();
 	return YPerl::yPerl()->callInner (
 	    m_module_name, m_local_name, true /* everything as methods? */,
-	    call, sig->returnType ());
+	    m_call, m_type->returnType ());
+    }
+    
+       /**
+     * Attaches a parameter to a given position to the call.
+     * @return false if there was a type mismatch
+     */
+    virtual bool attachParameter (const YCPValue& arg, const int position)
+    {
+	m_call->set (position+1, arg);
+	return true;
+    }
+
+    /**
+     * What type is expected for the next appendParameter (val) ?
+     * (Used when calling from Perl, to be able to convert from the
+     * simple type system of Perl to the elaborate type system of YCP)
+     * @return Type::Any if number of parameters exceeded
+     */
+    virtual constTypePtr wantedParameterType () const
+    {
+	return Type::Unspec;
+    }
+
+    /**
+     * Appends a parameter to the call.
+     * @return false if there was a type mismatch
+     */
+    virtual bool appendParameter (const YCPValue& arg)
+    {
+	m_call->add (arg);
+	return true;
+    }
+
+    /**
+     * Signal that we're done adding parameters.
+     * @return false if there was a parameter missing
+     */
+    virtual bool finishParameters () { return true; }
+
+
+    virtual bool reset ()
+    {
+	m_call = YCPList ();
+	// placeholder, formerly function name
+	m_call->add (YCPVoid ());
+	return true;
     }
 };
 
@@ -360,44 +393,13 @@ YPerlNamespace::YPerlNamespace (string name)
 	    //constFunctionTypePtr fun_tp = dynamic_cast<const FunctionType *> (sym_tp);
 	    constFunctionTypePtr fun_tp = (constFunctionTypePtr) sym_tp;
 
-//	    constFunctionTypePtr ret_tp = fun_tp->returnType ();
-
-	    // build a function definition
-
-	    // parameter block
-	    YBlock *parblock = new YBlock ((Point *)0);
-	    unsigned lineno = GvLINE (glob); //perl gives us the location, good
-
-	    static const int namesize = 7; // "arg000\0" should be enough
-	    static char argname[namesize];
-	    for (int i = 0; i < fun_tp->parameterCount (); ++i)
-	    {
-		// the name used in debug and error messages
-		snprintf (argname, namesize, "arg%d", i);
-		parblock->newEntry (
-		    argname,
-		    SymbolEntry::c_variable,
-		    fun_tp->parameterType (i),
-		    lineno
-		    );
-	    }
-
-	    // the function itself
-	    YFunction *fun_f = new YFunction (parblock);
-
 	    // symbol entry for the function
 	    SymbolEntry *fun_se = new SymbolEntry (
 		this,
 		count++,	// position. arbitrary numbering. must stay consistent when?
 		symbol,		// passed to Ustring, no need to strdup
-		SymbolEntry::c_global, // the only way to get it global
-		fun_tp,
-		fun_f);
-	    fun_se->setCategory (SymbolEntry::c_function);
-
-	    // the function definition
-	    YBlock *fun_def = new YPerlFunctionDefinition (m_name, symbol, fun_se);
-	    fun_f->setDefinition (fun_def);
+		SymbolEntry::c_function, 
+		sym_tp);
 
 	    // enter it to the symbol table
 	    enterSymbol (fun_se, 0);
@@ -439,12 +441,12 @@ YCPValue YPerlNamespace::evaluate (bool cse)
 
 // It seems that this is the standard implementation. why would we
 // ever want it to be different?
-Y2Function* YPerlNamespace::createFunctionCall (const string name)
+Y2Function* YPerlNamespace::createFunctionCall (const string name, constFunctionTypePtr required_type)
 {
     TableEntry *func_te = table ()->find (name.c_str (), SymbolEntry::c_function);
     if (func_te)
     {
-	return new YEFunction (func_te);
+	return new Y2PerlFunctionCall (m_name, name, required_type);
     }
     y2error ("No such function %s", name.c_str ());
     return NULL;

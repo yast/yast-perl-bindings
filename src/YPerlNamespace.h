@@ -30,5 +30,5 @@ public:
     // constructor is handled separately
     virtual YCPValue evaluate (bool cse = false);
 
-    virtual Y2Function* createFunctionCall (const string name);
+    virtual Y2Function* createFunctionCall (const string name, constFunctionTypePtr requiredType);
 };
