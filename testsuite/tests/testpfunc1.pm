@@ -9,6 +9,7 @@ our %TYPEINFO;
 BEGIN { $TYPEINFO{rxmatch} = ["function", "boolean", "string", "string"]; }
 sub rxmatch
 {
+    my $self = shift;
     my ($string, $pattern) = @_;
     return $string =~ $pattern;
 }
@@ -23,6 +24,7 @@ Computes the lengths of the strings in the list.
 
 sub lengths
 {
+    my $self = shift;
     # warning, we get a REFERENCE to the list of strings
     return [ map (length, @{$_[0]}) ];
 }
@@ -30,6 +32,7 @@ sub lengths
 BEGIN { $TYPEINFO{amap} = ["function", [ 'map', 'string', 'any' ], [ 'map', 'string', 'any' ]]; }
 sub amap
 {
+    my $self = shift;
     my $data = shift;
 
     my %returnMap = (a => 1, b => "two");
