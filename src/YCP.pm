@@ -118,14 +118,6 @@ use strict;
 use warnings;
 use diagnostics;
 
-# prevent errors from garbling ncurses screen (#37652)
-# Use the common log file so that there's context for Perl errors (#39959)
-BEGIN { if (($ARGV[0]||"") ne "--stderr") {
-    open (STDERR, ">>/var/log/YaST2/y2log") and
-    print STDERR "$0 ($$) " and system "date>&2";
-} }
-END { close STDERR; }
-
 require Exporter;
 our @ISA = qw(Exporter);
 my @e_data = qw(Boolean Byteblock Integer Float String Symbol Term);
