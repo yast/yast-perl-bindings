@@ -276,7 +276,10 @@ sub AUTOLOAD
 {
     our $AUTOLOAD;
 
-    print "$AUTOLOAD (", join (", ", @_), ")\n" if YaST::YCP::debug;
+    # strip $self on the way from Perl to YCP,
+    # just as it is added in the reverse direction
+    my $himself = shift;
+    print "$himself $AUTOLOAD (", join (", ", @_), ")\n" if YaST::YCP::debug;
 
     my @components = split ("::", $AUTOLOAD);
     my $func = pop (@components);

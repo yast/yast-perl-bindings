@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Mar 17 18:23:00 CET 2004 - mvidner@suse.cz
+
+- strip $self on the way from Perl to YCP,
+  just as it is added in the reverse direction
+- YaPI.inc -> YaPI.pm
+- 2.9.18
+
+-------------------------------------------------------------------
 Wed Mar 17 12:44:53 CET 2004 - mvidner@suse.cz
 
 - YCP now calls all perl functions as class methods
