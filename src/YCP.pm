@@ -209,7 +209,10 @@ sub args
     # see "Constructors and Instance Methods" in perltoot
     my $self = shift;
     if (@_) { @{ $self->{args} } = @_; }
-    return @{ $self->{args} };
+    # HACK:
+    # because I don't want to process multiple return values,
+    # I return it as a reference
+    return $self->{args};
 }
 
 1;

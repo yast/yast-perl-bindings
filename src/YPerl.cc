@@ -732,7 +732,7 @@ YPerl::tryFromPerlClassTerm (const char *class_name, SV *sv, YCPValue &out)
 	    return false;
 	}
 	SV *s_args = callMethod (sv, "YaST::YCP::Term::args");
-	YCPValue args = fromPerlScalar (s_args, Type::List ()); // optimize
+	YCPValue args = fromPerlScalar (s_args, new ListType (Type::Any)); // optimize
 	SvREFCNT_dec (s_args);
 	if (args.isNull () || !args->isList ())
 	{
@@ -938,6 +938,9 @@ YPerl::callMethod (SV * instance, const char * full_method_name)
     }
     PUTBACK;
 
+    // FREETMPS frees also the return value,
+    // so we must ref it here and our _caller_ must unref it
+    SvREFCNT_inc (ret);
     FREETMPS;
     LEAVE;
 

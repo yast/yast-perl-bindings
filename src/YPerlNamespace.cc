@@ -243,12 +243,18 @@ YPerlNamespace::YPerlNamespace (string name, string timestamp)
 
     const I32 create = 0;
 
-    // try to get the typeinfo, if provided
-    HV *typeinfo = get_hv ((m_name + "::TYPEINFO").c_str (), create);
-    //sv_dump ((SV *) typeinfo);
+    // TODO adjust the table size according to numsymbols,
+    // must be a prime
+    m_table = new SymbolTable (211);
 
     // stash == Symbol TAble haSH
     HV *stash = gv_stashpv (c_name, create);
+
+    if (stash == NULL)
+    {
+	y2error ("The Perl package %s is not provided by its pm file", c_name);
+	return;
+    }
 
     // iterate thru the stash
 
@@ -277,9 +283,9 @@ YPerlNamespace::YPerlNamespace (string name, string timestamp)
     // strange, sv_cmp (without the Perl_ prefix) should work but doesn't
     sortsv (AvARRAY (symbols_av), av_len (symbols_av) + 1, Perl_sv_cmp);
 
-    // TODO adjust the table size according to numsymbols,
-    // must be a prime
-    m_table = new SymbolTable (211);
+    // try to get the typeinfo, if provided
+    HV *typeinfo = get_hv ((m_name + "::TYPEINFO").c_str (), create);
+    //sv_dump ((SV *) typeinfo);
 
     char *symbol;
     STRLEN symlen;
