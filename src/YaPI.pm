@@ -125,8 +125,15 @@ my %textdomains;
 sub textdomain
 {
     my $domain = shift;
-    my $package = caller;
+    my ($package, $filename, $line) = caller;
 
+    if (defined ($textdomains{package}))
+    {
+	if ($textdomains{package} ne $domain)
+	{
+	    y2error ("Textdomain '$domain' overrides old textdomain '$textdomains{package}' in package $package, $filename:$line");
+	}
+    }
     $textdomains{$package} = $domain;
     return Locale::gettext::textdomain ($domain);
 }

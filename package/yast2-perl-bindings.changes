@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 13 12:57:14 CEST 2004 - mvidner@suse.cz
+
+- check that a single package does not use inconsistent textdomains
+
+-------------------------------------------------------------------
 Thu Apr  8 17:03:50 CEST 2004 - mvidner@suse.cz
 
 - YaPI.pm: Remember the text domain
