@@ -78,7 +78,7 @@ sub echoargs_recursive(@)
 		    if ( ref( $hash{ $key } ) )
 		    {
 			print( "\n" );
-			echoargs_recursive( $level + 1, $hash{ $key } );
+			echoargs_recursive( $level + 2, $hash{ $key } );
 		    }
 		    else
 		    {
