@@ -22,7 +22,6 @@ static
 Y2Namespace *
 getNs (const char * ns_name, const char * func_name)
 {
-#if 0
     // func_name is only for debugging
     Y2Component *c = Y2ComponentBroker::getNamespaceComponent (ns_name);
     if (c == NULL)
@@ -38,23 +37,16 @@ getNs (const char * ns_name, const char * func_name)
 	y2error ("Component %p could not provide namespace %s for a Perl call of %s",
 		 c, ns_name, func_name);
     }
-#endif
-    YSImport import (ns_name, 0);
-    Y2Namespace *ns = import.nameSpace ();
-    if (ns == NULL)
-    {
-	y2error ("Could not provide namespace %s for a Perl call of %s", ns_name, func_name);
-    }
     else
     {
-	import.evaluate ();
+	ns->initialize ();
     }
     return ns;
 }
 
 // forward declaration
 YCPValue YCP_call_SCR (pTHX_ const char * func_name, const vector<SV *>& args);
-YCPValue YCP_getset_variable (pTHX_ const char * ns_name, SymbolEntry *var_se, const vector<SV *>& args);
+YCPValue YCP_getset_variable (pTHX_ const char * ns_name, SymbolEntryPtr var_se, const vector<SV *>& args);
 
 XS(XS_YCP_y2_logger); /* prototype to pass -Wmissing-prototypes */
 XS(XS_YCP_y2_logger)
@@ -355,7 +347,7 @@ YCPValue YCP_call_SCR (pTHX_ const char * func_name, const vector<SV *>& args)
  * Otherwise error (and return YCPNull)
  * ns_name is for error reporting
  */
-YCPValue YCP_getset_variable (pTHX_ const char * ns_name, SymbolEntry *var_se, const vector<SV *>& args)
+YCPValue YCP_getset_variable (pTHX_ const char * ns_name, SymbolEntryPtr var_se, const vector<SV *>& args)
 {
     YCPValue ret_yv = YCPNull ();
     unsigned n = args.size ();

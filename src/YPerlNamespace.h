@@ -36,7 +36,7 @@ public:
 
     //! function parameters ??
     // bytecode uses unsigneds
-    virtual SymbolEntry* symbolEntry (unsigned int position) const;
+    virtual SymbolEntryPtr symbolEntry (unsigned int position) const;
     // bytecode uses unsigneds
     virtual int findSymbol (const SymbolEntry *entry);
 
