@@ -68,7 +68,7 @@ XSLoader::load ('YaST::YCP');
 sub Import ($)
 {
     my $package = shift;
-    print "Importing $package" if debug;
+    print "Importing $package\n" if debug;
 
     no strict;
     # let it get our autoload
