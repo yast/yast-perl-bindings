@@ -487,6 +487,25 @@ YPerl::newPerlScalar( const YCPValue & val, bool composite )
     if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
     if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
     if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
+/*
+Importing YaST::YCP initializes YCP twice and makes it crash :-(
+    if ( val->isTerm()    )
+    {
+	YCPTerm t = val->asTerm ();
+	YCPString name = t->name ();
+	YCPList args = t->args ();
+	return callConstructor ("YaST::YCP::Term", "YaST::YCP::Term::new",
+				args->functionalAdd (name, true /*prepend*/ ));
+    }
+    if ( val->isSymbol () )
+    {
+	YCPList args;
+	return callConstructor ("YaST::YCP::Symbol", "YaST::YCP::Symbol::new",
+				args->functionalAdd (
+				    YCPString (
+					val->asSymbol ()->symbol ())));
+    }
+*/
     if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
     if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
@@ -916,7 +935,7 @@ no, not needed yet
     return val;
 }
 
-// call a pethod of a perl object
+// call a method of a perl object
 // that takes no arguments and returns one scalar
 SV*
 YPerl::callMethod (SV * instance, const char * full_method_name)
@@ -949,6 +968,67 @@ YPerl::callMethod (SV * instance, const char * full_method_name)
 
     // FREETMPS frees also the return value,
     // so we must ref it here and our _caller_ must unref it
+    SvREFCNT_inc (ret);
+    FREETMPS;
+    LEAVE;
+
+    return ret;
+}
+
+// call a constructor of a perl object
+SV*
+YPerl::callConstructor (const char * class_name, const char * full_method_name,
+			YCPList args)
+{
+    EMBEDDED_PERL_DEFS;
+
+    // Ensure that the module is imported
+    // This is enough when all of them reside in a single pm file
+    static bool module_imported = false;
+    if (! module_imported)
+    {
+	YCPList m;
+	m->add (YCPString ("YaST::YCP"));
+	loadModule (m);
+	module_imported = true;
+    }
+
+    SV *ret = &PL_sv_undef;
+
+    dSP;
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK (SP);
+
+    // Class name
+    XPUSHs (sv_2mortal (newSVpv (class_name, 0)));
+
+    // Other arguments
+    for (int i = 0; i < args->size (); ++i)
+    {
+	XPUSHs (sv_2mortal (newPerlScalar (args->value (i), false )));
+    }
+
+    PUTBACK;
+
+    int count = call_method (full_method_name, G_SCALAR);
+
+    SPAGAIN;
+    if (count != 1)
+    {
+	// must be 0 because we specified G_SCALAR
+	y2error ("Method %s did not return a value", full_method_name);
+    }
+    else
+    {
+	ret = POPs;
+    }
+    PUTBACK;
+
+    // FREETMPS frees also the return value,
+    // so we must ref it here and our _caller_ must unref it
+    // when it no longer needs it
     SvREFCNT_inc (ret);
     FREETMPS;
     LEAVE;
