@@ -29,6 +29,17 @@
     } while (false)
 
 /**
+ * using this instead of plain strcmp
+ * enables embedding argument names into the typeinfo
+ */
+static bool firstWordIs (const char *where, const char *what)
+{
+    size_t n = strlen (what);
+    return !strncmp (where, what, n) &&
+	(where[n] == '\0' || isspace (where[n]));
+}
+
+/**
  * if the typeinfo is wrong, returns Type::Error
  */
 static constTypePtr parseTypeinfo (SV *ti)
@@ -37,27 +48,27 @@ static constTypePtr parseTypeinfo (SV *ti)
     if (SvPOK (ti)) // is it a string
     {
 	const char *s = SvPV_nolen (ti);
-	if      (!strcmp (s, "any"))
+	if      (firstWordIs (s, "any"))
 	    return Type::Any;
-	else if (!strcmp (s, "void"))
+	else if (firstWordIs (s, "void"))
 	    return Type::Void;
-	else if (!strcmp (s, "boolean"))
+	else if (firstWordIs (s, "boolean"))
 	    return Type::Boolean;
-	else if (!strcmp (s, "byteblock"))
+	else if (firstWordIs (s, "byteblock"))
 	    return Type::Byteblock;
-	else if (!strcmp (s, "integer"))
+	else if (firstWordIs (s, "integer"))
 	    return Type::Integer;
-	else if (!strcmp (s, "float"))
+	else if (firstWordIs (s, "float"))
 	    return Type::Float;
-	else if (!strcmp (s, "string"))
+	else if (firstWordIs (s, "string"))
 	    return Type::String;
-	else if (!strcmp (s, "locale"))
+	else if (firstWordIs (s, "locale"))
 	    return Type::Locale;
-	else if (!strcmp (s, "path"))
+	else if (firstWordIs (s, "path"))
 	    return Type::Path;
-	else if (!strcmp (s, "symbol"))
+	else if (firstWordIs (s, "symbol"))
 	    return Type::Symbol;
-	else if (!strcmp (s, "term"))
+	else if (firstWordIs (s, "term"))
 	    return Type::Term;
 	else
 	{
@@ -88,7 +99,7 @@ static constTypePtr parseTypeinfo (SV *ti)
 	    }
 
 	    const char *s = SvPV_nolen (*kind);
-	    if (!strcmp (s, "list"))
+	    if (firstWordIs (s, "list"))
 	    {
 		// maxidx already checked
 		SV **val = av_fetch (av, 1, 0);
@@ -104,7 +115,7 @@ static constTypePtr parseTypeinfo (SV *ti)
 		    return new ListType (tp_val);
 		}
 	    }
-	    else if (!strcmp (s, "map"))
+	    else if (firstWordIs (s, "map"))
 	    {
 		if (maxidx != 2)
 		{
@@ -131,7 +142,7 @@ static constTypePtr parseTypeinfo (SV *ti)
 		    return new MapType (tp_key, tp_val);
 		}
 	    }
-	    else if (!strcmp (s, "variable"))
+	    else if (firstWordIs (s, "variable"))
 	    {
 		// like list
 		// maxidx already checked
@@ -148,7 +159,7 @@ static constTypePtr parseTypeinfo (SV *ti)
 		    return new VariableType (tp_val);
 		}
 	    }
-	    else if (!strcmp (s, "function"))
+	    else if (firstWordIs (s, "function"))
 	    {
 		///
 		// maxidx already checked
@@ -204,15 +215,12 @@ class YPerlFunctionDefinition : public YBlock
 {
     //! function name, including module name
     string m_name;
-    //! we are this function's definition
-    // we use it to get at the parameter values
-//    YFunction m_function;
     //! get at everything we want :-|
-    SymbolEntry *m_symbolentry;
+    SymbolEntryPtr m_symbolentry;
 
 public:
     YPerlFunctionDefinition (const string &name,
-			     SymbolEntry *se
+			     SymbolEntryPtr se
 	) :
 	YBlock ("TODOfile", YBlock::b_unknown/*?*/),
 	m_name (name),
@@ -243,17 +251,12 @@ public:
 
 
 YPerlNamespace::YPerlNamespace (string name)
-    : m_name (name),
-      m_count (0)
+    : m_name (name)
 {
     EMBEDDED_PERL_DEFS;
     const char * c_name = m_name.c_str ();
 
     const I32 create = 0;
-
-    // TODO adjust the table size according to numsymbols,
-    // must be a prime
-    m_table = new SymbolTable (211);
 
     // stash == Symbol TAble haSH
     HV *stash = gv_stashpv (c_name, create);
@@ -296,6 +299,7 @@ YPerlNamespace::YPerlNamespace (string name)
     //sv_dump ((SV *) typeinfo);
 
     char *symbol;
+    int count = 0;
     STRLEN symlen;
     SV *glob;
     // iterate again, use the array this time.
@@ -377,7 +381,7 @@ YPerlNamespace::YPerlNamespace (string name)
 	    // symbol entry for the function
 	    SymbolEntry *fun_se = new SymbolEntry (
 		this,
-		m_count++,	// position. arbitrary numbering. must stay consistent when?
+		count++,	// position. arbitrary numbering. must stay consistent when?
 		symbol,		// passed to Ustring, no need to strdup
 		SymbolEntry::c_global, // the only way to get it global
 		fun_tp,
@@ -389,9 +393,7 @@ YPerlNamespace::YPerlNamespace (string name)
 	    fun_f->setDefinition (fun_def);
 
 	    // enter it to the symbol table
-	    m_table->enter (strdup (symbol), fun_se, 0);
-	    // and to the position index
-	    m_positions.push_back (fun_se);
+	    enterSymbol (fun_se, 0);
 	}
 
     }
@@ -401,36 +403,12 @@ YPerlNamespace::YPerlNamespace (string name)
 
 YPerlNamespace::~YPerlNamespace ()
 {
-    if (m_table)
-    {
-	delete m_table;
-    }
 }
 
 const string YPerlNamespace::filename () const
 {
     // TODO improve
     return ".../" + m_name;
-}
-
-unsigned int YPerlNamespace::symbolCount () const
-{
-    y2debug ("PING: %u", m_count);
-    return m_count;
-}
-
-SymbolEntryPtr YPerlNamespace::symbolEntry (unsigned int position) const
-{
-    SymbolEntry *ret = (position > m_count)? NULL : m_positions[position];
-    y2debug ("PING: %u -> %p", position, ret);
-    return ret;
-}
-
-int YPerlNamespace::findSymbol (const SymbolEntry *entry)
-{
-    int ret = 0;
-    y2error ("TODO: %p -> %d", entry, ret);
-    return ret;
 }
 
 // this is for error reporting only?
@@ -450,11 +428,6 @@ YCPValue YPerlNamespace::evaluate (bool cse)
     // so we don't need to do anything
     y2debug ("Doing nothing");
     return YCPNull ();
-}
-
-SymbolTable* YPerlNamespace::table () const
-{
-    return m_table;
 }
 
 // It seems that this is the standard implementation. why would we
