@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 31 18:03:57 CEST 2004 - mvidner@suse.cz
+
+- redirect stderr to prevent errors from garbling ncurses screen (#37652)
+- docs: fixed :: to ->
+- 2.9.24
+
+-------------------------------------------------------------------
 Mon Mar 29 10:49:03 CEST 2004 - mvidner@suse.cz
 
 - require perl(Locale::gettext) now that YaPI.pm uses it

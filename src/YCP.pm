@@ -11,8 +11,8 @@ YaST::YCP - a binary interface between Perl and YCP
  use YaST::YCP qw(:DATA :LOGGING);
 
  YaST::YCP::Import ("SCR");
- my $m = SCR::Read (".sysconfig.displaymanager.DISPLAYMANAGER");
- SCR::Write (".sysconfig.kernel.CRASH_OFTEN", Boolean (1));
+ my $m = SCR->Read (".sysconfig.displaymanager.DISPLAYMANAGER");
+ SCR->Write (".sysconfig.kernel.CRASH_OFTEN", Boolean (1));
 
 =head1 DATA TYPES
 
@@ -118,6 +118,13 @@ use strict;
 use warnings;
 use diagnostics;
 
+# prevent errors from garbling ncurses screen (#37652)
+BEGIN { if (($ARGV[0]||"") ne "--stderr") {
+    open (STDERR, ">>/var/log/YaST2/y2log-perl") and
+    print STDERR "$0 ($$) " and system "date>&2";
+} }
+END { close STDERR; }
+
 require Exporter;
 our @ISA = qw(Exporter);
 my @e_data = qw(Boolean Byteblock Integer Float String Symbol Term);
@@ -154,7 +161,7 @@ XSLoader::load ('YaST::YCP');
 =head2 Import
 
  YaST::YCP::Import "Namespace";
- Namespace::foo ("bar");
+ Namespace->foo ("bar");
 
 =cut
 
