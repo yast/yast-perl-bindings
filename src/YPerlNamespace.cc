@@ -405,14 +405,14 @@ const string YPerlNamespace::filename () const
 
 unsigned int YPerlNamespace::symbolCount ()
 {
-    y2error ("PING: %u", m_count);
+    y2debug ("PING: %u", m_count);
     return m_count;
 }
 
 SymbolEntry* YPerlNamespace::symbolEntry (unsigned int position)
 {
     SymbolEntry *ret = (position > m_count)? NULL : m_positions[position];
-    y2error ("PING: %u -> %p", position, ret);
+    y2debug ("PING: %u -> %p", position, ret);
     return ret;
 }
 
@@ -423,10 +423,13 @@ int YPerlNamespace::findSymbol (const SymbolEntry *entry)
     return ret;
 }
 
+// this is for error reporting only?
 string YPerlNamespace::toString () const
 {
     y2error ("TODO");
-    return "{\n...?\n}\n";
+    return "{\n"
+	"/* this namespace is provided in Perl */\n"
+	"}\n";
 }
 
 // called when running and the import statement is encountered
