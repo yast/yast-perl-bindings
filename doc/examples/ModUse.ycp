@@ -1,7 +1,10 @@
 // Example for loading a Perl module to an already existing parse tree
 {
+    y2milestone ("1");
     Perl::Use( "dummy" );
+    y2milestone ("after use dummy");
     Perl::Use( "mod_ex" );
+    y2milestone ("after use mod_ex");
 
     string msg = Perl::CallString( "mod_ex::helloWorld" );
     y2milestone( "Perl mod_ex::helloWorld() returned %1", msg );
