@@ -1,14 +1,18 @@
 package YaPI;
 
-BEGIN {
-    push @INC, '/usr/share/YaST2/modules';
-}
+=head1 NAME
+
+YaPI - common functions for modules implementing YaST API
+
+=cut
+
+use lib '/usr/share/YaST2/modules';
 
 use strict;
 
 use Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(textdomain);
+our @EXPORT = qw(textdomain __);
 
 use YaST::YCP;
 use ycp;
@@ -22,6 +26,29 @@ our %TYPEINFO;
 my %__error = ();
 my $VERSION = "";
 our @CAPABILITIES = ();
+
+=head2 base functions
+
+These are to be used by modules that use YaPI as their base class.
+
+  use YaPI;
+  our @ISA = ("YaPI");
+
+=head3 Interface
+
+Returns a reference to a list of hashes describing the functions
+in the current package. The information is taken from TYPEINFO.
+
+  [
+   {
+      functionName => "contains",
+      return => "boolean",
+      argument => [ "string", ["list", "string"]],
+   },
+   ...
+  ]
+
+=cut
 
 BEGIN { $TYPEINFO{Interface} = ["function", "any"]; }
 sub Interface {
@@ -48,12 +75,26 @@ sub Interface {
     return \@ret;
 }
 
+=head3 Version
+
+Returns the version of the current package.
+
+=cut
+
 BEGIN { $TYPEINFO{Version} = ["function", "string"]; }
 sub Version {
     my $self = shift;
     no strict "refs";
     return ${"${self}::VERSION"};
 }
+
+=head3 Supports
+
+Greps C<@CAPABILITIES> of the current package.
+
+  if (YaPI::Foo->Supports ("frobnicate")) {...}
+
+=cut
 
 BEGIN { $TYPEINFO{Supports} = ["function", "boolean", "string"]; }
 sub Supports {
@@ -70,6 +111,24 @@ sub Supports {
 }
 
 
+=head3 SetError
+
+Logs an error and remembers it for L</Error>.
+
+Error map:
+
+  {
+    code		# mandatory, an uppercase short string
+    summary
+    description
+  # if all of the following are missing, caller () is used
+    package
+    file
+    line
+  }
+
+=cut
+
 BEGIN { $TYPEINFO{SetError} = ["function", "boolean", ["map", "string", "any" ]]; }
 sub SetError {
     my $self = shift;
@@ -83,8 +142,18 @@ sub SetError {
     } else {
         y2error($__error{code});
     }
+    if(defined $__error{description} && $__error{description} ne "") {
+        y2error("Description: ".$__error{description});
+    }
+
     return undef;
 }
+
+=head3 Error
+
+Returns the error set by L</SetError>
+
+=cut
 
 BEGIN { $TYPEINFO{Error} = ["function", ["map", "string", "any"] ]; }
 sub Error {
@@ -97,11 +166,13 @@ sub Error {
     use YaPI;
     textdomain "mydomain";
 
-Just use C<_("my text")> to mark text to be translated.
+Just use C<__("my text")> to mark text to be translated.
+Both C<textdomain> and C<__> are exported to the calling package.
 
-These must not be used any longer:
+These must not be used any longer because they collide with symbols
+exported by this module:
 
- #  use Locale::gettext;
+ #  use Locale::gettext;    # textdomain
  #  sub _ { ... }
 
 These don't hurt but aren't necessary:
@@ -114,7 +185,7 @@ These don't hurt but aren't necessary:
 Calls Locale::gettext::textdomain
 and also
 remembers an association between the calling package and the
-domain. Later calls of _ use this domain as an argument to dgettext.
+domain. Later calls of __ use this domain as an argument to dgettext.
 
 =cut
 
@@ -138,20 +209,28 @@ sub textdomain
     return Locale::gettext::textdomain ($domain);
 }
 
-=head3 _
+=head3 __ (double underscore)
 
 Calls Locale::gettext::dgettext, supplying the textdomain of the calling
 package (set by calling textdomain).
 
-Note: functions with _ are automaticaly exported to main::
+Note: the single underscore function (_) will be removed because it
+is automaticaly exported to main:: which causes namespace conflicts.
 
 =cut
 
-sub _ {
+# bug 39954: __ better than _
+sub __ {
     my $msgid = shift;
     my $package = caller;
     my $domain = $textdomains{$package};
     return Locale::gettext::dgettext ($domain, $msgid);
 }
+
+# Compatibility by partial typeglob assignment:
+# &_ will call &__ but $_ will not be $__ which would happen
+# if we just asigned *_ = *__.
+# Cannot just call __ from _ because of "caller".
+*_ = \&__;
 
 1;

@@ -11,6 +11,8 @@
 #include <ycp/YBlock.h>
 #include <ycp/YExpression.h>
 #include <ycp/YStatement.h>
+#include <yui/YUIComponent.h>
+#include <wfm/Y2WFMComponent.h>
 
 #include "EXTERN.h"
 #include "perl.h"
@@ -382,6 +384,97 @@ YCPValue YCP_getset_variable (pTHX_ const char * ns_name, SymbolEntryPtr var_se,
     return ret_yv;
 }
 
+// XS_YCP_close_ui is called in END to close the ncurses window
+// if the ui was created in Perl
+Y2Component *owned_uic = 0;
+Y2Component *owned_wfmc = 0;
+
+// creates a ui component, if not already there, and returns the name
+// of the one that will be used
+XS(XS_YCP_init_ui); /* prototype to pass -Wmissing-prototypes */
+XS(XS_YCP_init_ui)
+{
+    dXSARGS;
+
+    const char *ui_name = "ncurses";
+
+    if (items == 1)
+    {
+	ui_name = SvPV_nolen (ST (0));
+    }
+    else if (items != 0)
+    {
+	y2error ("Zero or one arguments required (ui name, default %s", ui_name);
+	XSRETURN_EMPTY;
+    }
+
+    Y2Component *c = YUIComponent::uiComponent ();
+    if (c == 0)
+    {
+	y2debug ("UI component not created yet, creating %s", ui_name);
+
+	c = Y2ComponentBroker::createServer (ui_name);
+	if (c == 0)
+	{
+	    y2error ("Cannot create component %s", ui_name);
+	    XSRETURN_EMPTY;
+	}
+
+	if (YUIComponent::uiComponent () == 0)
+	{
+	    y2error ("Component %s is not a UI", ui_name);
+	    XSRETURN_EMPTY;
+	}
+	else
+	{
+	    // got it - initialize, remember
+	    c->setServerOptions (0, NULL);
+	    owned_uic = c;
+	}
+    }
+    else
+    {
+	y2debug ("UI component already present: %s", c->name ().c_str ());
+    }
+
+    ST (0) = sv_2mortal (newSVpv (c->name ().c_str (), 0));
+    XSRETURN (1);
+}
+
+void init_wfm ()
+{
+    if (Y2WFMComponent::instance () == 0)
+    {
+	owned_wfmc = Y2ComponentBroker::createClient ("wfm");
+	if (owned_wfmc == 0)
+	{
+	    y2error ("Cannot create WFM component");
+	}
+    }
+}
+
+XS(XS_YCP_close_components); /* prototype to pass -Wmissing-prototypes */
+XS(XS_YCP_close_components)
+{
+    dXSARGS;
+    // get rid of warning: unused variable `I32 items'
+    I32 __attribute__ ((unused)) foo = items;
+
+    if (owned_uic != 0)
+    {
+	delete owned_uic;
+	owned_uic = 0;
+    }
+
+    if (owned_wfmc != 0)
+    {
+	delete owned_wfmc;
+	owned_wfmc = 0;
+    }
+
+    XSRETURN_YES;
+}
+
 /* called by XSLoader::load ('YaST::YCP') */
 #ifdef __cplusplus
 extern "C"
@@ -396,12 +489,11 @@ XS(boot_YaST__YCP)
 
     XS_VERSION_BOOTCHECK ;
 
-    if (Y2ComponentBroker::createClient ("wfm") == 0)
-    {
-	y2error ("Cannot create server WFM component");
-    }
+    init_wfm ();
 
     newXS("YaST::YCP::call_ycp", XS_YCP_call_ycp, file);
+    newXS("YaST::YCP::close_components", XS_YCP_close_components, file);
+    newXS("YaST::YCP::init_ui",  XS_YCP_init_ui, file);
     newXS("YaST::YCP::y2_logger", XS_YCP_y2_logger, file);
     XSRETURN_YES;
 }
