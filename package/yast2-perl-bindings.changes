@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr  8 17:03:50 CEST 2004 - mvidner@suse.cz
+
+- YaPI.pm: Remember the text domain
+  and use dgettext instead of gettext (#38613).
+- 2.9.26
+
+-------------------------------------------------------------------
 Fri Apr  2 15:18:27 CEST 2004 - mvidner@suse.cz
 
 - changed license to GPL
