@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Feb 10 14:19:53 CET 2004 - mvidner@suse.cz
+
+- revert the preference of numbers
+  now strings are used unless the wanted type is known
+  or an explicit data class is used (Integer, Float, String added)
+- 2.9.5
+
+-------------------------------------------------------------------
 Mon Feb  9 14:43:49 CET 2004 - mvidner@suse.cz
 
 - try harder to convert Perl data to integers/strings
