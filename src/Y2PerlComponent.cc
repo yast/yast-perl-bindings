@@ -13,16 +13,19 @@
   File:	      Y2PerlComponent.cc
 
   Author:     Stefan Hundhammer <sh@suse.de>
+	      Martin Vidner <mvidner@suse.cz>
 
 /-*/
 
 #define y2log_component "Y2Perl"
 #include <ycp/y2log.h>
-#include <ycp/YCPError.h>
+#include <ycp/pathsearch.h>
+// just for the timestamp
+#include <ycp/Bytecode.h>
 
 #include "Y2PerlComponent.h"
 #include "YPerl.h"
-
+#include "YPerlNamespace.h"
 using std::string;
 
 
@@ -46,7 +49,9 @@ void Y2PerlComponent::result( const YCPValue & )
 }
 
 
-
+// The old way of calling builtins has to be redone
+// TODO later
+/*
 YCPValue
 Y2PerlComponent::evaluate( const YCPValue & val )
 {
@@ -77,4 +82,38 @@ Y2PerlComponent::evaluate( const YCPValue & val )
     if ( function == "Destroy" 		)	return YPerl::destroy();
 	
     return YCPError( string ( "Undefined Perl::" ) + function );
+}
+*/
+
+Y2Namespace *Y2PerlComponent::import (const char* name, const char* timestamp)
+{
+    // TODO where to look for it
+    // must be the same in Y2CCPerl and Y2PerlComponent
+    string module = YCPPathSearch::find (YCPPathSearch::Module, string (name) + ".pm");
+    if (module.empty ())
+    {
+	y2internal ("Couldn't find %s after Y2CCPerl pointed to us", name);
+	return NULL;
+    }
+    
+    // get timestamp
+    string ts = Bytecode::fileTimestamp (module);
+    if (timestamp != NULL && ts != timestamp)
+    {
+	y2error ("Timestamp for %s bad: expected %s, got %s",
+		 module.c_str (), timestamp, ts.c_str ());
+	return NULL;
+    }
+
+    module.erase (module.size () - 3 /* strlen (".pm") */);
+    YCPList args;
+    args->add (YCPString(module));
+
+    // load it
+    YPerl::loadModule (args);
+
+    // introspect, create data structures for the interpreter
+    Y2Namespace *ns = new YPerlNamespace (name, ts);
+
+    return ns;
 }

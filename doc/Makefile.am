@@ -2,7 +2,8 @@
 # Makefile.am for perl-bindings/doc
 #
 
-SUBDIRS = examples 
+# see examples/Makefile.am for why it is disabled
+#SUBDIRS = examples 
 
 htmldir = $(docdir)
 
@@ -11,8 +12,7 @@ CLEANFILES = $(html_DATA)
 
 builtin_perl = $(srcdir)/../src/YPerl.cc
 YCP-builtins-perl.html: $(builtin_perl)
-	@ybindir@/makebuiltindocs -t "Perl:: built-in functions" $^ > $@.new
-	mv $@.new $@
+	@ybindir@/makebuiltindocs -t "Perl:: built-in functions" $^ > $@.new; mv $@.new $@
 
 all: $(html_DATA)
 

@@ -18,6 +18,9 @@
 
 
 #include <list>
+#include <iosfwd>
+#include <sstream>
+#include <iomanip>
 
 #include <EXTERN.h>	// Perl stuff
 #include <perl.h>
@@ -29,10 +32,10 @@
 
 #include <ycp/YCPBoolean.h>
 #include <ycp/YCPFloat.h>
-#include <ycp/YCPError.h>
 #include <ycp/YCPInteger.h>
 #include <ycp/YCPList.h>
 #include <ycp/YCPMap.h>
+#include <ycp/YCPPath.h>
 #include <ycp/YCPString.h>
 #include <ycp/YCPSymbol.h>
 #include <ycp/YCPVoid.h>
@@ -40,9 +43,6 @@
 #include <YPerl.h>
 
 #define DIM(ARRAY)	( sizeof( ARRAY )/sizeof( ARRAY[0] ) )
-
-// The weird Perl macros need a PerlInterpreter * named 'my_perl' (!) almost everywhere.
-#define EMBEDDED_PERL_DEFS PerlInterpreter * my_perl = YPerl::perlInterpreter()
 
 
 
@@ -76,6 +76,11 @@ YPerl::YPerl()
 		0 );	// env
 }
 
+YPerl::YPerl(pTHX)
+    : _perlInterpreter(aTHX)
+    , _haveParseTree( false )
+{
+}
 
 YPerl::~YPerl()
 {
@@ -92,6 +97,17 @@ YPerl::yPerl()
 {
     if ( ! _yPerl )
 	_yPerl = new YPerl();
+
+    return _yPerl;
+}
+
+YPerl *
+YPerl::yPerl(pTHX)
+{
+    if ( ! _yPerl )
+	_yPerl = new YPerl(aTHX);
+    else
+	_yPerl->_perlInterpreter = aTHX;
 
     return _yPerl;
 }
@@ -120,6 +136,12 @@ YPerl::perlInterpreter()
     return 0;
 }
 
+/**
+ * @builtin Perl::AAA_DISABLED () -> void
+ * Note that with the migration to the new interpreter,
+ * these builtins don't work! I will rework the docs.
+ * -- mvidner
+ */
 
 /**
  * @builtin Perl::Parse (string file_name) -> void
@@ -194,6 +216,16 @@ YPerl::loadModule( YCPList argList )
 {
     EMBEDDED_PERL_DEFS;
 
+// Trying to avoid accessing freed filename when later sv_dumping.
+// No success yet.
+/*
+    dSP;
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK (SP);
+    PUTBACK;
+*/
     if ( argList->size() != 1 || ! argList->value(0)->isString() )
 	return YCPError( "Perl::loadModule() / Perl::Use() : Bad arguments: String expected!" );
 
@@ -204,10 +236,21 @@ YPerl::loadModule( YCPList argList )
 
     //sv_dump (name);
     // the name is unref'd by load_module, so it must not be mortal
+    // on the contrary, we ref it so that the file name gets preserved for debugging
+    // :-( does not work
+    newRV (name);
     load_module( flags, name, version );
     //sv_dump (name);
+
     yPerl()->setHaveParseTree( true );
 
+/*
+    SPAGAIN;
+    PUTBACK;
+
+    FREETMPS;
+    LEAVE;
+*/
     return YCPVoid();
 }
 
@@ -218,7 +261,7 @@ YPerl::loadModule( YCPList argList )
 YCPValue
 YPerl::callVoid( YCPList argList )
 {
-    return yPerl()->call( argList, YT_VOID );
+    return yPerl()->call( argList, Type::Void );
 }
 
 
@@ -229,7 +272,7 @@ YPerl::callVoid( YCPList argList )
 YCPValue
 YPerl::callString( YCPList argList )
 {
-    return yPerl()->call( argList, YT_STRING );
+    return yPerl()->call( argList, Type::String );
 }
 
 
@@ -240,7 +283,7 @@ YPerl::callString( YCPList argList )
 YCPValue
 YPerl::callList( YCPList argList )
 {
-    return yPerl()->call( argList, YT_LIST );
+    return yPerl()->call( argList, Type::List ());
 }
 
 
@@ -253,7 +296,7 @@ YPerl::callList( YCPList argList )
 YCPValue
 YPerl::callBool( YCPList argList )
 {
-    return yPerl()->call( argList, YT_BOOLEAN );
+    return yPerl()->call( argList, Type::Boolean );
 }
 
 
@@ -265,12 +308,12 @@ YPerl::callBool( YCPList argList )
 YCPValue
 YPerl::callInt( YCPList argList )
 {
-    return yPerl()->call( argList, YT_INTEGER );
+    return yPerl()->call( argList, Type::Integer );
 }
 
 
 YCPValue
-YPerl::call( YCPList argList, YCPValueType wanted_result_type )
+YPerl::call( YCPList argList, constTypePtr wanted_result_type )
 {
     EMBEDDED_PERL_DEFS;
 
@@ -281,6 +324,7 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 	return YCPError( "Perl::Call: Use Perl::Parse() or Perl::LoadModule() before Perl::Call() !" );
 
     string functionName = argList->value(0)->asString()->value();
+    string originalName = functionName;
     string::size_type arrowPos = functionName.find( "->" );
     string className;
 
@@ -297,13 +341,9 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 
     int calling_context;
 
-    switch ( wanted_result_type )
-    {
-	case YT_LIST:	calling_context = G_ARRAY;	break;
-	case YT_VOID:	calling_context = G_VOID;	break;
-	default:	calling_context = G_SCALAR;	break;
-
-    }
+    if (wanted_result_type->isList ())		calling_context = G_ARRAY;
+    else if (wanted_result_type->isVoid ())	calling_context = G_VOID;
+    else					calling_context = G_SCALAR;
 
     // Using the weird embedded-Perl macros as described in
     // man perlembed, man perlcall, man perlapi, man perlguts
@@ -353,8 +393,9 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
     SPAGAIN;		// Copy global stack pointer to local one
     YCPValue result = YCPVoid();
 
-    if ( wanted_result_type == YT_LIST )
+    if ( wanted_result_type->isList () )
     {
+	constTypePtr value_type = ((constListTypePtr)(wanted_result_type))->type ();
 	std::list<SV *> results;
 
 	// We want a list, but Perl uses a stack, so invert order of return values.
@@ -365,13 +406,13 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 	YCPList result_list;
 
 	for ( std::list<SV *>::iterator it = results.begin(); it != results.end(); ++it )
-	    result_list->add( fromPerlScalar( *it ) );
+	    result_list->add (fromPerlScalar (*it, value_type));
 
 	result = result_list;
     }
     else
     {
-	if ( wanted_result_type == YT_VOID )
+	if (wanted_result_type->isVoid ())
 	{
 	    // Perl always returns something - the last expression calculated.
 	    // Ignore this if return type void is desired.
@@ -380,7 +421,7 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 	}
 	else
 	{
-	    result = fromPerlScalar( POPs );
+	    result = fromPerlScalar (POPs, wanted_result_type);
 	}
 
 	if ( ret_count > 1 )
@@ -400,6 +441,15 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
     PUTBACK;		// Make local stack pointer global
     FREETMPS;		// Free temporary variables
     LEAVE;		// Close the Perl scope
+
+    // fromPerlScalar can return Null to indicate that the type check failed.
+    // It is used here and in passing parameters,
+    // so specify the location better
+    if (result.isNull ())
+    {
+	y2error ("... when returning from %s", originalName.c_str ());
+	result = YCPVoid ();
+    }
 
     return result;
 }
@@ -422,7 +472,7 @@ YPerl::eval( YCPList argList )
     if ( ! result )
 	return YCPVoid();
 
-    return yPerl()->fromPerlScalar( result );
+    return yPerl()->fromPerlScalarToAny( result );
 }
 
 
@@ -562,16 +612,210 @@ YPerl::newPerlHashRef( const YCPMap & map )
     return newRV_noinc( (SV *) hash );
 }
 
+static
+string
+debugDump (SV *sv)
+{
+    static char *svtypes[] = {
+	"NULL",
+	"IV",
+	"NV",
+	"RV",
+	"PV",
+	"PVIV",
+	"PVNV",
+	"PVMG",
+	"PVBM",
+	"PVLV",
+	"PVAV",
+	"PVHV",
+	"PVCV",
+	"PVGV",
+	"PVFM",
+	"PVIO",
+    };
+    U32 f = SvFLAGS (sv);
+    std::ostringstream ss;
+/*
+    ss << "SV with flags 0x"
+       << std::setfill ('0')
+       << std::setw (8)
+       << std::setbase (16)
+       << f;
+*/
+    ss << "SV with TYPE: "
+       << svtypes[SvTYPE (sv) & 15] // just to be sure if Perl changes weirdly
 
+       << ", FLAGS:"
+       << (f & 0x00000100 ? " PADBUSY": "")/* reserved for tmp or my already */
+       << (f & 0x00000200 ? " PADTMP": "") /* in use as tmp */
+       << (f & 0x00000400 ? " PADMY": "")  /* in use a "my" variable */
+       << (f & 0x00000800 ? " TEMP": "")   /* string is stealable? */
+       << (f & 0x00001000 ? " OBJECT": "") /* is "blessed" */
+       << (f & 0x00002000 ? " GMG": "")    /* has magical get method */
+       << (f & 0x00004000 ? " SMG": "")    /* has magical set method */
+       << (f & 0x00008000 ? " RMG": "")    /* has random magical methods */
+
+       << (f & 0x00010000 ? " IOK": "")    /* has valid public integer value */
+       << (f & 0x00020000 ? " NOK": "")    /* has valid public numeric value */
+       << (f & 0x00040000 ? " POK": "")    /* has valid public pointer value */
+       << (f & 0x00080000 ? " ROK": "")    /* has a valid reference pointer */
+
+       << (f & 0x00100000 ? " FAKE": "")   /* glob or lexical is just a copy */
+       << (f & 0x00200000 ? " OOK": "")    /* has valid offset value */
+       << (f & 0x00400000 ? " BREAK": "")  /* refcnt is artificially low - used
+					    * by SV's in final arena  cleanup */
+       << (f & 0x00800000 ? " READONLY": "") /* may not be modified */
+
+       << (f & 0x01000000 ? " pIOK": "")   /* has valid non-public integer value */
+       << (f & 0x02000000 ? " pNOK": "")   /* has valid non-public numeric value */
+       << (f & 0x04000000 ? " pPOK": "")   /* has valid non-public pointer value */
+       << (f & 0x08000000 ? " pSCREAM": "")/* has been studied? */
+       << (f & 0x20000000 ? " UTF8": "")   /* SvPV is UTF-8 encoded */
+       << (f & 0x10000000 ? " AMAGIC": "") /* has magical overloaded methods */
+	;
+
+    return ss.str ();
+}
+
+/**
+ * If type did not match, returns YCPNull
+ * (which must then be converted to YCPVoid)
+ *
+ */
 YCPValue
-YPerl::fromPerlScalar( SV * sv, YCPValueType wanted_type )
+YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 {
     EMBEDDED_PERL_DEFS;
-    STRLEN len; // Caution: The SvPV macro uses the address (!) of this!
 
-    YCPValue val = YCPVoid();
+    YCPValue val = YCPNull ();
 
-    if      ( SvPOK( sv ) )		val = YCPString ( SvPV( sv, len ) );
+    // Decide by the wanted type,
+    // Except first check if we got undef and in that case return nil
+    if (!SvOK (sv))
+    {
+	val = YCPVoid ();
+    }
+    else if (wanted_type->isAny ())
+    {
+	val = fromPerlScalarToAny (sv);
+    }
+    else if (wanted_type->isBoolean ())
+    {
+	val = YCPBoolean (SvTRUE (sv));
+    }
+    else if (wanted_type->isString ())
+    {
+	if (SvPOK (sv))	val = YCPString (SvPV_nolen (sv));
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
+    else if (wanted_type->isInteger ())
+    {
+	if (SvIOK (sv))	val = YCPInteger (SvIV (sv));
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
+    else if (wanted_type->isFloat ())
+    {
+	if (SvNOK (sv))	val = YCPFloat (SvNV (sv));
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
+/*
+locale - should be similar to string
+but YCPLocale does not exist anymore
+*/
+    else if (wanted_type->isSymbol ())
+    {
+	if (SvPOK (sv))	val = YCPSymbol (SvPV_nolen (sv));
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
+/*
+  function - probably not. or its name?
+ */
+/*
+term - pass as a list
+ */
+    else if (wanted_type->isPath ())
+    {
+	// a string
+	if (SvPOK (sv))	val = YCPPath (SvPV_nolen (sv));
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+	// maybe allow list later?
+    }
+    else if (wanted_type->isList ())
+    {
+	if (SvROK (sv))
+	{
+	    SV *ref = SvRV (sv);
+	    if (SvTYPE (ref) == SVt_PVAV)
+	    {
+		constListTypePtr list_type = (constListTypePtr) wanted_type;
+		val = fromPerlArray ((AV *) ref, list_type->type ());
+	    }
+	    else	y2error ("Expected %s, got reference to %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(ref).c_str ());
+
+	}
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
+    else if (wanted_type->isMap ())
+    {
+	if (SvROK (sv))
+	{
+	    SV *ref = SvRV (sv);
+	    if (SvTYPE (ref) == SVt_PVHV)
+	    {
+		constMapTypePtr map_type = (constMapTypePtr) wanted_type;
+		val = fromPerlHash ((HV *) ref,
+				    map_type->keytype (),
+				    map_type->valuetype ());
+	    }
+	    else	y2error ("Expected %s, got reference to %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(ref).c_str ());
+
+	}
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
+/*
+  tuple?
+ */
+    else
+    {
+	y2internal ("Unhandled conversion to %s from %s",
+		    wanted_type->toString ().c_str (), debugDump(sv).c_str ());
+    }
+
+
+    return val;
+}
+
+/**
+ * This is copied from the original sh's function.
+ * It converts according to what Perl provides, not what YCP wants.
+ */
+YCPValue
+YPerl::fromPerlScalarToAny (SV * sv)
+{
+    EMBEDDED_PERL_DEFS;
+
+    YCPValue val = YCPNull ();
+
+    if      ( SvPOK( sv ) )		val = YCPString ( SvPV_nolen( sv ) );
     else if ( SvNOK( sv ) )		val = YCPFloat  ( SvNV( sv ) );
     else if ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
     else if ( SvROK( sv ) )
@@ -580,46 +824,27 @@ YPerl::fromPerlScalar( SV * sv, YCPValueType wanted_type )
 
 	switch ( SvTYPE( ref ) )
 	{
-	    case SVt_IV:
-	    case SVt_NV:
-	    case SVt_PV:
-	    case SVt_RV:
-		val = fromPerlScalar( ref, wanted_type );
-		break;
-
 	    case SVt_PVAV:	// Reference to an array
-		val = fromPerlArray( (AV *) ref );
+		val = fromPerlArray ((AV *) ref, Type::Any);
 		break;
 
 	    case SVt_PVHV:	// Reference to a hash
-		val = fromPerlHash( (HV *) ref );
+		val = fromPerlHash ((HV *) ref, Type::Any, Type::Any);
 		break;
 
 	    default:
-		y2error( "Reference to unknown type #%lu", SvTYPE( ref ) );
+		y2error ("Expected %s, got reference to %s",
+				 "any",
+				 debugDump(ref).c_str ());
 		break;
-	}
-    }
-
-    if ( wanted_type == YT_BOOLEAN )	val = YCPBoolean( SvOK( sv ) );
-
-
-    if ( wanted_type != YT_UNDEFINED )
-    {
-	if ( wanted_type != val->valuetype() )
-	{
-	    y2error( "Perl returned type #%d, expected type #%d",
-		     val->valuetype(), wanted_type );
-	    val = YCPVoid();
 	}
     }
 
     return val;
 }
 
-
 YCPList
-YPerl::fromPerlArray( AV * array )
+YPerl::fromPerlArray (AV * array, constTypePtr wanted_type)
 {
     EMBEDDED_PERL_DEFS;
 
@@ -628,7 +853,19 @@ YPerl::fromPerlArray( AV * array )
 
     while ( ( sv = av_shift( array ) ) != &PL_sv_undef )
     {
-	yList->add( fromPerlScalar( sv ) );
+	// Error propagation:
+	// May be better to continue converting even if an error occurred
+	// so that code will run longer...
+	// Then we would have to pass also an error code to indicate a failure
+	// After all, does not seem as such a good idea
+	// => abort at first failure
+	YCPValue v = fromPerlScalar (sv, wanted_type);
+	if (v.isNull ())
+	{
+	    y2error ("... when converting to a list");
+	    return YCPNull ();
+	}
+	yList->add( v );
     }
 
     return yList;
@@ -636,7 +873,7 @@ YPerl::fromPerlArray( AV * array )
 
 
 YCPMap
-YPerl::fromPerlHash( HV * hv )
+YPerl::fromPerlHash (HV * hv, constTypePtr key_type, constTypePtr value_type)
 {
     EMBEDDED_PERL_DEFS;
 
@@ -651,12 +888,27 @@ YPerl::fromPerlHash( HV * hv )
 	SV * sv = hv_iternextsv( hv, &key, &key_len );
 
 	if ( sv && key )
-	    map->add( YCPString( key ), fromPerlScalar( sv ) );
+	{
+	    // The map may want a symbol or integer as key
+	    // so massage the key through fromPerlScalar too
+	    SV *key_sv = newSVpv (key, key_len);
+	    YCPValue ykey = fromPerlScalar (key_sv, key_type);
+	    SvREFCNT_dec (key_sv);
+	    if (ykey.isNull ())
+	    {
+		y2error ("... when converting to a map key");
+		return YCPNull ();
+	    }
+
+	    YCPValue yval = fromPerlScalar (sv, value_type);
+	    if (yval.isNull ())
+	    {
+		y2error ("... when converting to a map value");
+		return YCPNull ();
+	    }
+	    map->add (ykey, yval);
+	}
     }
 
     return map;
 }
-
-
-
-

@@ -1,0 +1,7 @@
+<1> [liby2] genericfrontend.cc(main):121 Launched YaST2 component 'lt-y2base'
+<1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):37 Creating Y2PerlComponent
+<1> [wfm] Y2CCScript.cc(create):139 Parsing finished
+<1> [liby2] genericfrontend.cc(main):400 YAST_IS_RUNNING is yes
+<1> [wfm] Y2WFMComponent.cc(SetLanguage):342 LC_ALL = 'cs_CZ', proposedEncoding ISO-8859-2
+<1> [YCP] tests/simple1.ycp:6 Hello, world
+<1> [liby2] genericfrontend.cc(main):415 Finished YaST2 component 'lt-y2base'

@@ -1,12 +1,10 @@
 @HEADER-COMMENT@
 
-# neededforbuild  gpp libgpp perl libxcrypt libxcrypt-devel yast2-devel-packages
+# neededforbuild  gpp libgpp perl libxcrypt libxcrypt-devel curl curl-devel openssl openssl-devel popt popt-devel rpm-devel yast2-devel-packages
 
 @HEADER@
 
 Summary:	-
-Provides:	y2base:/var/lib/YaST2/servers/perl
-Provides:	y2base:/usr/lib/YaST2/plugin/libpy2perl.so.2
 
 %description
 -
@@ -21,7 +19,11 @@ Provides:	y2base:/usr/lib/YaST2/plugin/libpy2perl.so.2
 
 %files
 %defattr (-, root, root)
-@plugindir@/libpy2perl.so.*
-@plugindir@/libpy2perl.so
-@plugindir@/libpy2perl.la
+@plugindir@/libpy2lang_perl.so.*
+@plugindir@/libpy2lang_perl.so
+@plugindir@/libpy2lang_perl.la
+# libYCP goes elsewhere
+%dir %{perl_vendorarch}/YaST
+%{perl_vendorarch}/YaST/YCP.pm
+%{perl_vendorarch}/auto/YaST
 %doc @docdir@

@@ -20,24 +20,11 @@
 #ifndef YPerl_h
 #define YPerl_h
 
+#include <EXTERN.h>
+#include <perl.h>
+
 #include <ycp/YCPList.h>
-
-
-// Cheat g++ to accept a forward declaration of PerlInterpreter.
-// g++ doesn't accept "class PerlInterpreter" if that "PerlInterpreter" is
-// later typedef'ed to a struct.
-class interpreter;
-typedef struct interpreter PerlInterpreter;
-
-class STRUCT_SV;
-typedef struct STRUCT_SV SV;
-
-class av;
-typedef struct av AV;
-
-class hv;
-typedef struct hv HV;
-
+#include <ycp/Type.h>
 
 class YPerl
 {
@@ -131,6 +118,14 @@ public:
     static YPerl * yPerl();
 
     /**
+     * Access the static (singleton) YPerl object. Create it if it isn't
+     * created yet. Tell it that we are an XSUB and have our own interpreter
+     *
+     * Returns 0 on error.
+     **/
+    static YPerl * yPerl(pTHX);
+
+    /**
      * Access the static (singleton) YPerl object's embedde Perl
      * interpreter. Create and initialize it if it isn't created yet.
      *
@@ -156,6 +151,12 @@ protected:
     YPerl();
 
     /**
+     * Protected constructor. Use one of the static methods rather than
+     * instantiate an object of this class yourself.
+     **/
+    YPerl(pTHX);
+
+    /**
      * Destructor.
      **/
     ~YPerl();
@@ -177,16 +178,18 @@ protected:
      **/
     void setHaveParseTree( bool have ) { _haveParseTree = have; }
 
+public:
     /**
      * Generic Perl call.
      **/
-    YCPValue call( YCPList argList, YCPValueType wanted_result_type = YT_UNDEFINED );
+    YCPValue call( YCPList argList, constTypePtr wanted_result_type );
     
     /**
      * Create a new Perl scalar value from a YCP value.
      **/
     SV * newPerlScalar( const YCPValue & val );
 
+protected:
     /**
      * Create a Reference to a new Perl array from a YCP list.
      **/
@@ -197,25 +200,32 @@ protected:
      **/
     SV * newPerlHashRef( const YCPMap & map );
 
+public:
     /**
      * Convert a Perl scalar to a YCPValue.
      *
-     * If 'wanted_type' is something else than YT_UNDEFINED, that type is
-     * forced. If the types mismatch, YCPVoid (nil) is returned and an error to
+     * If the types mismatch, YCPNull is returned and an error to
      * the log file is issued.
      **/
     YCPValue fromPerlScalar( SV * perl_scalar,
-			     YCPValueType wanted_type = YT_UNDEFINED );
+			     constTypePtr wanted_type);
+
+protected:
+    /**
+     * This is copied from the original sh's function.
+     * It converts according to what Perl provides, not what YCP wants.
+     */
+    YCPValue fromPerlScalarToAny (SV * perl_scalar);
 
     /**
      * Convert a Perl array to a YCPList.
      **/
-    YCPList fromPerlArray( AV * av );
+    YCPList fromPerlArray (AV * array, constTypePtr wanted_type);
     
     /**
      * Convert a Perl hash to a YCPMap.
      **/
-    YCPMap fromPerlHash( HV * hv );
+    YCPMap fromPerlHash (HV * hv, constTypePtr key_type, constTypePtr value_type);
 
 
     // Data members.
@@ -226,5 +236,7 @@ protected:
     static YPerl *	_yPerl;
 };
 
+//! The weird Perl macros need a PerlInterpreter * named 'my_perl' (!) almost everywhere.
+#define EMBEDDED_PERL_DEFS PerlInterpreter * my_perl = YPerl::perlInterpreter()
 
 #endif	// YPerl_h

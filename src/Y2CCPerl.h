@@ -1,4 +1,4 @@
-/*---------------------------------------------------------------------\
+/*-----------------------------------------------------------*- c++ -*-\
 |								       |
 |		       __   __	  ____ _____ ____		       |
 |		       \ \ / /_ _/ ___|_   _|___ \		       |
@@ -32,11 +32,20 @@
  */
 class Y2CCPerl : public Y2ComponentCreator
 {
+private:
+    Y2Component *cperl;
+
 public:
     /**
-     * Creates a Qt component creator
+     * Creates a Perl component creator
      */
-    Y2CCPerl() : Y2ComponentCreator( Y2ComponentBroker::BUILTIN ) {};
+    Y2CCPerl() : Y2ComponentCreator( Y2ComponentBroker::BUILTIN ),
+	cperl (0) {};
+
+    ~Y2CCPerl () {
+	if (cperl)
+	    delete cperl;
+    }
 
     /**
      * Returns true, since the Perl component is a YaST2 server.
@@ -48,9 +57,16 @@ public:
      */
     Y2Component *create( const char * name ) const
     {
+	// create as many as requested, they all share the static YPerl anyway
 	if ( ! strcmp( name, "perl") ) return new Y2PerlComponent();
 	else return 0;
     }
+
+    /**
+     * always returns the same component, deletes it finally
+     */
+    Y2Component *provideNamespace (const char *name);
+
 };
 
 #endif	// ifndef _Y2CCPerl_h

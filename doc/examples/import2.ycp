@@ -1,0 +1,6 @@
+// test the transparent bindings
+{
+    import "imported";
+    map<string, integer> numbers = imported::getmap2 ("blah");
+    y2milestone ("getmap2: %1", numbers);
+}
