@@ -1,7 +1,15 @@
 // Check YCP/Perl argument passing
 {
     Perl::Parse( "arg_check.pl" );
-    Perl::CallVoid( "echoargs", "one", "two", "three", 4 );
+    Perl::CallVoid( "echoargs", "one", "two", "three", 4, true, 3.14 );
+    
+    Perl::CallVoid( "echoargs", [ "one", "two", "three" ], 4 );
+    
+    Perl::CallVoid( "echoargs",
+		    $[ "France"	:	"Paris",
+		       "Germany":	[ "Berlin", "Bonn" ],
+		       "Russia"	:	"Moscow" ],
+		    4 );
     
     y2milestone( "Done." );
 }

@@ -18,6 +18,9 @@ print "You should never see this.\n"
     . "\n";
 exit 1;
 
+#-----------------------------------------------------------------------------
+
+sub echoargs_recursive(@);
 
 #-----------------------------------------------------------------------------
 
@@ -28,6 +31,7 @@ exit 1;
 sub echoargs()
 {
     echoargs_recursive( 0, @_ );
+    print( "\n" );
 }
 
 
@@ -42,7 +46,7 @@ sub echoargs()
 #     @args	arguments to dump
 #
 
-sub echoargs_recursive()
+sub echoargs_recursive(@)
 {
     my $level = shift;
     my @args = @_;
@@ -50,8 +54,47 @@ sub echoargs_recursive()
 
     foreach $arg ( @args )
     {
-	print( $level . ": " . ( "." x ( $level * 4 ) ) );
-	print( $arg . "\n" );
+	print( " " x ( $level * 4 ) );
+
+	if ( ref( $arg ) )
+	{
+	    if ( ref( $arg ) eq "ARRAY" )
+	    {
+		print( "Array reference:\n" );
+		echoargs_recursive( $level+1, @$arg );
+	    }
+	    elsif ( ref( $arg ) eq "HASH" )
+	    {
+		print( "Hash reference:\n" );
+
+		my %hash = %$arg;
+		my $key;
+
+		foreach $key ( sort keys %hash )
+		{
+		    print( " " x ( ($level+1) * 4 ) );
+		    print( "\"$key\" => " );
+
+		    if ( ref( $hash{ $key } ) )
+		    {
+			print( "\n" );
+			echoargs_recursive( $level + 1, $hash{ $key } );
+		    }
+		    else
+		    {
+			print( "\"$hash{ $key }\"\n" );
+		    }
+		}
+	    }
+	    else
+	    {
+		print( "Reference to " . ref( $arg ) );
+	    }
+	}
+	else
+	{
+	    print( "\"$arg\"\n" );
+	}
     }
 }
 
