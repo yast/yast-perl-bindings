@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  2 15:18:27 CEST 2004 - mvidner@suse.cz
+
+- changed license to GPL
+- 2.9.25
+
+-------------------------------------------------------------------
 Wed Mar 31 18:03:57 CEST 2004 - mvidner@suse.cz
 
 - redirect stderr to prevent errors from garbling ncurses screen (#37652)
