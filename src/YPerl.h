@@ -216,6 +216,10 @@ protected:
     //! that takes no arguments and returns one scalar
     SV* callMethod (SV * instance, const char * full_method_name);
 
+    //! call a constructor of a perl object
+    SV* callConstructor (const char * class_name,
+			 const char * full_method_name,
+			 YCPList args);
     /**
      * Given that sv is an object and its class name is class_name,
      * check whether it is YaST::YCP::Boolean.
