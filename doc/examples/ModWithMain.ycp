@@ -1,0 +1,18 @@
+// Example for using a Perl script that uses a Perl module
+{
+    // Parse the script.
+    //
+    // This executes Perl "use" instructions and BEGIN blocks,
+    // but not the script itself.
+    
+    Perl::Parse( "mod_ex_main.pl" );
+
+    
+    // Call some functions from a module the script loaded with "use".
+    
+    string msg = Perl::CallString( "mod_ex::helloWorld" );
+    y2milestone( "Perl mod_ex::helloWorld() returned %1", msg );
+    
+    list ret_list = Perl::CallList( "mod_ex::copyargs", "one", "two", "three" );
+    y2milestone( "Perl mod_ex::copyargs returned %1", ret_list );
+}

@@ -156,6 +156,39 @@ YPerl::parse( YCPList argList )
 
 
 YCPValue
+YPerl::run( YCPList argList )
+{
+    if ( argList->size() != 0 )
+	return YCPError( "Perl::Run(): No arguments expected" );
+
+    if ( ! yPerl()->haveParseTree() )
+	return YCPError( "Perl::Run(): Use Perl::Parse() or Perl::LoadModule() before Perl::Run() !" );
+
+    perl_run( yPerl()->perlInterpreter() );
+    return YCPVoid();
+}
+
+
+YCPValue
+YPerl::loadModule( YCPList argList )
+{
+    EMBEDDED_PERL_DEFS;
+
+    if ( argList->size() != 1 || ! argList->value(0)->isString() )
+	return YCPError( "Perl::loadModule() / Perl::Use() : Bad arguments: String expected!" );
+
+    string module_name = argList->value(0)->asString()->value();
+    I32 flags	 = PERL_LOADMOD_NOIMPORT;	// load_module() flags are undocumented  :-(
+    SV * version = 0;
+
+    load_module( flags, sv_2mortal( newSVpv( module_name.c_str(), 0 ) ), version );
+    yPerl()->setHaveParseTree( true );
+
+    return YCPVoid();
+}
+
+
+YCPValue
 YPerl::callVoid( YCPList argList )
 {
     return yPerl()->call( argList, YT_VOID );
@@ -199,7 +232,7 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 	return YCPError( "Perl::Call(): Bad arguments: No function to execute!" );
 
     if ( ! yPerl()->haveParseTree() )
-	return YCPError( "Do Perl::Parse() before Perl::Call() !" );
+	return YCPError( "Perl::Call: Use Perl::Parse() or Perl::LoadModule() before Perl::Call() !" );
 
     string functionName = argList->value(0)->asString()->value();
 
@@ -497,7 +530,7 @@ YPerl::fromPerlScalar( SV * sv, YCPValueType wanted_type )
     {
 	if ( wanted_type != val->valuetype() )
 	{
-	    y2error( "Perl returned type #%d, expected type %d",
+	    y2error( "Perl returned type #%d, expected type #%d",
 		     val->valuetype(), wanted_type );
 	    val = YCPVoid();
 	}
