@@ -1,7 +1,22 @@
 #! /usr/bin/perl -w
-# This is a first try at a transparent interface layer between Perl and YCP
 # Martin Vidner
 # $Id$
+
+=head1 NAME
+
+YaST::YCP - a binary interface between Perl and YCP
+
+=head1 SYNOPSIS
+
+ use YaST::YCP qw(Boolean);
+
+ YaST::YCP::Import ("SCR");
+ my $m = SCR::Read (".sysconfig.displaymanager.DISPLAYMANAGER");
+ SCR::Write (".sysconfig.kernel.CRASH_OFTEN", Boolean (1));
+
+=head1 YaST::YCP
+
+=cut
 
 package YaST::YCP;
 use strict;
@@ -11,6 +26,16 @@ use diagnostics;
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(Boolean);
+
+=head2 debug
+
+ $olddebug = YaST::YCP::debug (1);
+ YaST::YCP::...
+ YaST::YCP::debug ($olddebug);
+
+Enables miscellaneous unscpecified debugging
+
+=cut
 
 my $debug = 0;
 sub debug (;$)
@@ -30,7 +55,8 @@ XSLoader::load ('YaST::YCP');
 
 =head2 Import
 
-YaST::YCP::Import "Namespace";
+ YaST::YCP::Import "Namespace";
+ Namespace::foo ("bar");
 
 =cut
 
@@ -45,6 +71,7 @@ sub Import ($)
 }
 
 # shortcuts for the data types
+# for POD see packages below
 
 sub Boolean ($)
 {
@@ -74,6 +101,15 @@ sub AUTOLOAD
     return YaST::YCP::call_ycp (join ("::", @components), $func, @_);
 }
 
+=head2 Boolean
+
+ $b = YaST::YCP::Boolean (1);
+ $b->value (0);
+ print $b->value, "\n";
+ SCR::Write (.foo, $b);
+
+=cut
+
 package YaST::YCP::Boolean;
 use strict;
 use warnings;
@@ -98,4 +134,3 @@ sub value
 }
 
 1;
-
