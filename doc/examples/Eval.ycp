@@ -2,5 +2,21 @@
 {
     y2milestone( "Calling Perl" );
     Perl::Eval( "print 'Hello, world!\n';" );
+
+    
+    // Notice that the Perl's eval() function returns the last expression.
+    // This might not be what you want:
+    //
+    //		$x =~ s/Hello/Good Bye/
+    //
+    // returns 1 (Perl's 'true') since the assignment was successful,
+    // not the result of the replacement!
+    //
+    // Thus simply evaluate the expression you really want once more -
+    // $x in this example.
+    
+    string result = Perl::Eval( "$x=\"Hello, World!\"; $x =~ s/Hello/Good Bye/; $x" );
+    y2milestone( "Result: %1", result );
+    
     y2milestone( "Done." );
 }
