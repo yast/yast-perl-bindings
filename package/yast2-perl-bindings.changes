@@ -2,6 +2,7 @@
 Fri Nov  5 10:02:32 CET 2004 - visnov@suse.cz
 
 - Set exported symbol entries global (#47078) 
+- 2.11.1
 
 -------------------------------------------------------------------
 Fri Oct 29 17:14:35 CEST 2004 - mvidner@suse.cz
