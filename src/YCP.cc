@@ -199,14 +199,14 @@ XS(XS_YCP_call_ycp)
 	for (int i = 0; i < ret_len; ++i)
 	{
 	    // put return values, no need to XPUSHs
-	    PUSHs (sv_2mortal (yperl->newPerlScalar (ret_lv->value (i))));
+	    PUSHs (sv_2mortal (yperl->newPerlScalar (ret_lv->value (i), false)));
 	}
 	XSRETURN (ret_len);
     }
     else
     {
 	y2debug ("returning a scalar");
-	ST (0) = sv_2mortal (yperl->newPerlScalar (ret_yv));
+	ST (0) = sv_2mortal (yperl->newPerlScalar (ret_yv, false));
 	XSRETURN (1);
     }
 }

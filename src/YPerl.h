@@ -186,8 +186,9 @@ public:
     
     /**
      * Create a new Perl scalar value from a YCP value.
+     * @param composite If an undef should go to an array/hash, it must be represented specially.
      **/
-    SV * newPerlScalar( const YCPValue & val );
+    SV * newPerlScalar( const YCPValue & val, bool composite );
 
 protected:
     /**
