@@ -406,12 +406,12 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
     //
     // Determine Perl calling context
     //
-
-    int calling_context;
-
-    if (wanted_result_type->isList ())		calling_context = G_ARRAY;
-    else if (wanted_result_type->isVoid ())	calling_context = G_VOID;
-    else					calling_context = G_SCALAR;
+    // We used to set G_ARRAY for wanted_result_type being a list.
+    // But YCP does not ave a concept of wantarray, so better
+    // not create it here.
+    // It's better to always want G_SCALAR because that way error
+    // handling is easier: we can distinguish between 'nil' and ['nil'].
+    int calling_context = G_SCALAR;
 
     // Using the weird embedded-Perl macros as described in
     // man perlembed, man perlcall, man perlapi, man perlguts
@@ -459,59 +459,22 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
     //
 
     SPAGAIN;		// Copy global stack pointer to local one
-    YCPValue result = YCPVoid();
 
-    if ( wanted_result_type->isList () )
+    YCPValue result = fromPerlScalar (POPs, wanted_result_type);
+
+    // If we called it with G_ARRAY, we would have to pop all return
+    // values and reverse their order. See the CVS history.
+
+    if ( ret_count > 1 )
     {
-	constTypePtr value_type = ((constListTypePtr)(wanted_result_type))->type ();
-	std::list<SV *> results;
+	// Check for excess return values.
+	y2warning ("Perl function %s returned %d arguments, expecting just 1",
+		   functionName.c_str(), ret_count );
 
-	// We want a list, but Perl uses a stack, so invert order of return values.
-
-	while ( ret_count-- > 0 )
-	    results.push_front( POPs );
-
-	YCPList result_list;
-
-	for ( std::list<SV *>::iterator it = results.begin(); it != results.end(); ++it )
+	// Get rid of excess return values.
+	while (--ret_count > 0)
 	{
-	    YCPValue v = fromPerlScalar (*it, value_type);
-	    if (v.isNull ())
-	    {
-		y2error ("... when constructing a list of return values");
-		result_list = YCPNull ();
-		break;
-	    }
-	    result_list->add (v);
-	}
-
-	result = result_list;
-    }
-    else
-    {
-	if (wanted_result_type->isVoid ())
-	{
-	    // Perl always returns something - the last expression calculated.
-	    // Ignore this if return type void is desired.
-
-	    result = YCPVoid();
-	}
-	else
-	{
-	    result = fromPerlScalar (POPs, wanted_result_type);
-	}
-
-	if ( ret_count > 1 )
-	{
-	    // Check for excess return values.
-
-	    y2warning( "Perl function %s returned %d arguments, expecting just one",
-		       functionName.c_str(), ret_count );
-
-	    // Get rid of excess return values.
-
-	    while ( --ret_count > 0 )
-		(void) POPs;
+	    (void) POPs;
 	}
     }
 
@@ -936,7 +899,7 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 
     // Decide by the wanted type,
     // Except first check if we got undef and in that case return nil
-    if (!SvOK (sv))
+    if (!SvOK (sv) || wanted_type->isVoid ())
     {
 	val = YCPVoid ();
     }
@@ -1081,16 +1044,24 @@ no, not needed yet
     }
     else if (wanted_type->isByteblock ())
     {
-	// see isString
-	STRLEN len;
-	const char * pv = SvPV (sv, len);
-	if (SvPOK (sv))
+	if (sv_isobject (sv))
 	{
-	    val = YCPByteblock (reinterpret_cast<const unsigned char *> (pv), len);
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    mismatch = !tryFromPerlClassByteblock (class_name, sv, val);
 	}
 	else
 	{
-	    mismatch = true;
+	    // see isString
+	    STRLEN len;
+	    const char * pv = SvPV (sv, len);
+	    if (SvPOK (sv))
+	    {
+		val = YCPByteblock (reinterpret_cast<const unsigned char *> (pv), len);
+	    }
+	    else
+	    {
+		mismatch = true;
+	    }
 	}
     }
     else if (wanted_type->isList ())
