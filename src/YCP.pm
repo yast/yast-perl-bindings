@@ -8,13 +8,16 @@ YaST::YCP - a binary interface between Perl and YCP
 
 =head1 SYNOPSIS
 
- use YaST::YCP qw(Boolean);
+ use YaST::YCP qw(:DATA);
 
  YaST::YCP::Import ("SCR");
  my $m = SCR::Read (".sysconfig.displaymanager.DISPLAYMANAGER");
  SCR::Write (".sysconfig.kernel.CRASH_OFTEN", Boolean (1));
 
 =head1 YaST::YCP
+
+The DATA tag (in C<use YaST::YCP qw(:DATA)>) imports the data
+constructor functions such as Boolean, Symbol or Term.
 
 =cut
 
@@ -25,7 +28,9 @@ use diagnostics;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(Boolean);
+my @e_data = qw(Boolean Symbol Term);
+our @EXPORT_OK = @e_data;
+our %EXPORT_TAGS = ( DATA => [@e_data] );
 
 =head2 debug
 
@@ -76,6 +81,16 @@ sub Import ($)
 sub Boolean ($)
 {
     return new YaST::YCP::Boolean (@_);
+}
+
+sub Symbol ($)
+{
+    return new YaST::YCP::Symbol (@_);
+}
+
+sub Term ($@)
+{
+    return new YaST::YCP::Term (@_);
 }
 
 # by defining AUTOLOAD in a separate package, undefined functions in
@@ -131,6 +146,70 @@ sub value
     my $self = shift;
     if (@_) { $$self = shift; }
     return $$self;
+}
+
+=head2 Symbol
+
+ use YaST::YCP qw(:DATA);
+
+ $s = Symbol ("next");
+ $s->value ("back");
+ print $s->value, "\n";
+ return Term ("id", $s);
+
+=cut
+
+package YaST::YCP::Symbol;
+use strict;
+use warnings;
+use diagnostics;
+
+
+# a Symbol is just a blessed reference to a scalar
+# just like Boolean, so use it!
+
+our @ISA = qw (YaST::YCP::Boolean);
+
+=head2 Term
+
+ $t = YaST::YCP::Term ("CzechBox", "Accept spam", YaST::YCP::Boolean (0));
+ $t->name ("CheckBox");
+ print $t->args[0], "\n";
+ UI::OpenDialog ($t);
+
+=cut
+
+package YaST::YCP::Term;
+use strict;
+use warnings;
+use diagnostics;
+
+# a Term has a name and arguments
+
+sub new
+{
+    my $class = shift;
+    my $name = shift;
+    my $args = [ @_ ];
+    return bless { name => name, args => $args }, $class
+}
+
+# get/set
+sub name
+{
+    # see "Constructors and Instance Methods" in perltoot
+    my $self = shift;
+    if (@_) { $self->{name} = shift; }
+    return $self->{name};
+}
+
+# get/set
+sub args
+{
+    # see "Constructors and Instance Methods" in perltoot
+    my $self = shift;
+    if (@_) { @{ $self->{args} } = @_; }
+    return @{ $self->{args} };
 }
 
 1;

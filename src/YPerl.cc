@@ -38,6 +38,7 @@
 #include <ycp/YCPPath.h>
 #include <ycp/YCPString.h>
 #include <ycp/YCPSymbol.h>
+#include <ycp/YCPTerm.h>
 #include <ycp/YCPVoid.h>
 
 #include <YPerl.h>
@@ -66,7 +67,7 @@ YPerl::YPerl()
     // Preliminary call perl_parse so the Perl interpreter is ready right away.
     // This does _not_ affect _haveParseTree: This is intended for real code trees.
 
-    const char *argv[] = { "", "-e", "" };
+    const char *argv[] = { "yperl", "-e", "" };
     int	argc = DIM( argv );
 
     perl_parse( _perlInterpreter,
@@ -636,13 +637,7 @@ debugDump (SV *sv)
     };
     U32 f = SvFLAGS (sv);
     std::ostringstream ss;
-/*
-    ss << "SV with flags 0x"
-       << std::setfill ('0')
-       << std::setw (8)
-       << std::setbase (16)
-       << f;
-*/
+
     ss << "SV with TYPE: "
        << svtypes[SvTYPE (sv) & 15] // just to be sure if Perl changes weirdly
 
@@ -678,6 +673,82 @@ debugDump (SV *sv)
     return ss.str ();
 }
 
+bool
+YPerl::tryFromPerlClassBoolean (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    if (!strcmp (class_name, "YaST::YCP::Boolean"))
+    {
+	SV *sval = callMethod (sv, "YaST::YCP::Boolean::value");
+	out = YCPBoolean (SvTRUE (sval));
+	SvREFCNT_dec (sval);
+	return true;
+    }
+    else
+    {
+	return false;
+    }
+}
+
+bool
+YPerl::tryFromPerlClassSymbol (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    bool ret;
+    if (!strcmp (class_name, "YaST::YCP::Symbol"))
+    {
+	SV *sval = callMethod (sv, "YaST::YCP::Symbol::value");
+	if (SvPOK (sval))
+	{
+	    out = YCPSymbol (SvPV_nolen (sval));
+	    ret = true;
+	}
+	else
+	{
+	    y2internal ("YaST::YCP::Symbol::value did not return a string");
+	    ret = false;
+	}
+	SvREFCNT_dec (sval);
+    }
+    else
+    {
+	ret = false;
+    }
+    return ret;
+}
+
+bool
+YPerl::tryFromPerlClassTerm (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    if (!strcmp (class_name, "YaST::YCP::Term"))
+    {
+	SV *s_name = callMethod (sv, "YaST::YCP::Term::name");
+	YCPValue name = fromPerlScalar (s_name, Type::String); // optimize
+	SvREFCNT_dec (s_name);
+	if (name.isNull () || !name->isString ())
+	{
+	    y2internal ("YaST::YCP::Term::name did not return a string");
+	    return false;
+	}
+	SV *s_args = callMethod (sv, "YaST::YCP::Term::args");
+	YCPValue args = fromPerlScalar (s_args, Type::List ()); // optimize
+	SvREFCNT_dec (s_args);
+	if (args.isNull () || !args->isList ())
+	{
+	    y2internal ("YaST::YCP::Term::args did not return a list");
+	    return false;
+	}
+	out = YCPTerm (name->asString ()->value (),
+		       args->asList ());
+	return true;
+    }
+    else
+    {
+	return false;
+    }
+}
+
 /**
  * If type did not match, returns YCPNull
  * (which must then be converted to YCPVoid)
@@ -702,7 +773,20 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
     }
     else if (wanted_type->isBoolean ())
     {
-	val = YCPBoolean (SvTRUE (sv));
+	if (sv_isobject (sv))
+	{
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    if (!tryFromPerlClassBoolean (class_name, sv, val))
+	    {
+	    		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+	    }
+	}
+	else
+	{
+	    val = YCPBoolean (SvTRUE (sv));
+	}
     }
     else if (wanted_type->isString ())
     {
@@ -725,23 +809,42 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 				 wanted_type->toString ().c_str (),
 				 debugDump(sv).c_str ());
     }
-/*
-locale - should be similar to string
-but YCPLocale does not exist anymore
-*/
     else if (wanted_type->isSymbol ())
     {
 	if (SvPOK (sv))	val = YCPSymbol (SvPV_nolen (sv));
-	else		y2error ("Expected %s, got %s",
+	else if (!sv_isobject (sv) ||
+		 !tryFromPerlClassTerm (HvNAME (SvSTASH (SvRV (sv))), sv,
+					val))
+	{
+	    		y2error ("Expected %s, got %s",
 				 wanted_type->toString ().c_str (),
 				 debugDump(sv).c_str ());
+	}
     }
 /*
   function - probably not. or its name?
  */
 /*
-term - pass as a list
+term - pass as a list ["asymbol", arg1, arg2...], like typeinfo
+no, not needed yet
  */
+    else if (wanted_type->isTerm ())
+    {
+	if (sv_isobject (sv))
+	{
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    if (!tryFromPerlClassTerm (class_name, sv, val))
+	    {
+	    		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+	    }
+	}
+//	else if //... try from a list
+	else		y2error ("Expected %s, got %s",
+				 wanted_type->toString ().c_str (),
+				 debugDump(sv).c_str ());
+    }
     else if (wanted_type->isPath ())
     {
 	// a string
@@ -804,6 +907,43 @@ term - pass as a list
     return val;
 }
 
+// call a pethod of a perl object
+// that takes no arguments and returns one scalar
+SV*
+YPerl::callMethod (SV * instance, const char * full_method_name)
+{
+    EMBEDDED_PERL_DEFS;
+
+    SV *ret = &PL_sv_undef;
+
+    dSP;
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK (SP);
+    XPUSHs (instance);
+    PUTBACK;
+
+    int count = call_method (full_method_name, G_SCALAR);
+
+    SPAGAIN;
+    if (count != 1)
+    {
+	// must be 0 because we specified G_SCALAR
+	y2error ("Method %s did not return a value", full_method_name);
+    }
+    else
+    {
+	ret = POPs;
+    }
+    PUTBACK;
+
+    FREETMPS;
+    LEAVE;
+
+    return ret;
+}
+
 /**
  * This is copied from the original sh's function.
  * It converts according to what Perl provides, not what YCP wants.
@@ -837,44 +977,40 @@ YPerl::fromPerlScalarToAny (SV * sv)
 		if (sv_isobject (sv)) // note sv, not ref
 		{
 		    char *class_name = HvNAME (SvSTASH (ref));
-		    #define DCLASS "YaST::YCP::Boolean"
-		    if (!strcmp (class_name, DCLASS))
+		    if (!strcmp (class_name, "YaST::YCP::Boolean"))
 		    {
-			SV *sval;
-
-			dSP;
-			ENTER;
-			SAVETMPS;
-
-			PUSHMARK (SP);
-			XPUSHs (sv); // instance
-			PUTBACK;
-
-			int count = call_method (DCLASS "::value", G_SCALAR);
-
-			SPAGAIN;
-			if (count != 1)
+			SV *sval = callMethod (sv, "YaST::YCP::Boolean::value");
+			val = YCPBoolean (SvTRUE (sval));
+			SvREFCNT_dec (sval);
+		    }
+		    else if (!strcmp (class_name, "YaST::YCP::Term"))
+		    {
+			SV *s_name = callMethod (sv, "YaST::YCP::Term::name");
+			YCPValue name = fromPerlScalar (s_name, Type::String);
+			SvREFCNT_dec (s_name);
+			if (name.isNull () || !name->isString ())
 			{
-			    // must be 0 because we specified G_SCALAR
-			    y2error ("Data class %s did not return a value", DCLASS);
+			    y2internal ("YaST::YCP::Term::name"
+					" did not return a string");
+			    break;
 			}
-			else
+			SV *s_args = callMethod (sv, "YaST::YCP::Term::args");
+			YCPValue args = fromPerlScalar (s_args, Type::List ());
+			SvREFCNT_dec (s_args);
+			if (args.isNull () || !args->isList ())
 			{
-			    sval = POPs;
+			    y2internal ("YaST::YCP::Term::args"
+					" did not return a list");
+			    break;
 			}
-			PUTBACK;
-
-			FREETMPS;
-			LEAVE;
-
-			val = fromPerlScalar (sval, Type::Boolean);
+			val = YCPTerm (name->asString ()->value (),
+				       args->asList ());
 		    }
 		    else
 		    {
 			y2error ("Expected any, got reference to object of class %s",
 				 class_name);
 		    }
-		    #undef DCLASS
 		}
 		else
 		{

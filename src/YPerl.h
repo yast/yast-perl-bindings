@@ -211,6 +211,33 @@ public:
 			     constTypePtr wanted_type);
 
 protected:
+    //! call a pethod of a perl object
+    //! that takes no arguments and returns one scalar
+    SV* callMethod (SV * instance, const char * full_method_name);
+
+    /**
+     * Given that sv is an object and its class name is class_name,
+     * check whether it is YaST::YCP::Boolean.
+     * If yes, store its value into out
+     */
+    bool tryFromPerlClassBoolean (const char *class_name, SV *sv,
+				  YCPValue &out);
+
+    /**
+     * Given that sv is an object and its class name is class_name,
+     * check whether it is YaST::YCP::Symbol.
+     * If yes, store its value into out
+     */
+    bool tryFromPerlClassSymbol (const char *class_name, SV *sv,
+				 YCPValue &out);
+
+    /**
+     * Given that sv is an object and its class name is class_name,
+     * check whether it is YaST::YCP::Term.
+     * If yes, store its value into out
+     */
+    bool tryFromPerlClassTerm (const char *class_name, SV *sv, YCPValue &out);
+
     /**
      * This is copied from the original sh's function.
      * It converts according to what Perl provides, not what YCP wants.
