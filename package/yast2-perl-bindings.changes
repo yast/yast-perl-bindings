@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb 27 14:55:30 CET 2004 - mvidner@suse.cz
+
+- added sformat
+- adapted to changes in yast2-core:
+   Y2Namespace::initialize, SymbolEntryPtr, YFunctionPtr
+- 2.9.12
+
+-------------------------------------------------------------------
 Wed Feb 25 17:43:58 CET 2004 - mvidner@suse.cz
 
 - added liby2util based logging
