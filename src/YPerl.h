@@ -32,6 +32,12 @@ typedef struct interpreter PerlInterpreter;
 class STRUCT_SV;
 typedef struct STRUCT_SV SV;
 
+class av;
+typedef struct av AV;
+
+class hv;
+typedef struct hv HV;
+
 
 class YPerl
 {
@@ -106,6 +112,27 @@ public:
      **/
     static SV * newPerlHashRef( const YCPMap & map );
 
+    /**
+     * Convert a Perl scalar to a YCPValue.
+     *
+     * If 'wanted_type' is something else than YT_UNDEFINED, that type is
+     * forced. If the types mismatch, YCPVoid (nil) is returned and an error to
+     * the log file is issued.
+     **/
+    static YCPValue fromPerlScalar( SV * perl_scalar,
+				    YCPValueType wanted_type = YT_UNDEFINED );
+
+    /**
+     * Convert a Perl array to a YCPList.
+     **/
+    static YCPList fromPerlArray( AV * av );
+    
+    /**
+     * Convert a Perl hash to a YCPMap.
+     **/
+    static YCPMap fromPerlHash( HV * hv );
+
+    
 protected:
 
     /**

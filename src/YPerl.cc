@@ -37,8 +37,8 @@
 
 #define DIM(ARRAY)	( sizeof( ARRAY )/sizeof( ARRAY[0] ) )
 
-// The weird Perl macros need a PerlInterpreter of name 'my_perl' (!) almost everywhere.
-#define WEIRD_PERL_MACRO_DEFS PerlInterpreter * my_perl = YPerl::perlInterpreter()
+// The weird Perl macros need a PerlInterpreter * named 'my_perl' (!) almost everywhere.
+#define EMBEDDED_PERL_DEFS PerlInterpreter * my_perl = YPerl::perlInterpreter()
 
 
 
@@ -58,7 +58,20 @@ YPerl::YPerl()
 
     if ( _perlInterpreter )
 	perl_construct( _perlInterpreter );
+
+    // Preliminary call perl_parse so the Perl interpreter is ready right away.
+    // This does _not_ affect _haveParseTree: This is intended for real code trees.
+
+    const char *argv[] = { "", "-e", "" };
+    int	argc = DIM( argv );
+
+    perl_parse( _perlInterpreter,
+		xs_init, // Init function from (generated) perlxsi.c
+		argc,
+		const_cast<char **> (argv),
+		0 );	// env
 }
+
 
 YPerl::~YPerl()
 {
@@ -116,7 +129,8 @@ YPerl::parse( YCPList argList )
 	return YCPError( "Perl::Parse(): Bad arguments: String expected!" );
 
     if ( yPerl()->haveParseTree() )
-	y2warning( "Perl::Parse() multiply called - memory leak? Try Perl::Destroy() first!" );
+	y2warning( "Perl::Parse() multiply called - memory leak? "
+		   "Try Perl::Destroy() first!" );
 
     string script = argList->value(0)->asString()->value();
     const char *argv[] = { "", script.c_str() };
@@ -139,6 +153,7 @@ YPerl::parse( YCPList argList )
 YCPValue
 YPerl::callVoid( YCPList argList )
 {
+    // The Perl macros demand this thing is named 'my_perl'. Yuck.
     PerlInterpreter * my_perl = YPerl::perlInterpreter();
 
     if ( ! my_perl )
@@ -203,40 +218,28 @@ YPerl::callVoid( YCPList argList )
 YCPValue
 YPerl::eval( YCPList argList )
 {
-    PerlInterpreter * perl = YPerl::perlInterpreter();
-
-    if ( ! perl )
-	return YCPNull();
+    EMBEDDED_PERL_DEFS;
 
     if ( argList->size() != 1 || ! argList->value(0)->isString() )
 	return YCPError( "Perl::Eval(): Bad arguments: String expected!" );
 
-    string expr = argList->value(0)->asString()->value();
-    const char *argv[] = { "", "-w", "-e", expr.c_str() };
-    int	argc = DIM( argv );
+    SV * result = eval_pv( argList->value(0)->asString()->value_cstr(), 1 );
 
-    perl_parse( perl,
-		0,	// xs_init function
-#if 0
-		xs_init, // Init function from (generated) perlxsi.c
-#endif
-		argc,
-		const_cast<char **> (argv),
-		0 );	// env
-    perl_run( perl );
+    if ( ! result )
+	return YCPVoid();
 
-    return YCPVoid();
+    return fromPerlScalar( result );
 }
 
 
 SV *
 YPerl::newPerlScalar( const YCPValue & val )
 {
-    WEIRD_PERL_MACRO_DEFS;
+    EMBEDDED_PERL_DEFS;
 
     if ( val->isString()  )	return newSVpv( val->asString()->value_cstr(), 0 );
     if ( val->isList()    )	return newPerlArrayRef( val->asList() );
-    if ( val->isMap() )		return newPerlHashRef( val->asMap() );
+    if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
     if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
     if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
     if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
@@ -249,7 +252,7 @@ YPerl::newPerlScalar( const YCPValue & val )
 SV *
 YPerl::newPerlArrayRef( const YCPList & list )
 {
-    WEIRD_PERL_MACRO_DEFS;
+    EMBEDDED_PERL_DEFS;
 
     //
     // Create array
@@ -296,7 +299,7 @@ YPerl::newPerlArrayRef( const YCPList & list )
 SV *
 YPerl::newPerlHashRef( const YCPMap & map )
 {
-    WEIRD_PERL_MACRO_DEFS;
+    EMBEDDED_PERL_DEFS;
 
     //
     // Create hash
@@ -363,3 +366,102 @@ YPerl::newPerlHashRef( const YCPMap & map )
 
     return newRV_noinc( (SV *) hash );
 }
+
+
+YCPValue
+YPerl::fromPerlScalar( SV * sv, YCPValueType wanted_type )
+{
+    EMBEDDED_PERL_DEFS;
+    STRLEN len; // Caution: The SvPV macro uses the address (!) of this!
+
+    YCPValue val = YCPVoid();
+
+    if      ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
+    else if ( SvNOK( sv ) )		val = YCPFloat  ( SvNV( sv ) );
+    else if ( SvPOK( sv ) )		val = YCPString ( SvPV( sv, len ) );
+    else if ( SvROK( sv ) )
+    {
+	SV * ref = SvRV( sv );
+
+	switch ( SvTYPE( ref ) )
+	{
+	    case SVt_IV:
+	    case SVt_NV:
+	    case SVt_PV:
+	    case SVt_RV:
+		val = fromPerlScalar( ref, wanted_type );
+		break;
+
+	    case SVt_PVAV:	// Reference to an array
+		val = fromPerlArray( (AV *) ref );
+		break;
+
+	    case SVt_PVHV:	// Reference to a hash
+		val = fromPerlHash( (HV *) ref );
+		break;
+
+	    default:
+		y2error( "Reference to unknown type #%d", SvTYPE( ref ) );
+		break;
+	}
+    }
+
+    if ( wanted_type == YT_BOOLEAN )	val = YCPBoolean( SvOK( sv ) );
+
+
+    if ( wanted_type != YT_UNDEFINED )
+    {
+	if ( wanted_type != val->valuetype() )
+	{
+	    y2error( "Perl returned type #%d, expected type %d",
+		     val->valuetype(), wanted_type );
+	    val = YCPVoid();
+	}
+    }
+
+    return val;
+}
+
+
+YCPList
+YPerl::fromPerlArray( AV * array )
+{
+    EMBEDDED_PERL_DEFS;
+    
+    YCPList list;
+    SV * sv;
+
+    while ( ( sv = av_shift( array ) ) != &PL_sv_undef )
+    {
+	list->add( fromPerlScalar( sv ) );
+    }
+
+    return list;
+}
+
+
+YCPMap
+YPerl::fromPerlHash( HV * hv )
+{
+    EMBEDDED_PERL_DEFS;
+    
+    YCPMap map;
+    I32 count = hv_iterinit( hv );
+
+    for ( int i=0; i < count; i++ )
+    {
+	char * key;
+	I32 key_len;
+
+	SV * sv = hv_iternextsv( hv, &key, &key_len );
+
+	if ( sv && key )
+	    map->add( YCPString( key ), fromPerlScalar( sv ) );
+    }
+
+    return map;
+}
+
+
+
+
