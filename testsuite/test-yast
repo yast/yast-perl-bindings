@@ -4,7 +4,7 @@
 export LC_ALL=C
 
 # run all test cases or stop at first failure?
-if [ "x$1" = "x-a" ]; then
+if [ "x$1" = "x-a" -o "x$ALL" != "x" ]; then
     RUNALL=1
 fi
 
@@ -42,7 +42,7 @@ for SCRIPT in tests/*.ycp; do
 
     if ! $CASEOK; then
 	RET=1
-	[ -n $RUNALL ] || break
+	[ -n "$RUNALL" ] || break
     fi
 done
 
