@@ -18,7 +18,7 @@ liby2perl_la_LIBADD  = $(PERL_LDFLAGS)
 
 
 liby2perl_la_SOURCES = 				\
-	YPerl.cc				\
+	YPerl.cc YPerl.h			\
 						\
 	perlxsi.c
 
@@ -41,8 +41,8 @@ perlxsi.c:
 
 libpy2perl_la_SOURCES =				\
 	$(liby2perl_la_SOURCES)			\
-	Y2CCPerl.cc				\
-	Y2PerlComponent.cc
+	Y2CCPerl.cc Y2CCPerl.h			\
+	Y2PerlComponent.cc Y2PerlComponent.h
 
 
 CLEANFILES = y2perl.kdoc y2ui.kdoc		\
