@@ -10,7 +10,6 @@ class YPerlNamespace : public Y2Namespace
 {
 private:
     string m_name;		//! this namespace's name, eg. XML::Writer
-    string m_timestamp;		//! ts of the file we were loaded from
     SymbolTable * m_table;	//! public symbols
     unsigned m_count;		//! number of public symbols
     //! maps integers to pointers
@@ -22,9 +21,8 @@ public:
     /**
      * Construct an interface. The module must be already loaded
      * @param name eg "XML::Writer"
-     * @param timestamp remember it so that it can be saved to bytecode
      */
-    YPerlNamespace (string name, string timestamp);
+    YPerlNamespace (string name);
 
     virtual ~YPerlNamespace ();
 
@@ -34,11 +32,11 @@ public:
     virtual const string filename () const;
 
     //! somehow needed for function declarations ?!
-    virtual unsigned int symbolCount ();
+    virtual unsigned int symbolCount () const;
 
     //! function parameters ??
     // bytecode uses unsigneds
-    virtual SymbolEntry* symbolEntry (unsigned int position);
+    virtual SymbolEntry* symbolEntry (unsigned int position) const;
     // bytecode uses unsigneds
     virtual int findSymbol (const SymbolEntry *entry);
 
@@ -49,17 +47,7 @@ public:
     virtual YCPValue evaluate (bool cse = false);
 
     //! get our whole symbol table?
-    virtual SymbolTable* table ();
-
-    /**
-     * A method to get a unique timestamp for the file (for example MD5),
-     * from which
-     * was this namespace loaded/created. The interpreter will
-     * request exactly the same timestamp when reloading the file
-     * next time
-     * @return a string value containing the unique timestamp
-     */
-    virtual const string timestamp ();
+    virtual SymbolTable* table () const;
 
     virtual Y2Function* createFunctionCall (const string name);
 };

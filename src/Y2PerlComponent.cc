@@ -85,7 +85,7 @@ Y2PerlComponent::evaluate( const YCPValue & val )
 }
 */
 
-Y2Namespace *Y2PerlComponent::import (const char* name, const char* timestamp)
+Y2Namespace *Y2PerlComponent::import (const char* name)
 {
     // TODO where to look for it
     // must be the same in Y2CCPerl and Y2PerlComponent
@@ -96,15 +96,6 @@ Y2Namespace *Y2PerlComponent::import (const char* name, const char* timestamp)
 	return NULL;
     }
     
-    // get timestamp
-    string ts = Bytecode::fileTimestamp (module);
-    if (timestamp != NULL && ts != timestamp)
-    {
-	y2error ("Timestamp for %s bad: expected %s, got %s",
-		 module.c_str (), timestamp, ts.c_str ());
-	return NULL;
-    }
-
     module.erase (module.size () - 3 /* strlen (".pm") */);
     YCPList args;
     args->add (YCPString(module));
@@ -113,7 +104,7 @@ Y2Namespace *Y2PerlComponent::import (const char* name, const char* timestamp)
     YPerl::loadModule (args);
 
     // introspect, create data structures for the interpreter
-    Y2Namespace *ns = new YPerlNamespace (name, ts);
+    Y2Namespace *ns = new YPerlNamespace (name);
 
     return ns;
 }
