@@ -8,6 +8,11 @@ use strict;
 use YaST::YCP;
 use ycp;
 
+use Locale::gettext;
+use POSIX ();     # Needed for setlocale()
+
+POSIX::setlocale(LC_MESSAGES, "");
+
 our %TYPEINFO;
 my %__error = ();
 my $VERSION = "";
@@ -81,5 +86,11 @@ sub Error {
     my $self = shift;
     return \%__error;
 }
+
+# Note: functions with _ are automaticaly exported to main::
+sub _ {
+    return gettext ($_[0]);
+}
+
 
 1;
