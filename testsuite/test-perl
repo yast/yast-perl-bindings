@@ -9,32 +9,33 @@ if [ "x$1" = "x-a" -o "x$ALL" != "x" ]; then
 fi
 
 # set unless overriden
-: ${PREFIX:=/usr}
+: ${prefix:=/usr}
+# will be lib64 in biarch ...
+: ${libdir:=${prefix}/lib}
 : ${PERL:=perl}
 # load modules from the proper directory
 # and plugins
 export Y2DIR=.
-MODDIR=tests
-# for building (DESTDIR is set to RPM_BUILD_ROOT from outside)
-PLUGDIR=${DESTDIR}${PREFIX}/lib/YaST2/plugin
+TDIR=tests.pl
+MODDIR=$TDIR
 rm -f $Y2DIR/modules
 ln -s $MODDIR $Y2DIR/modules
-rm -f $Y2DIR/plugin
-ln -s $PLUGDIR $Y2DIR/plugin
-trap "rm -f $Y2DIR/modules $Y2DIR/plugin" EXIT TERM
+trap "rm -f $Y2DIR/modules" EXIT TERM
+
+$prefix/bin/ycpc -c $TDIR/*.ycp
 
 RET=0
-for SCRIPT in tests/*.pl; do
+for SCRIPT in $TDIR/*.pl; do
     BASE=${SCRIPT%.pl}
     OUT=$BASE.out
     ERR=$BASE.err
-    BASE=${BASE#tests/}
+    BASE=${BASE#$TDIR/}
 
     echo ----- $BASE
     CASEOK=true
     # y2log to stderr, take specified namespace from Perl
-    $PERL $SCRIPT > tmp.out.$BASE 2> tmp.err.$BASE
-#strace -eopen    $PERL $SCRIPT 2>&1 |grep -v ENOENT
+    $PERL $SCRIPT > tmp.out.$BASE 2> tmp.err.$BASE || CASEOK=false
+#strace -eopen    $PERL $SCRIPT 2>&1 |grep -v ENOENT > t.out
     # filter out variable information
     sed --in-place -e 's/^....-..-.. ..:..:.. \(<.> \)[^ ]* /\1/' tmp.err.$BASE
     sed --in-place -e 's/\(([^)]*)\):[0-9]\+/\1:XXX/' tmp.err.$BASE

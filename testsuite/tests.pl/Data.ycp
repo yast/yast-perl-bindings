@@ -1,0 +1,8 @@
+//
+{
+    module "Data";
+    global define any loop (any a) {
+	y2milestone ("loop: %1", a);
+	return a;
+    }
+}
