@@ -832,9 +832,59 @@ YPerl::fromPerlScalarToAny (SV * sv)
 		val = fromPerlHash ((HV *) ref, Type::Any, Type::Any);
 		break;
 
+	    case SVt_PVMG:	// Blessed reference (perlguts)
+		// TODO: accept these also in fromPerlScalar
+		if (sv_isobject (sv)) // note sv, not ref
+		{
+		    char *class_name = HvNAME (SvSTASH (ref));
+		    #define DCLASS "YaST::YCP::Boolean"
+		    if (!strcmp (class_name, DCLASS))
+		    {
+			SV *sval;
+
+			dSP;
+			ENTER;
+			SAVETMPS;
+
+			PUSHMARK (SP);
+			XPUSHs (sv); // instance
+			PUTBACK;
+
+			int count = call_method (DCLASS "::value", G_SCALAR);
+
+			SPAGAIN;
+			if (count != 1)
+			{
+			    // must be 0 because we specified G_SCALAR
+			    y2error ("Data class %s did not return a value", DCLASS);
+			}
+			else
+			{
+			    sval = POPs;
+			}
+			PUTBACK;
+
+			FREETMPS;
+			LEAVE;
+
+			val = fromPerlScalar (sval, Type::Boolean);
+		    }
+		    else
+		    {
+			y2error ("Expected any, got reference to object of class %s",
+				 class_name);
+		    }
+		    #undef DCLASS
+		}
+		else
+		{
+		    y2error ("Expected any, got reference to %s: %s",
+				 "magical scalar that is not an object",
+				 debugDump(ref).c_str ());
+		}
+		break;
 	    default:
-		y2error ("Expected %s, got reference to %s",
-				 "any",
+		y2error ("Expected any, got reference to %s",
 				 debugDump(ref).c_str ());
 		break;
 	}
