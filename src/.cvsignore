@@ -1,6 +1,7 @@
 Makefile
 Makefile.in
 perlxsi.c
+YaPI.pm
 *.lo
 .deps
 .libs
