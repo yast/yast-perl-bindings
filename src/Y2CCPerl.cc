@@ -7,24 +7,23 @@
 |			 |_|\__,_|____/ |_| |_____|		       |
 |								       |
 |				core system			       |
-|							 (C) SuSE GmbH |
+|						     (C) SuSE Linux AG |
 \----------------------------------------------------------------------/
 
-  File:	      Y2CCQt.cc
+  File:	      Y2CCPerl.cc
 
-  Author:     Mathias Kettner <kettner@suse.de>
-  Maintainer: Stefan Hundhammer <sh@suse.de>
+  Author:     Stefan Hundhammer <sh@suse.de>
 
 /-*/
 
 
-#include "Y2CCQt.h"
+#include "Y2CCPerl.h"
 
 // This is very important: We create one global variable of
-// Y2CCQt. Its constructor will register it automatically to
+// Y2CCPerl. Its constructor will register it automatically to
 // the Y2ComponentBroker, so that will be able to find it.
 // This all happens before main() is called!
 
-Y2CCQt g_y2ccqt;
+Y2CCPerl g_y2ccperl;
 
 

@@ -7,70 +7,53 @@
 |			 |_|\__,_|____/ |_| |_____|		       |
 |								       |
 |				core system			       |
-|							 (C) SuSE GmbH |
+|						     (C) SuSE Linux AG |
 \----------------------------------------------------------------------/
 
-  File:	      Y2CCQt.h
+  File:	      Y2CCPerl.h
 
-  Author:     Mathias Kettner <kettner@suse.de>
-  Maintainer: Stefan Hundhammer <sh@suse.de>
+  Author:     Stefan Hundhammer <sh@suse.de>
 
 /-*/
 
-/**
- * This file is part of YaST2.
- *
- * $Id$
- *
- * Author: Waldo Bastian <bastian@suse.de>
- * Maintainer: Stefan Hundhammer <sh@suse.de>
- *
- * Description: YaST2 Qt Component Creator
- *
- * Copyright:
- *
- * Licence:
- *
- */
 
-
-#ifndef _Y2CCQt_h
-#define _Y2CCQt_h
+#ifndef _Y2CCPerl_h
+#define _Y2CCPerl_h
 
 #include "Y2QtComponent.h"
 
 /**
- * @short Y2ComponentCreator that can create Qt user interfaces
- * A Y2ComponentCreator is an object, that can create components.
- * It is given a component name and - if it knows how to create
+ * @short Y2ComponentCreator that creates Perl-from-YCP bindings.
+ *
+ * A Y2ComponentCreator is an object that can create components.
+ * It receives a component name and - if it knows how to create
  * such a component - returns a newly created component of this
- * type. The Y2CCQt can create components with the name "qt".
+ * type. Y2CCPerl can create components with the name "Perl".
  */
-class Y2CCQt : public Y2ComponentCreator
+class Y2CCPerl : public Y2ComponentCreator
 {
 public:
     /**
      * Creates a Qt component creator
      */
-    Y2CCQt() : Y2ComponentCreator(Y2ComponentBroker::BUILTIN) { };
+    Y2CCPerl() : Y2ComponentCreator( Y2ComponentBroker::BUILTIN ) {};
 
     /**
-     * Returns true, since the qt component is a
-     * YaST2 server.
+     * Returns true, since the Perl component is a YaST2 server.
      */
     bool isServerCreator() const { return true; };
 
     /**
-     * Creates a new Qt UI component.
+     * Creates a new Perl component.
      */
-    Y2Component *create(const char * name) const
+    Y2Component *create( const char * name ) const
     {
-	if (!strcmp(name, "qt") ) return new Y2QtComponent();
+	if ( ! strcmp( name, "Perl") ) return new Y2PerlComponent();
 	else return 0;
     }
 };
 
-#endif	// ifndef _Y2CCQt_h
+#endif	// ifndef _Y2CCPerl_h
 
 
 // EOF

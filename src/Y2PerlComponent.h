@@ -7,46 +7,45 @@
 |			 |_|\__,_|____/ |_| |_____|		       |
 |								       |
 |				core system			       |
-|							 (C) SuSE GmbH |
+|						     (C) SuSE Linux AG |
 \----------------------------------------------------------------------/
 
-  File:	      Y2QtComponent.h
+  File:	      Y2PerlComponent.h
 
-  Author:     Mathias Kettner <kettner@suse.de>
-  Maintainer: Stefan Hundhammer <sh@suse.de>
+  Author:     Stefan Hundhammer <sh@suse.de>
 
 /-*/
 
 
-#ifndef Y2QtComponent_h
-#define Y2QtComponent_h
+#ifndef Y2PerlComponent_h
+#define Y2PerlComponent_h
 
 #include "Y2.h"
 
-class YUIQt;
+class YPerlInterpreter;
 
 /**
  * @short YaST2 Component: Qt user interface
  * The YaST2 Component realizes a Qt based user interface with an
  * embedded YCP interpreter. It component name is "qt".
  */
-class Y2QtComponent : public Y2Component
+class Y2PerlComponent : public Y2Component
 {
 public:
     /**
      * Initialize data.
      */
-    Y2QtComponent();
+    Y2PerlComponent();
 
     /**
      * Cleans up.
      */
-    ~Y2QtComponent();
+    ~Y2PerlComponent();
 
     /**
-     * The name of this component is qt.
+     * The name of this component.
      */
-    string name() const { return "qt"; }
+    string name() const { return "perl"; }
 
     /**
      * Implements the server. The interpreter is created here and not
@@ -61,30 +60,11 @@ public:
      */
     void result( const YCPValue & result );
 
-    /**
-     * Is called by the genericfrontend after it parsed the commandline.
-     * gives the QT UI its commandline options. We store it here and
-     * wait until we create the interpreter in @ref #evaluate.
-     */
-    void setServerOptions( int argc, char **argv );
-
-    /**
-     * Functions to pass callback information
-     * The callback is a pointer to a Y2Component with
-     * a valid evaluate() function.
-     */
-    Y2Component * getCallback (void) const;
-    void setCallback(Y2Component * callback );
-
-
+    
 protected:
-    int			_argc;
-    char **		_argv;
-    YUIQt * 		_interpreter;
-    Y2Component *	_callback;
-    bool 		_with_threads;
-
+    
+    YPerlInterpreter *	_interpreter;
 };
 
-#endif	// Y2QtComponent_h
+#endif	// Y2PerlComponent_h
 
