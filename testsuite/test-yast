@@ -9,14 +9,17 @@ if [ "x$1" = "x-a" -o "x$ALL" != "x" ]; then
 fi
 
 # set unless overriden
-: ${PREFIX:=/usr}
-: ${Y2BASE:=${PREFIX}/lib/YaST2/bin/y2base}
+: ${prefix:=/usr}
+# will be lib64 in biarch ...
+: ${libdir:=${prefix}/lib}
+# ...but not here
+: ${Y2BASE:=${prefix}/lib/YaST2/bin/y2base}
 # load modules from the proper directory
 # and plugins
 export Y2DIR=.
 MODDIR=tests
 # for building (DESTDIR is set to RPM_BUILD_ROOT from outside)
-PLUGDIR=${DESTDIR}${PREFIX}/lib/YaST2/plugin
+PLUGDIR=${DESTDIR}${libdir}/YaST2/plugin
 rm -f $Y2DIR/modules
 ln -s $MODDIR $Y2DIR/modules
 rm -f $Y2DIR/plugin
