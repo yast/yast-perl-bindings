@@ -1199,18 +1199,32 @@ YPerl::callConstructor (const char * class_name, const char * full_method_name,
     ENTER;
     SAVETMPS;
 
+    // This function can be called recursively (typically if there are
+    // nested terms). I don't understand the Perl stack well enough
+    // so create the argument SVs when the stack is in a consistent state.
+
+    int nargs = args.size ();
+    // the array does not own the pointers, FREETMPS does
+    SV ** sv_args = new SV *[nargs];
+    for (int i = 0; i < nargs; ++i)
+    {
+	sv_args[i] = sv_2mortal (newPerlScalar (args->value (i), false ));
+    }
+    
     PUSHMARK (SP);
 
     // Class name
     XPUSHs (sv_2mortal (newSVpv (class_name, 0)));
 
     // Other arguments
-    for (int i = 0; i < args->size (); ++i)
+    for (int i = 0; i < nargs; ++i)
     {
-	XPUSHs (sv_2mortal (newPerlScalar (args->value (i), false )));
+	XPUSHs (sv_args[i]);
     }
 
     PUTBACK;
+
+    delete[] (sv_args);
 
     int count = call_method (full_method_name, G_SCALAR);
 
