@@ -1,0 +1,7 @@
+//
+{
+    import "types2";
+    term t = `MyTerm ("Hi", 42);
+    y2milestone ("termloop: %1",    types2::termloop (t));
+    y2milestone ("termreverse: %1", types2::termreverse (t));
+}
