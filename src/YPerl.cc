@@ -369,7 +369,7 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
 
     for ( int i=1; i < argList->size(); i++ )
     {
-	XPUSHs( sv_2mortal( newPerlScalar( argList->value(i) ) ) );
+	XPUSHs( sv_2mortal( newPerlScalar( argList->value(i), false ) ) );
     }
 
     PUTBACK;		// Make local stack pointer global
@@ -478,7 +478,7 @@ YPerl::eval( YCPList argList )
 
 
 SV *
-YPerl::newPerlScalar( const YCPValue & val )
+YPerl::newPerlScalar( const YCPValue & val, bool composite )
 {
     EMBEDDED_PERL_DEFS;
 
@@ -488,7 +488,7 @@ YPerl::newPerlScalar( const YCPValue & val )
     if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
     if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
     if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
-    if ( val->isVoid()    )	return &PL_sv_undef;
+    if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
     return 0;
 }
@@ -514,7 +514,7 @@ YPerl::newPerlArrayRef( const YCPList & yList )
 
     for ( int i = 0; i < yList->size(); i++ )
     {
-	SV * scalarVal = newPerlScalar( yList->value(i) );
+	SV * scalarVal = newPerlScalar( yList->value(i), true );
 
 	if ( scalarVal )
 	{
@@ -523,7 +523,7 @@ YPerl::newPerlArrayRef( const YCPList & yList )
 	    if ( SvREFCNT( scalarVal ) != 1 )
 	    {
 		// U32 is unsigned long, even on a Hammer
-		y2error( "Internal error: Reference count is %lu (should be 1)",
+		y2error( "Internal error: Reference count is %" IVdf " (should be 1)",
 			 SvREFCNT( scalarVal ) );
 	    }
 	}
@@ -579,7 +579,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 	    // Add one key / value pair
 	    //
 
-	    SV * scalarVal = newPerlScalar( it.value() );
+	    SV * scalarVal = newPerlScalar( it.value(), true );
 
 	    if ( scalarVal )
 	    {
@@ -594,7 +594,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 		}
 		else if ( SvREFCNT( scalarVal ) != 1 )
 		{
-		    y2error( "Internal error: Reference count is %lu (should be 1)",
+		    y2error( "Internal error: Reference count is %" IVdf " (should be 1)",
 			     SvREFCNT( scalarVal ) );
 		}
 	    }
@@ -790,21 +790,30 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
     }
     else if (wanted_type->isString ())
     {
-	if (SvPOK (sv))	val = YCPString (SvPV_nolen (sv));
+	// Perl relies on automatic coercion between strings and numbers
+	//
+	// So to behave more like it, instead of "if (SvXOK (sv)) SvXV (sv)"
+	// we first SvXV (sv) and only then SvXOK.
+	const char *pv = SvPV_nolen (sv);
+	if (SvPOK (sv))	val = YCPString (pv);
 	else		y2error ("Expected %s, got %s",
 				 wanted_type->toString ().c_str (),
 				 debugDump(sv).c_str ());
     }
     else if (wanted_type->isInteger ())
     {
-	if (SvIOK (sv))	val = YCPInteger (SvIV (sv));
+	// see isString
+	IV iv = SvIV (sv);
+	if (SvIOK (sv))	val = YCPInteger (iv);
 	else		y2error ("Expected %s, got %s",
 				 wanted_type->toString ().c_str (),
 				 debugDump(sv).c_str ());
     }
     else if (wanted_type->isFloat ())
     {
-	if (SvNOK (sv))	val = YCPFloat (SvNV (sv));
+	// see isString
+	NV nv = SvNV (sv);
+	if (SvNOK (sv))	val = YCPFloat (nv);
 	else		y2error ("Expected %s, got %s",
 				 wanted_type->toString ().c_str (),
 				 debugDump(sv).c_str ());
@@ -958,9 +967,13 @@ YPerl::fromPerlScalarToAny (SV * sv)
 
     YCPValue val = YCPNull ();
 
-    if      ( SvPOK( sv ) )		val = YCPString ( SvPV_nolen( sv ) );
+    // Try strings only after numbers
+    // because numbers will get an additional string nature
+    // after being prited out.
+    // This is not foolproof vice versa but that should be really less common.
+    if      ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
     else if ( SvNOK( sv ) )		val = YCPFloat  ( SvNV( sv ) );
-    else if ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
+    else if ( SvPOK( sv ) )		val = YCPString ( SvPV_nolen( sv ) );
     else if (sv_isobject (sv))
     {
 	char *class_name = HvNAME (SvSTASH (SvRV (sv)));
