@@ -16,7 +16,8 @@ use vars qw(@ISA @EXPORT);
 
 BEGIN
 {
-    print "Executing dummy module BEGIN block\n";
+    print "Executing dummy module BEGIN block, sleep 5\n";
+    sleep 5;
 }
 
 END

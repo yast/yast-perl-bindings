@@ -16,7 +16,8 @@ use vars qw(@ISA @EXPORT $helloMsg);
 
 BEGIN
 {
-    print "Executing mod_ex module BEGIN block\n";
+    print "Executing mod_ex module BEGIN block, sleep 5\n";
+    sleep 5;
 }
 
 END
