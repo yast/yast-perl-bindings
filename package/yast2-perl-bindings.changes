@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 25 15:45:57 CET 2004 - mvidner@suse.cz
+
+- fixed passing nested terms
+- 2.9.21
+
+-------------------------------------------------------------------
 Mon Mar 22 15:35:41 CET 2004 - mvidner@suse.cz
 
 - implemented passing symbols and terms to Perl

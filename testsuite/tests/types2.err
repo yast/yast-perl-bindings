@@ -4,6 +4,7 @@
 <1> [wfm] Y2CCScript.cc(createInLevel):XXX Parsing finished
 <1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
 <1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
-<1> [YCP] tests/types2.ycp:5 termloop: `MyTerm ("Hi", "42")
-<1> [YCP] tests/types2.ycp:6 termreverse: `mreTyM ("42", "Hi")
+<1> [YCP] tests/types2.ycp:6 termloop: `MyTerm ("Hi", "42")
+<1> [YCP] tests/types2.ycp:7 termloop nt: `NestedTerm (`id ("42"), `MyTerm ("Hi", "42"))
+<1> [YCP] tests/types2.ycp:8 termreverse: `mreTyM ("42", "Hi")
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
