@@ -350,7 +350,7 @@ YPerl::callString( YCPList argList )
 YCPValue
 YPerl::callList( YCPList argList )
 {
-    return yPerl()->call( argList, Type::List ());
+    return yPerl()->call( argList, Type::List );
 }
 
 
