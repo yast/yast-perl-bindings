@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  1 15:11:40 CET 2004 - mvidner@suse.cz
+
+- adapted to changes in yast2-core: Type::List
+- 2.9.13
+
+-------------------------------------------------------------------
 Fri Feb 27 14:55:30 CET 2004 - mvidner@suse.cz
 
 - added sformat
