@@ -86,6 +86,6 @@ CLEANFILES = \
 
 INCLUDES = -I$(srcdir)/include -I$(includedir)
 
-module_DATA = YaPI.inc
+module_DATA = YaPI.pm
 
 EXTRA_DIST = $(perlpm_DATA) $(module_DATA)
