@@ -4,6 +4,9 @@
 
 @HEADER@
 
+# for YaPI.pm
+Requires:	perl(Locale::gettext)
+
 Summary:	-
 
 %description
