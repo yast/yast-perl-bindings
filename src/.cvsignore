@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+*.lo
+.deps
+.libs
+*.kdoc
+*.la
+*.bak
+*.auto
+*~
