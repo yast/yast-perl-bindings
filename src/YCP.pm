@@ -28,7 +28,7 @@ use diagnostics;
 
 require Exporter;
 our @ISA = qw(Exporter);
-my @e_data = qw(Boolean Integer Float String Symbol Term);
+my @e_data = qw(Boolean Byteblock Integer Float String Symbol Term);
 my @e_logging = qw(y2debug y2milestone y2warning y2error y2security y2internal);
 our @EXPORT_OK = (@e_data, @e_logging, "sformat");
 our %EXPORT_TAGS = ( DATA => [@e_data], LOGGING => [@e_logging] );
@@ -139,6 +139,11 @@ sub Boolean ($)
     return new YaST::YCP::Boolean (@_);
 }
 
+sub Byteblock ($)
+{
+    return new YaST::YCP::Byteblock (@_);
+}
+
 sub Integer ($)
 {
     return new YaST::YCP::Integer (@_);
@@ -218,6 +223,30 @@ sub value
     if (@_) { $$self = shift; }
     return $$self;
 }
+
+=head2 Byteblock
+
+ A chunk of binary data.
+
+ use YaST::YCP qw(:DATA);
+
+ read ($dev_random_fh, $r, 100);
+ $b = Byteblock ($r);
+ $b->value ("Hello\0world\0");
+ print $b->value, "\n";
+ return $b;
+
+=cut
+
+package YaST::YCP::Byteblock;
+use strict;
+use warnings;
+use diagnostics;
+
+# a Byteblock is just a blessed reference to a scalar
+# just like Boolean, so use it!
+
+our @ISA = qw (YaST::YCP::Boolean);
 
 =head2 Integer
 

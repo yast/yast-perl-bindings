@@ -43,6 +43,8 @@ static constTypePtr parseTypeinfo (SV *ti)
 	    return Type::Void;
 	else if (!strcmp (s, "boolean"))
 	    return Type::Boolean;
+	else if (!strcmp (s, "byteblock"))
+	    return Type::Byteblock;
 	else if (!strcmp (s, "integer"))
 	    return Type::Integer;
 	else if (!strcmp (s, "float"))
