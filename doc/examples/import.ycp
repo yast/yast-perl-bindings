@@ -1,0 +1,36 @@
+// test the transparent bindings
+{
+    import "imported";
+    import "foo";
+
+    // call a Perl function which will call a YCP function
+    imported::getback ();
+
+    integer r = imported::plusone (41);
+    y2milestone ("plusone: %1", r);
+
+    integer i = r + 1;
+    y2milestone ("plus one more: %1", i);
+
+    // test how a YCP call appears in debugging output
+    foo::bar ();
+
+    map<string, integer> numbers = imported::getmap ();
+    y2milestone ("getmap: %1", numbers);
+
+    numbers = imported::getmap2 ("blah");
+    y2milestone ("getmap2: %1", numbers);
+
+    any l1 = imported::loopback (1);
+    any l2 = imported::loopback ("two");
+    any l3 = imported::loopback (3.0);
+    any l4 = imported::loopback (["four"]);
+    any l5 = imported::loopback ($[5: "five"]);
+    any l6 = imported::loopback (true);
+    y2milestone ("loopback: %1, %2, %3, %4, %5, %6", l1, l2, l3, l4, l5, l6);
+
+    symbol sym = imported::longsymbol (20);
+    y2milestone ("longsymbol: %1", sym);
+
+    imported::fiddle_variables ();
+}

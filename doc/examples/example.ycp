@@ -1,0 +1,11 @@
+/**
+ * Test the Example module, implemented in C++,
+ * and its bytecode and debug output.
+ *
+ * $Id$
+ */
+{
+	import "Example";
+
+	Example::MoreFun ("HI");
+}

@@ -11,4 +11,13 @@
     
     list ret_list = Perl::CallList( "mod_ex::copyargs", "one", "two", "three" );
     y2milestone( "Perl mod_ex::copyargs returned %1", ret_list );
+
+    integer i = Perl::CallInteger( "mod_ex::getInteger" );
+    y2milestone( "Perl mod_ex::getInteger() returned %1", i );
+
+    float f = Perl::CallFloat( "mod_ex::getFloat" );
+    y2milestone( "Perl mod_ex::getFloat() returned %1", f );
+
+    boolean b = Perl::CallBoolean( "mod_ex::getBoolean" );
+    y2milestone( "Perl mod_ex::getBoolean() returned %1", b );
 }

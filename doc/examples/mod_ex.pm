@@ -35,6 +35,21 @@ sub helloWorld()
     return $helloMsg;
 }
 
+sub getInteger()
+{
+    return 43;
+}
+
+sub getFloat()
+{
+    return 3.14;
+}
+
+sub getBoolean()
+{
+    return 0;
+}
+
 #-----------------------------------------------------------------------------
 
 #

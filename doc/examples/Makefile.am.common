@@ -1,0 +1,21 @@
+# Makefile.am.common
+# this is a hacked up version of the thing that is in newer devtools
+# if you see this, bug me to fix it
+# $Id$
+
+# suffix mapping
+%.ybc: %.ycp
+	Y2DIR=$(yast2dir) $(bindir)/ycpc -c -M. -q $<
+
+modulebin_DATA = $(patsubst %.ycp,%.ybc,$(module_DATA))
+modulebindir = $(moduledir)
+
+# files to clean
+CLEANFILES = $(modulebin_DATA)
+
+# generate dependencies
+.dep: $(wildcard *.ycp)
+	./makedep.sh > .new.dep
+	mv .new.dep .dep
+
+-include .dep

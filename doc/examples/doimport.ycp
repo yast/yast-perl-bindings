@@ -1,0 +1,6 @@
+// test importing a file (intermediate.ybc) that references perl modules
+{
+    import "intermediate";
+
+    intermediate::doit ();
+}

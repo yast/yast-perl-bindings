@@ -1,0 +1,32 @@
+/**
+ * A YCP module to be imported by "import.ycp"
+ * to test the bytecode and debug output
+ *
+ * $Id$
+ */
+{
+	module "foo";
+
+	global define void bar () ``{
+		y2milestone ("BAR!");
+	}
+
+	global define list<integer> double (list<integer> s) ``{
+		return maplist (integer i, s, ``( 2 * i ));
+	}
+
+	global define string scalar () ``{
+		return "mujscalar";
+	}
+
+	global integer intvar = 23;
+
+/*
+ references like this seem not to work
+	integer localvar = 77;
+
+	global integer & r_intvar = intvar;
+	global integer & r_localvar = localvar;
+*/
+	global symbol symvar = `cancel;
+}

@@ -25,5 +25,9 @@ AC_SUBST(PERL_LDFLAGS)
 CFLAGS="${CFLAGS} ${PERL_CFLAGS}"
 CXXFLAGS="${CXXFLAGS} ${PERL_CFLAGS}"
 
+## Where to install modules
+PERL_VENDORARCH=`perl -V:vendorarch | sed "s!.*='!!;s!'.*!!"`
+AC_SUBST(PERL_VENDORARCH)
+
 ## and generate the output
 @YAST2-OUTPUT@

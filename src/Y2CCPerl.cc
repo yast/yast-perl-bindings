@@ -18,6 +18,9 @@
 
 
 #include "Y2CCPerl.h"
+#include <ycp/pathsearch.h>
+#define y2log_component "Y2Perl"
+#include <ycp/y2log.h>
 
 // This is very important: We create one global variable of
 // Y2CCPerl. Its constructor will register it automatically to
@@ -26,4 +29,31 @@
 
 Y2CCPerl g_y2ccperl;
 
+Y2Component *Y2CCPerl::provideNamespace (const char *name)
+{
+    y2debug ("Y2CCPerl::provideNamespace %s", name);
+    if (strcmp (name, "Perl") == 0)
+    {
+	// low level functions
 
+	// leave implementation to later
+	return 0;
+    }
+    else
+    {
+	// is there a perl module?
+	// must be the same in Y2CCPerl and Y2PerlComponent
+	string module = YCPPathSearch::find (YCPPathSearch::Module, string (name) + ".pm");
+	if (!module.empty ())
+	{
+	    if (!cperl)
+	    {
+		cperl = new Y2PerlComponent ();
+	    }
+	    return cperl;
+	}
+
+	// let someone else try creating the namespace
+	return 0;
+    }
+}

@@ -1,0 +1,19 @@
+// test the transparent bindings
+{
+    module "intermediate";
+
+    import "imported";
+    import "foo";
+
+  global define void doit () ``{
+
+    integer r = imported::plusone (41);
+    y2milestone ("plusone: %1", r);
+
+    integer i = r + 1;
+    y2milestone ("plus one more: %1", i);
+
+    // test how a YCP call appears in debugging output
+    foo::bar ();
+  }
+}
