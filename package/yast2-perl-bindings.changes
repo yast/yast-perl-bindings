@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 30 14:04:45 CET 2004 - mvidner@suse.cz
+
+- don't consume Perl arrays when passing them to YCP
+- 2.9.3
+
+-------------------------------------------------------------------
 Fri Jan 30 10:23:41 CET 2004 - mvidner@suse.cz
 
 - fixed parse errors and more
