@@ -3,79 +3,99 @@
 # Martin Vidner
 # $Id$
 
-# try noto to get into infinite recursion
-package YCP_Autoload;
+package YaST::YCP;
+use strict;
+use warnings;
+use diagnostics;
+
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw(Boolean);
+
+my $debug = 0;
+sub debug (;$)
+{
+    my $param = shift;
+    if (defined $param)
+    {
+	$debug = $param;
+    }
+    return $debug;
+}
+
+
+## calls boot_YaST__YCP
+require XSLoader;
+XSLoader::load ('YaST::YCP');
+
+=head2 Import
+
+YaST::YCP::Import "Namespace";
+
+=cut
+
+sub Import ($)
+{
+    my $package = shift;
+    print "Importing $package" if debug;
+
+    no strict;
+    # let it get our autoload
+    *{"${package}::AUTOLOAD"} = \&YaST::YCP::Autoload::AUTOLOAD;
+}
+
+# shortcuts for the data types
+
+sub Boolean ($)
+{
+    return new YaST::YCP::Boolean (@_);
+}
+
+# by defining AUTOLOAD in a separate package, undefined functions in
+# the main one will be detected
+package YaST::YCP::Autoload;
+use strict;
+use warnings;
+use diagnostics;
 
 # cannot rely on UNIVERSAL::AUTOLOAD getting automatically called
 # http://www.rocketaware.com/perl/perldelta/Deprecated_Inherited_C_AUTOLOAD.htm
 
-# gets called instead of all functions in Import'ed modules
+# Gets called instead of all functions in Import'ed modules
+# It assumes a normal function, not a class or instance method
 sub AUTOLOAD
 {
-    # Here we would call the YCP interface
-    # For now, only show that we understand the request
-    my $instance = $_[0];
-    my $class = ref ($instance);
-    if ($imported{$class})
-    {
-	shift;
-#	print "Calling instance";
-    }
-    else
-    {
-#	print "Calling function";
-    }
-#    print " $AUTOLOAD (", join (", ", @_), ")\n";
+    our $AUTOLOAD;
 
-    print "AUTOLOAD for $AUTOLOAD\n";
+    print "$AUTOLOAD (", join (", ", @_), ")\n" if YaST::YCP::debug;
 
     my @components = split ("::", $AUTOLOAD);
     my $func = pop (@components);
     return YaST::YCP::call_ycp (join ("::", @components), $func, @_);
 }
 
-package YaST::YCP;
+package YaST::YCP::Boolean;
+use strict;
+use warnings;
+use diagnostics;
 
-@ISA = qw(DynaLoader);
+# a Boolean is just a blessed reference to a scalar
 
-#use strict;
-# may be useful
-my %imported;
-
-## calls boot_YCP
-require XSLoader;
-XSLoader::load ('YaST::YCP');
-## We use DynaLoader directly so that we can specify the library search path
-
-# gets executed on "use"
-sub unused_import
+sub new
 {
-    use DynaLoader;
-
-    # search paths, in increasing importance:
-    unshift @DynaLoader::dl_library_path, "/home/mvidner/2/tmp/headprefix/lib/YaST2/plugin";
-    unshift @DynaLoader::dl_library_path, "/usr/lib/YaST2/plugin";
-    unshift @DynaLoader::dl_library_path, @_;
-    bootstrap YCP;
+    my $class = shift;
+    my $val = shift;
+    return bless \$val, $class
 }
 
-=head2 Import
-
-YCP::Import "Namespace";
-
-=cut
-
-sub Import
+# get/set
+sub value
 {
-    my $package = shift;
-    warn "$package";
-    $imported{$package} = 1;
-
-    {
-#	no strict refs;
-	# let it get our autoload
-	*{"${package}::AUTOLOAD"} = \&YCP_Autoload::AUTOLOAD;
-    }
+    # see "Constructors and Instance Methods" in perltoot
+    my $self = shift;
+    if (@_) { $$self = shift; }
+    return $$self;
 }
 
 1;
+
