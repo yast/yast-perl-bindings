@@ -121,6 +121,16 @@ YPerl::perlInterpreter()
 }
 
 
+/**
+ * @builtin Perl::Parse (string file_name) -> void
+ * Loads a Perl script.
+ *
+ * This executes Perl "use" instructions and BEGIN blocks,
+ * but not the script itself.
+ *
+ * Internal structures must be cleaned up by Perl::Destroy
+ * before it can be called again.
+ */
 YCPValue
 YPerl::parse( YCPList argList )
 {
@@ -154,6 +164,12 @@ YPerl::parse( YCPList argList )
 }
 
 
+/**
+ * @builtin Perl::Run () -> void
+ * Runs a script loaded by Perl::Parse or Perl::LoadModule.
+ *
+ * Can be called repeatedly.
+ */
 YCPValue
 YPerl::run( YCPList argList )
 {
@@ -168,6 +184,11 @@ YPerl::run( YCPList argList )
 }
 
 
+/**
+ * @builtin Perl::Use        (string module) -> void
+ * @builtin Perl::LoadModule (string module) -> void
+ * Loads a module.
+ */
 YCPValue
 YPerl::loadModule( YCPList argList )
 {
@@ -186,7 +207,10 @@ YPerl::loadModule( YCPList argList )
     return YCPVoid();
 }
 
-
+/**
+ * @builtin Perl::CallVoid (string funcname, any param1, ...) -> void
+ * Calls a perl function ...
+ */
 YCPValue
 YPerl::callVoid( YCPList argList )
 {
@@ -194,6 +218,10 @@ YPerl::callVoid( YCPList argList )
 }
 
 
+/**
+ * @builtin Perl::CallString (string funcname, any param1, ...) -> string
+ * Calls a perl function ...
+ */
 YCPValue
 YPerl::callString( YCPList argList )
 {
@@ -201,6 +229,10 @@ YPerl::callString( YCPList argList )
 }
 
 
+/**
+ * @builtin Perl::CallList (string funcname, any param1, ...) -> list
+ * Calls a perl function ...
+ */
 YCPValue
 YPerl::callList( YCPList argList )
 {
@@ -208,6 +240,12 @@ YPerl::callList( YCPList argList )
 }
 
 
+// there are &nbsp;s after CallBool
+/**
+ * @builtin Perl::CallBoolean (string funcname, any param1, ...) -> boolean
+ * @builtin Perl::CallBool    (string funcname, any param1, ...) -> boolean
+ * Calls a perl function ...
+ */
 YCPValue
 YPerl::callBool( YCPList argList )
 {
@@ -215,6 +253,11 @@ YPerl::callBool( YCPList argList )
 }
 
 
+/**
+ * @builtin Perl::CallInteger (string funcname, any param1, ...) -> integer
+ * @builtin Perl::CallInt     (string funcname, any param1, ...) -> integer
+ * Calls a perl function ...
+ */
 YCPValue
 YPerl::callInt( YCPList argList )
 {
@@ -358,6 +401,10 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 }
 
 
+/**
+ * @builtin Perl::Eval (string perl_code) -> any
+ * Evaluates Perl code and returns the result.
+ */
 YCPValue
 YPerl::eval( YCPList argList )
 {
