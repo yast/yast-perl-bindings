@@ -200,8 +200,12 @@ YPerl::loadModule( YCPList argList )
     string module_name = argList->value(0)->asString()->value();
     I32 flags	 = PERL_LOADMOD_NOIMPORT;	// load_module() flags are undocumented  :-(
     SV * version = 0;
+    SV * name = newSVpv( module_name.c_str(), 0 );
 
-    load_module( flags, sv_2mortal( newSVpv( module_name.c_str(), 0 ) ), version );
+    //sv_dump (name);
+    // the name is unref'd by load_module, so it must not be mortal
+    load_module( flags, name, version );
+    //sv_dump (name);
     yPerl()->setHaveParseTree( true );
 
     return YCPVoid();
