@@ -324,7 +324,9 @@ YPerlNamespace::YPerlNamespace (string name)
 	    }
 	    if (sym_tp->isUnspec ())
 	    {
-		y2warning ("No $TYPEINFO{%s}", symbol);
+		// not a y2warning, because there may be functions
+		// pushed from 3rd party Perl modules
+		y2debug ("No $TYPEINFO{%s}", symbol);
 		sym_tp = new FunctionType ();
 	    }
 
