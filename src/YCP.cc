@@ -213,6 +213,8 @@ XS(XS_YCP_call_ycp)
 	y2debug ("void context, returning nothing");
 	XSRETURN_EMPTY;
     }
+#if 0
+    // disabled to be consistent with YPerl::call - disregard array context
     else if (context == G_ARRAY && ret_yv->isList ())
     {
 	y2debug ("returning a list");
@@ -229,6 +231,7 @@ XS(XS_YCP_call_ycp)
 	}
 	XSRETURN (ret_len);
     }
+#endif
     else
     {
 	y2debug ("returning a scalar");
@@ -392,7 +395,7 @@ XS(boot_YaST__YCP)
     char* file = __FILE__;
 
     XS_VERSION_BOOTCHECK ;
-    
+
     if (Y2ComponentBroker::createClient ("wfm") == 0)
     {
 	y2error ("Cannot create server WFM component");

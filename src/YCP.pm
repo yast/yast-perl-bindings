@@ -14,6 +14,97 @@ YaST::YCP - a binary interface between Perl and YCP
  my $m = SCR::Read (".sysconfig.displaymanager.DISPLAYMANAGER");
  SCR::Write (".sysconfig.kernel.CRASH_OFTEN", Boolean (1));
 
+=head1 DATA TYPES
+
+YaST has a richer and stricter data type system than Perl.
+(TODO: see native ycp docs - what, where?)
+
+Note that the stdio-communicating agents, based on the modules
+L<YaST::SCRAgent|YaST::SCRAgent> and L<ycp|ycp>, have a similar but
+not the same data type mapping.
+
+When the language binding knows what type to expect, eg. when passing
+an argument to a YCP function, it will convert a Perl scalar to the
+desired type.
+
+On the other hand, if the type is not known, expressed
+in YCP as C<any>, scalars will be passed as strings. If you want
+a specific data type, use one of the data classes like
+L<YaST::YCP::Integer|/Integer>. Of course these work also when
+the type is known.
+
+=over 4
+
+=item void
+
+Has only one value, C<nil>, which is represented as C<undef>.
+Any data type can have C<nil> as a value.
+
+=item any
+
+A union of all data types. Any data type can be assigned to it.
+
+=item string, integer, float, boolean
+
+B<YCP to Perl:> Becomes a scalar
+
+B<Perl to YCP:> Any scalar will become a string
+(even if it looks like a number).
+Use L</String>, L</Integer>, L</Float> or L</Boolean>
+if you want a specific data type.
+
+=item list E<lt>TE<gt>
+
+B<YCP to Perl:> A list becomes a reference to an array.
+
+B<Perl to YCP:> A reference to an array becomes a list.
+I<This was different before SL9.1 Beta1:>
+Perl functions returning multiple values should not return a list
+but a reference to it. YCP will always set a scalar calling context,
+even if the result is assigned to a list.
+
+=item map E<lt>T1, T2E<gt>
+
+B<YCP to Perl:> A map becomes a reference to a hash.
+
+B<Perl to YCP:> A reference to a hash becomes a map.
+
+=item path
+
+B<YCP to Perl:> NOT IMPLEMENTED YET.
+
+B<Perl to YCP:> If a path is expected, a scalar like C<".foo.bar">
+will be converted to C<.foo.bar>.
+Otherwise use L</Path> (which is NOT IMPLEMENTED YET).
+
+=item symbol
+
+B<YCP to Perl:> NOT IMPLEMENTED YET.
+
+B<Perl to YCP:> If a symbol is expected, a scalar like C<"foo">
+will be converted to C<`foo>.
+Otherwise use L</Symbol>.
+
+=item term
+
+B<YCP to Perl:> NOT IMPLEMENTED YET.
+
+B<Perl to YCP:> Use L</Term>.
+
+=item byteblock
+
+B<YCP to Perl:> NOT IMPLEMENTED YET.
+
+B<Perl to YCP:> If a byteblock is expected, a scalar like C<"\0\1">
+will be converted to C<#[0001]>.
+Otherwise use L</Byteblock>.
+
+=item locale, block E<lt>TE<gt>, ...
+
+Not implemented.
+
+=back
+
 =head1 YaST::YCP
 
 The DATA tag (in C<use YaST::YCP qw(:DATA)>) imports the data
@@ -110,7 +201,7 @@ sub y2internal ($)	{ y2_logger_helper (5, shift); }
 
 Implements the sformat YCP builtin:
 
-sformat ('%2 %% %1', "a", "b") returns 'b % a'
+C<sformat ('%2 %% %1', "a", "b")> returns C<'b % a'>
 
 It is useful mainly for messages marked for translation.
 
@@ -197,7 +288,7 @@ sub AUTOLOAD
  $b = YaST::YCP::Boolean (1);
  $b->value (0);
  print $b->value, "\n";
- SCR::Write (.foo, $b);
+ SCR::Write (".foo", $b);
 
 =cut
 
@@ -226,7 +317,7 @@ sub value
 
 =head2 Byteblock
 
- A chunk of binary data.
+A chunk of binary data.
 
  use YaST::YCP qw(:DATA);
 
@@ -250,7 +341,7 @@ our @ISA = qw (YaST::YCP::Boolean);
 
 =head2 Integer
 
- An explicitly typed integer, useful to put in heterogenous data structures.
+An explicitly typed integer, useful to put in heterogenous data structures.
 
  use YaST::YCP qw(:DATA);
 
@@ -274,7 +365,7 @@ our @ISA = qw (YaST::YCP::Boolean);
 
 =head2 Float
 
- An explicitly typed float, useful to put in heterogenous data structures.
+An explicitly typed float, useful to put in heterogenous data structures.
 
  use YaST::YCP qw(:DATA);
 
@@ -296,9 +387,15 @@ use diagnostics;
 
 our @ISA = qw (YaST::YCP::Boolean);
 
+=head2 Path
+
+Not implemented yet.
+
+=cut
+
 =head2 String
 
- An explicitly typed string, useful to put in heterogenous data structures.
+An explicitly typed string, useful to put in heterogenous data structures.
 
  use YaST::YCP qw(:DATA);
 
@@ -343,7 +440,7 @@ our @ISA = qw (YaST::YCP::Boolean);
 
 =head2 Term
 
- $t = YaST::YCP::Term ("CzechBox", "Accept spam", YaST::YCP::Boolean (0));
+ $t = new YaST::YCP::Term("CzechBox", "Accept spam", new YaST::YCP::Boolean(0));
  $t->name ("CheckBox");
  print $t->args[0], "\n";
  UI::OpenDialog ($t);

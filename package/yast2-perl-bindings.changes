@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar  9 15:28:24 CET 2004 - mvidner@suse.cz
+
+- disregard array context: a YCP list is always a reference to a Perl array
+- added data type docs
+- fixed explicit Byteblock if type known
+- 2.9.14
+
+-------------------------------------------------------------------
 Mon Mar  1 18:30:05 CET 2004 - mvidner@suse.cz
 
 - added YaST::YCP::Byteblock
