@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 25 17:54:58 CET 2004 - mvidner@suse.cz
+
+- added i18n functions to YaPI.pm (mcalmer)
+- 2.9.22
+
+-------------------------------------------------------------------
 Thu Mar 25 15:45:57 CET 2004 - mvidner@suse.cz
 
 - fixed passing nested terms
