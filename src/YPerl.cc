@@ -383,8 +383,6 @@ YPerl::callInt( YCPList argList )
 YCPValue
 YPerl::call( YCPList argList, constTypePtr wanted_result_type )
 {
-    EMBEDDED_PERL_DEFS;
-
     if ( argList->size() < 1 || ! argList->value(0)->isString() )
 	return YCPError( "Perl::Call(): Bad arguments: No function to execute!" );
 
@@ -392,7 +390,6 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
 	return YCPError( "Perl::Call: Use Perl::Parse() or Perl::LoadModule() before Perl::Call() !" );
 
     string functionName = argList->value(0)->asString()->value();
-    string originalName = functionName;
     string::size_type arrowPos = functionName.find( "->" );
     string className;
 
@@ -401,8 +398,19 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
 	className = functionName.substr( 0, arrowPos );	// extract class name
 	functionName.erase( 0, arrowPos+2 );		// remove  class name and "->"
     }
+    return callInner (className, functionName, !className.empty (),
+		      argList, wanted_result_type);
+}
 
-    
+/**
+ * @param argList arguments start 1!, 0 is dummy
+ */
+YCPValue
+YPerl::callInner (string module, string function, bool method,
+		  YCPList argList, constTypePtr wanted_result_type)
+{
+    EMBEDDED_PERL_DEFS;
+
     //
     // Determine Perl calling context
     //
@@ -426,9 +434,9 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
     
     // For class method calls put the class name on the stack first
     
-    if ( ! className.empty() )
+    if (method)
     {
-	XPUSHs( sv_2mortal( newSVpv( className.c_str(), 0 ) ) );
+	XPUSHs( sv_2mortal( newSVpv( module.c_str(), 0 ) ) );
     }
     
 
@@ -445,13 +453,13 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
     //
     // Call the function
     //
-    
+
+    string full_name = module + "::" + function;
     int ret_count = 0;
     
-    if ( className.empty() )
-	ret_count = call_pv( functionName.c_str(), calling_context );
-    else
-	ret_count = call_method( functionName.c_str(), calling_context );
+    // so far we use static methods, so call_pv is enough
+    ret_count = call_pv( full_name.c_str(), calling_context );
+
     
 
     //
@@ -469,7 +477,7 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
     {
 	// Check for excess return values.
 	y2warning ("Perl function %s returned %d arguments, expecting just 1",
-		   functionName.c_str(), ret_count );
+		   full_name.c_str(), ret_count );
 
 	// Get rid of excess return values.
 	while (--ret_count > 0)
@@ -487,7 +495,7 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
     // so specify the location better
     if (result.isNull ())
     {
-	y2error ("... when returning from %s", originalName.c_str ());
+	y2error ("... when returning from %s", full_name.c_str ());
 	result = YCPVoid ();
     }
 
