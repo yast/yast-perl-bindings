@@ -49,13 +49,29 @@ public:
     static YCPValue parse( YCPList argList );
 
     /**
-     * Call a Perl method.
-     *
-     *		***MORE DOC TO FOLLOW***
-     *		***MORE DOC TO FOLLOW***
-     *		***MORE DOC TO FOLLOW***
+     * Call a Perl method that doesn't return a value.
      **/
     static YCPValue callVoid( YCPList argList );
+    
+    /**
+     * Call a Perl method that returns multiple values (a list).
+     **/
+    static YCPValue callList( YCPList argList );
+    
+    /**
+     * Call a Perl method that returns a bool value.
+     **/
+    static YCPValue callBool( YCPList argList );
+    
+    /**
+     * Call a Perl method that returns a string value.
+     **/
+    static YCPValue callString( YCPList argList );
+    
+    /**
+     * Call a Perl method that returns an integer value.
+     **/
+    static YCPValue callInt( YCPList argList );
 
     /**
      * Evaluate a Perl expression.
@@ -86,52 +102,6 @@ public:
      **/
     static YCPValue destroy();
 
-    /**
-     * Returns 'true' if the perl interpreter does have a parse tree, i.e. if
-     * parse() was called previously.
-     **/
-    bool haveParseTree() const { return _haveParseTree; }
-
-    /**
-     * Indicate whether or not the perl interpreter does have a parse tree.
-     **/
-    void setHaveParseTree( bool have ) { _haveParseTree = have; }
-
-    /**
-     * Create a new Perl scalar value from a YCP value.
-     **/
-    static SV * newPerlScalar( const YCPValue & val );
-
-    /**
-     * Create a Reference to a new Perl array from a YCP list.
-     **/
-    static SV * newPerlArrayRef( const YCPList & list );
-
-    /**
-     * Create a Reference to a new Perl hash from a YCP map.
-     **/
-    static SV * newPerlHashRef( const YCPMap & map );
-
-    /**
-     * Convert a Perl scalar to a YCPValue.
-     *
-     * If 'wanted_type' is something else than YT_UNDEFINED, that type is
-     * forced. If the types mismatch, YCPVoid (nil) is returned and an error to
-     * the log file is issued.
-     **/
-    static YCPValue fromPerlScalar( SV * perl_scalar,
-				    YCPValueType wanted_type = YT_UNDEFINED );
-
-    /**
-     * Convert a Perl array to a YCPList.
-     **/
-    static YCPList fromPerlArray( AV * av );
-    
-    /**
-     * Convert a Perl hash to a YCPMap.
-     **/
-    static YCPMap fromPerlHash( HV * hv );
-
     
 protected:
 
@@ -151,6 +121,57 @@ protected:
      **/
     PerlInterpreter * internalPerlInterpreter() const
 	{ return _perlInterpreter; }
+
+    /**
+     * Returns 'true' if the perl interpreter does have a parse tree, i.e. if
+     * parse() was called previously.
+     **/
+    bool haveParseTree() const { return _haveParseTree; }
+
+    /**
+     * Indicate whether or not the perl interpreter does have a parse tree.
+     **/
+    void setHaveParseTree( bool have ) { _haveParseTree = have; }
+
+    /**
+     * Generic Perl call.
+     **/
+    YCPValue call( YCPList argList, YCPValueType wanted_result_type = YT_UNDEFINED );
+    
+    /**
+     * Create a new Perl scalar value from a YCP value.
+     **/
+    SV * newPerlScalar( const YCPValue & val );
+
+    /**
+     * Create a Reference to a new Perl array from a YCP list.
+     **/
+    SV * newPerlArrayRef( const YCPList & list );
+
+    /**
+     * Create a Reference to a new Perl hash from a YCP map.
+     **/
+    SV * newPerlHashRef( const YCPMap & map );
+
+    /**
+     * Convert a Perl scalar to a YCPValue.
+     *
+     * If 'wanted_type' is something else than YT_UNDEFINED, that type is
+     * forced. If the types mismatch, YCPVoid (nil) is returned and an error to
+     * the log file is issued.
+     **/
+    YCPValue fromPerlScalar( SV * perl_scalar,
+			     YCPValueType wanted_type = YT_UNDEFINED );
+
+    /**
+     * Convert a Perl array to a YCPList.
+     **/
+    YCPList fromPerlArray( AV * av );
+    
+    /**
+     * Convert a Perl hash to a YCPMap.
+     **/
+    YCPMap fromPerlHash( HV * hv );
 
 
     // Data members.
