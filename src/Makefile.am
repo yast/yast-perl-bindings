@@ -17,6 +17,7 @@ perlso_LTLIBRARIES = libYCP.la
 
 # binary part of the Perl module
 libYCP_la_SOURCES =				\
+	$(liby2lang_perl_la_SOURCES)		\
 	YCP.cc
 
 # are there enough yast libraries?
