@@ -446,7 +446,7 @@ our @ISA = qw (YaST::YCP::Boolean);
  $t = new YaST::YCP::Term("CzechBox", "Accept spam", new YaST::YCP::Boolean(0));
  $t->name ("CheckBox");
  print $t->args[0], "\n";
- UI::OpenDialog ($t);
+ UIx::OpenDialog ($t);
 
 =cut
 
