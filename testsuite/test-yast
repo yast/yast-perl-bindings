@@ -17,7 +17,8 @@ fi
 # load modules from the proper directory
 # and plugins
 export Y2DIR=.
-MODDIR=tests
+TDIR=tests
+MODDIR=$TDIR
 # for building (DESTDIR is set to RPM_BUILD_ROOT from outside)
 PLUGDIR=${DESTDIR}${libdir}/YaST2/plugin
 rm -f $Y2DIR/modules
@@ -27,11 +28,11 @@ ln -s $PLUGDIR $Y2DIR/plugin
 trap "rm -f $Y2DIR/modules $Y2DIR/plugin" EXIT TERM
 
 RET=0
-for SCRIPT in tests/*.ycp; do
+for SCRIPT in $TDIR/*.ycp; do
     BASE=${SCRIPT%.ycp}
     OUT=$BASE.out
     ERR=$BASE.err
-    BASE=${BASE#tests/}
+    BASE=${BASE#$TDIR/}
 
     echo ----- $BASE
     CASEOK=true
