@@ -37,7 +37,6 @@
 #include <ycp/YCPSymbol.h>
 #include <ycp/YCPVoid.h>
 
-
 #include <YPerl.h>
 
 #define DIM(ARRAY)	( sizeof( ARRAY )/sizeof( ARRAY[0] ) )
@@ -235,7 +234,19 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 	return YCPError( "Perl::Call: Use Perl::Parse() or Perl::LoadModule() before Perl::Call() !" );
 
     string functionName = argList->value(0)->asString()->value();
+    string::size_type arrowPos = functionName.find( "->" );
+    string className;
 
+    if ( arrowPos != string::npos )	// "->" in function name?
+    {
+	className = functionName.substr( 0, arrowPos );	// extract class name
+	functionName.erase( 0, arrowPos+2 );		// remove  class name and "->"
+
+	y2milestone( "Calling method '%s' of Perl class '%s'",
+		     functionName.c_str(), className.c_str() );
+    }
+
+    
     //
     // Determine Perl calling context
     //
@@ -260,6 +271,15 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
     SAVETMPS;		// Save temporary variables
     PUSHMARK(SP);	// Save stack pointer
 
+    
+    // For class method calls put the class name on the stack first
+    
+    if ( ! className.empty() )
+    {
+	XPUSHs( sv_2mortal( newSVpv( className.c_str(), 0 ) ) );
+    }
+    
+
     // Put arguments on the stack
 
     for ( int i=1; i < argList->size(); i++ )
@@ -269,15 +289,24 @@ YPerl::call( YCPList argList, YCPValueType wanted_result_type )
 
     PUTBACK;		// Make local stack pointer global
 
-    int ret_count = call_pv( functionName.c_str(), calling_context ); // Call the function
-
-    SPAGAIN;		// Copy global stack pointer to local one
-
+    
+    //
+    // Call the function
+    //
+    
+    int ret_count = 0;
+    
+    if ( className.empty() )
+	ret_count = call_pv( functionName.c_str(), calling_context );
+    else
+	ret_count = call_method( functionName.c_str(), calling_context );
+    
 
     //
     // Pop result from the stack
     //
 
+    SPAGAIN;		// Copy global stack pointer to local one
     YCPValue result = YCPVoid();
 
     if ( wanted_result_type == YT_LIST )
