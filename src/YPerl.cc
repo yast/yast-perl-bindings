@@ -55,16 +55,26 @@ EXTERN_C void xs_init( pTHX );
 
 YPerl * YPerl::_yPerl = 0;
 
-// Prepend MODULEDIR (defined on the compiler comand line) to PERL5LIB
+// Prepend MODULEDIR (defined on the compiler comand line) and Y2DIR/modules
+// to PERL5LIB
 static void PrependModulePath ()
 {
     static const char * const moduledir = MODULEDIR;
+
+    const char * y2dir = getenv ("Y2DIR");
+    std::string y2dirm = (y2dir == NULL) ?
+	"" :
+	std::string (y2dir) + "/modules";
+
     static const char * const varname = "PERL5LIB";
     const char * var = getenv (varname);
     std::string newvar;
-    // make room for "$MODULEDIR:$PERL5LIB"
-    newvar.reserve ((var == NULL ? 0 :strlen (var)) + strlen (moduledir) + 1);
+    // make room for "$Y2DIR/modules:$MODULEDIR:$PERL5LIB"
+    newvar.reserve ((var == NULL ? 0 :strlen (var)) +
+		    strlen (moduledir) +
+		    y2dirm.size () + 2);
     bool seen = false; // if the module path is already there, don't insert it
+    bool seeny2dirm = false;
 
     // split the var at colons to get the individual search paths
     const char * end;
@@ -72,16 +82,22 @@ static void PrependModulePath ()
     while (var != NULL)
     {
 	end = index (var, ':');
-	int n = (end == NULL) ? std::string::npos : end - var;
-	string path = std::string (var, n);
+	string path = (end == NULL) ?
+	    std::string (var) :
+	    std::string (var, end - var);
 	seen = path == moduledir;
+	seeny2dirm = (y2dir != NULL) && path == y2dirm;
 	p5l.push_back (path);
-	var = (end == NULL) ? NULL : var + 1; // the character after :
+	var = (end == NULL) ? NULL : end + 1; // the character after :
     }
 
     if (!seen)
     {
 	p5l.push_front (moduledir);
+    }
+    if (!seeny2dirm && y2dir != NULL)
+    {
+	p5l.push_front (y2dirm);
     }
 
     // join ':', p5l
