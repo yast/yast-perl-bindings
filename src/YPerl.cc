@@ -12,7 +12,10 @@
 
   File:	      YPerl.cc
 
+  Maintainer: Martin Vidner <mvidner@suse.cz>
   Author:     Stefan Hundhammer <sh@suse.de>
+
+  This is the common part, defining data type conversions.
 
 /-*/
 
