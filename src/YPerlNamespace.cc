@@ -227,7 +227,8 @@ public:
 	// function name
 	call->add (YCPString (m_name));
 	// parameters
-	YFunction *m_function = dynamic_cast<YFunction *> (m_symbolentry->code ());
+	// the static cast actually calls an operator involving a dynamic cast
+	YFunctionPtr m_function = static_cast<YFunctionPtr> (m_symbolentry->code ());
 	for (unsigned i = 0; i < m_function->parameterCount (); ++i)
 	{
 	    call->add (m_function->parameter (i)->value ());
@@ -416,7 +417,7 @@ unsigned int YPerlNamespace::symbolCount () const
     return m_count;
 }
 
-SymbolEntry* YPerlNamespace::symbolEntry (unsigned int position) const
+SymbolEntryPtr YPerlNamespace::symbolEntry (unsigned int position) const
 {
     SymbolEntry *ret = (position > m_count)? NULL : m_positions[position];
     y2debug ("PING: %u -> %p", position, ret);
