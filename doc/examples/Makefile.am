@@ -20,6 +20,4 @@ perl_examples_DATA =				\
 	mod_ex.pm				\
 	mod_ex_main.pl
 
-
-EXTRA_DIST = $(ycp_examples_DATA perl_examples_DATA)
-
+EXTRA_DIST = $(ycp_examples_DATA) $(perl_examples_DATA)
