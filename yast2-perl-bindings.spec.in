@@ -1,6 +1,6 @@
 @HEADER-COMMENT@
 
-# neededforbuild  gpp libgpp perl libxcrypt libxcrypt-devel curl curl-devel openssl openssl-devel popt popt-devel rpm-devel yast2-devel-packages
+# neededforbuild curl curl-devel dejagnu doxygen expect gpp hwinfo hwinfo-devel libgpp libpng libtool libxcrypt libxcrypt-devel liby2util liby2util-devel openslp openslp-devel openssl openssl-devel popt popt-devel rpm-devel tcl udev yast2-core yast2-core-devel yast2-devtools yast2-packagemanager yast2-packagemanager-devel
 
 @HEADER@
 
@@ -29,5 +29,6 @@ Summary:	-
 %dir %{perl_vendorarch}/YaST
 %{perl_vendorarch}/YaST/YCP.pm
 %{perl_vendorarch}/auto/YaST
+%dir @moduledir@
 @moduledir@/YaPI.pm
 %doc @docdir@

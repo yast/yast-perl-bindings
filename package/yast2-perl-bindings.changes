@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 12 13:11:02 CEST 2004 - mvidner@suse.cz
+
+- Broke neededforbuild cycle by copying nfb from yast2-core.
+- 2.10.3
+
+-------------------------------------------------------------------
 Tue Aug  3 16:12:06 CEST 2004 - visnov@suse.cz
 
 - return correct type for the next wanted parameter in function calls
