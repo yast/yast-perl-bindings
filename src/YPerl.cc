@@ -32,6 +32,7 @@
 
 #define y2log_component "Y2Perl"
 #include <ycp/y2log.h>
+#include <ycp/pathsearch.h>
 
 
 #include <ycp/YCPBoolean.h>
@@ -59,73 +60,37 @@ EXTERN_C void xs_init( pTHX );
 
 YPerl * YPerl::_yPerl = 0;
 
-// Prepend MODULEDIR (defined on the compiler comand line) and Y2DIR/modules
-// to PERL5LIB
-static void PrependModulePath ()
+// prepend YCP's search path
+static void PrependModulePath (PerlInterpreter *my_perl)
 {
-    static const char * const moduledir = MODULEDIR;
+    YCPPathSearch::initialize ();
 
-    const char * y2dir = getenv ("Y2DIR");
-    std::string y2dirm = (y2dir == NULL) ?
-	"" :
-	std::string (y2dir) + "/modules";
-
-    static const char * const varname = "PERL5LIB";
-    const char * var = getenv (varname);
-    std::string newvar;
-    // make room for "$Y2DIR/modules:$MODULEDIR:$PERL5LIB"
-    newvar.reserve ((var == NULL ? 0 :strlen (var)) +
-		    strlen (moduledir) +
-		    y2dirm.size () + 2);
-    bool seen = false; // if the module path is already there, don't insert it
-    bool seeny2dirm = false;
-
-    // split the var at colons to get the individual search paths
-    const char * end;
-    std::list<std::string> p5l;
-    while (var != NULL)
+    list<string>::const_iterator
+	b = YCPPathSearch::searchListBegin (YCPPathSearch::Module),
+	e = YCPPathSearch::searchListEnd (YCPPathSearch::Module),
+	i;
+    // count the number of directories to prepend
+    int n = 0;
+    for (i = b; i != e; ++i)
     {
-	end = index (var, ':');
-	string path = (end == NULL) ?
-	    std::string (var) :
-	    std::string (var, end - var);
-	seen = path == moduledir;
-	seeny2dirm = (y2dir != NULL) && path == y2dirm;
-	p5l.push_back (path);
-	var = (end == NULL) ? NULL : end + 1; // the character after :
+	++n;
     }
 
-    if (!seen)
-    {
-	p5l.push_front (moduledir);
-    }
-    if (!seeny2dirm && y2dir != NULL)
-    {
-	p5l.push_front (y2dirm);
-    }
+    AV * INC = get_av ("INC", 1 /* create */);
+    av_unshift (INC, n);	// make room in the front
 
-    // join ':', p5l
-    std::list<std::string>::iterator
-	i = p5l.begin (),
-	e = p5l.end ();
-    if (i != e)
+    n = 0;
+    for (i = b; i != e; ++i)
     {
-	newvar += *i++;
+	SV *path = newSVpv (i->c_str (), 0);
+	av_store (INC, n++, path); // does not update refcount which is ok
     }
-    for (; i != e; ++i)
-    {
-	newvar += ':' + *i;
-    }
-
-    setenv (varname, newvar.c_str (), 1);
 }
 
 YPerl::YPerl()
     : _perlInterpreter(0)
     , _haveParseTree( false )
 {
-    PrependModulePath ();
-
     _perlInterpreter = perl_alloc();
 
     if ( _perlInterpreter )
@@ -142,12 +107,15 @@ YPerl::YPerl()
 		argc,
 		const_cast<char **> (argv),
 		0 );	// env
+
+    PrependModulePath (internalPerlInterpreter ());
 }
 
 YPerl::YPerl(pTHX)
     : _perlInterpreter(aTHX)
     , _haveParseTree( false )
 {
+    PrependModulePath (internalPerlInterpreter ());
 }
 
 YPerl::~YPerl()

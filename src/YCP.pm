@@ -119,8 +119,9 @@ use warnings;
 use diagnostics;
 
 # prevent errors from garbling ncurses screen (#37652)
+# Use the common log file so that there's context for Perl errors (#39959)
 BEGIN { if (($ARGV[0]||"") ne "--stderr") {
-    open (STDERR, ">>/var/log/YaST2/y2log-perl") and
+    open (STDERR, ">>/var/log/YaST2/y2log") and
     print STDERR "$0 ($$) " and system "date>&2";
 } }
 END { close STDERR; }
@@ -158,6 +159,21 @@ sub debug (;$)
 require XSLoader;
 XSLoader::load ('YaST::YCP');
 
+=head2 init_ui
+
+ YaST::YCP::init_ui ();
+ YaST::YCP::init_ui "qt";
+
+Initializes the user interface, "ncurses" (the default) or "qt".
+
+=cut
+
+# ensure that the ncurses window is closed
+# and wfm and its agents are closed (#39519)
+END {
+    close_components (); # XS
+}
+
 =head2 Import
 
  YaST::YCP::Import "Namespace";
@@ -180,30 +196,37 @@ sub Import ($)
 These functions go via liby2util and thus use log.conf.
 See also ycp::y2milestone.
 
- y2debug ($message)
- y2milestone ($message)
- y2warning ($message)
- y2error ($message)
- y2security ($message)
- y2internal ($message)
+The multiple arguments are simply joined by a space.
+
+ y2debug ($message, $message2, ...)
+ y2milestone ($message, $message2, ...)
+ y2warning ($message, $message2, ...)
+ y2error ($message, $message2, ...)
+ y2security ($message, $message2, ...)
+ y2internal ($message, $message2, ...)
 
 =cut
 
-sub y2_logger_helper ($$)
+sub y2_logger_helper ($@)
 {
-    my ($level, $message) = @_;
-    # look _two_ frames up
+    my $level = shift;
+    # look _two_ frames up for the subroutine
+    # when called from the main script, it will be undef
     my ($package, $filename, $line, $subroutine) = caller (2);
+    # look _one_ frame up for file and line
+    # (is it because of optimization?)
+    ($package, $filename, $line) = caller (1);
     # this is a XS:
-    y2_logger ($level, "Perl", $filename, $line, $subroutine, $message);
+    y2_logger ($level, "Perl", $filename, $line, $subroutine || "",
+	       join (" ", @_));
 }
 
-sub y2debug ($)		{ y2_logger_helper (0, shift); }
-sub y2milestone ($)	{ y2_logger_helper (1, shift); }
-sub y2warning ($)	{ y2_logger_helper (2, shift); }
-sub y2error ($)		{ y2_logger_helper (3, shift); }
-sub y2security ($)	{ y2_logger_helper (4, shift); }
-sub y2internal ($)	{ y2_logger_helper (5, shift); }
+sub y2debug (@)		{ y2_logger_helper (0, @_); }
+sub y2milestone (@)	{ y2_logger_helper (1, @_); }
+sub y2warning (@)	{ y2_logger_helper (2, @_); }
+sub y2error (@)		{ y2_logger_helper (3, @_); }
+sub y2security (@)	{ y2_logger_helper (4, @_); }
+sub y2internal (@)	{ y2_logger_helper (5, @_); }
 
 =head2 sformat
 

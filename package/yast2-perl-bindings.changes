@@ -1,4 +1,50 @@
 -------------------------------------------------------------------
+Fri May  7 15:37:00 CEST 2004 - mvidner@suse.cz
+
+- Made _ a *working* alias for __ (#39954).
+- 2.9.34
+
+-------------------------------------------------------------------
+Fri May  7 11:27:26 CEST 2004 - mvidner@suse.cz
+
+- YaST::YCP: Use the common log file so that there's context
+  for Perl errors (#39959)
+- YaPI::_ deprecated in favor of YaPI::__ (#39954)
+- more documentation for YaPI.pm
+- 2.9.33
+
+-------------------------------------------------------------------
+Mon May  3 12:50:20 CEST 2004 - mvidner@suse.cz
+
+- logging: fixed caller info, enabled multiple arguments (#39768)
+- 2.9.32
+
+-------------------------------------------------------------------
+Fri Apr 30 11:26:56 CEST 2004 - mvidner@suse.cz
+
+- rewrote PrependModulePath to use exactly what YCPPathSearch uses
+  (#39512)
+- 2.9.31
+
+-------------------------------------------------------------------
+Thu Apr 29 17:23:52 CEST 2004 - mvidner@suse.cz
+
+- if we created WFM, do also the cleanup (#39519)
+- 2.9.30
+
+-------------------------------------------------------------------
+Thu Apr 29 11:20:59 CEST 2004 - mvidner@suse.cz
+
+- YaPI->SetError: write description (if any) to the log
+- 2.9.29
+
+-------------------------------------------------------------------
+Tue Apr 20 14:41:11 CEST 2004 - mvidner@suse.cz
+
+- if there is no UI, use ncurses (#39192)
+- 2.9.28
+
+-------------------------------------------------------------------
 Mon Apr 19 09:14:32 CEST 2004 - mvidner@suse.cz
 
 - adapted testsuite for fix in yast2-core-2.9.80
