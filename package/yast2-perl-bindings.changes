@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 11 19:51:00 CET 2004 - mvidner@suse.cz
+
+- YPerlNamespace: some stuff is now in Y2Namespace, removed (#34207)
+- parseTypeinfo: allow argument names after whitespace
+- 2.9.15
+
+-------------------------------------------------------------------
 Tue Mar  9 15:28:24 CET 2004 - mvidner@suse.cz
 
 - disregard array context: a YCP list is always a reference to a Perl array
