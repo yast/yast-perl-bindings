@@ -1,6 +1,0 @@
-// Simplest possible Perl call
-{
-    y2milestone( "Calling Perl" );
-    Perl::Call( "ladi", "print 'Hello, world!\n';" );
-    y2milestone( "Done." );
-}

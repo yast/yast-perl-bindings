@@ -1,0 +1,7 @@
+// Check YCP/Perl argument passing
+{
+    Perl::Parse( "arg_check.pl" );
+    Perl::CallVoid( "echoargs", "one", "two", "three", 4 );
+    
+    y2milestone( "Done." );
+}

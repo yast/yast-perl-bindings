@@ -2,12 +2,16 @@
 # Makefile.am for perl-bindings/doc/examples
 #
 
-examplesdir = 	$(docdir)/examples
+ycp_examplesdir = 	$(docdir)/examples
+perl_examplesdir = 	$(docdir)/examples
 
-examples_DATA =		\
-	HelloLog.ycp	\
+ycp_examples_DATA =	\
+	ArgCheck.ycp	\
 	Eval.ycp
 
+perl_examples_DATA =	\
+	arg_check.pl
 
-EXTRA_DIST = $(examples_DATA)
+
+EXTRA_DIST = $(ycp_examples_DATA perl_examples_DATA)
 
