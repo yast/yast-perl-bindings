@@ -20,8 +20,6 @@
 #define y2log_component "Y2Perl"
 #include <ycp/y2log.h>
 #include <ycp/pathsearch.h>
-// just for the timestamp
-#include <ycp/Bytecode.h>
 
 #include "Y2PerlComponent.h"
 #include "YPerl.h"
