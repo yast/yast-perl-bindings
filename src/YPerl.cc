@@ -407,7 +407,16 @@ YPerl::call( YCPList argList, constTypePtr wanted_result_type )
 	YCPList result_list;
 
 	for ( std::list<SV *>::iterator it = results.begin(); it != results.end(); ++it )
-	    result_list->add (fromPerlScalar (*it, value_type));
+	{
+	    YCPValue v = fromPerlScalar (*it, value_type);
+	    if (v.isNull ())
+	    {
+		y2error ("... when constructing a list of return values");
+		result_list = YCPNull ();
+		break;
+	    }
+	    result_list->add (v);
+	}
 
 	result = result_list;
     }
@@ -509,6 +518,8 @@ Importing YaST::YCP initializes YCP twice and makes it crash :-(
     if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
     if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
+    // YuCK, stringify
+    y2error ("Unhandled conversion from YCP type #%d", val->valuetype ());
     return 0;
 }
 
@@ -542,8 +553,8 @@ YPerl::newPerlArrayRef( const YCPList & yList )
 	    if ( SvREFCNT( scalarVal ) != 1 )
 	    {
 		// U32 is unsigned long, even on a Hammer
-		y2error( "Internal error: Reference count is %" IVdf " (should be 1)",
-			 SvREFCNT( scalarVal ) );
+		y2internal ("Reference count is %" IVdf " (should be 1)",
+			    SvREFCNT( scalarVal ) );
 	    }
 	}
 	else
@@ -613,8 +624,8 @@ YPerl::newPerlHashRef( const YCPMap & map )
 		}
 		else if ( SvREFCNT( scalarVal ) != 1 )
 		{
-		    y2error( "Internal error: Reference count is %" IVdf " (should be 1)",
-			     SvREFCNT( scalarVal ) );
+		    y2internal( "Reference count is %" IVdf " (should be 1)",
+				SvREFCNT( scalarVal ) );
 		}
 	    }
 	    else
@@ -710,6 +721,57 @@ YPerl::tryFromPerlClassBoolean (const char *class_name, SV *sv, YCPValue &out)
 }
 
 bool
+YPerl::tryFromPerlClassInteger (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    if (!strcmp (class_name, "YaST::YCP::Integer"))
+    {
+	SV *sval = callMethod (sv, "YaST::YCP::Integer::value");
+	out = YCPInteger (SvIV (sval));
+	SvREFCNT_dec (sval);
+	return true;
+    }
+    else
+    {
+	return false;
+    }
+}
+
+bool
+YPerl::tryFromPerlClassFloat (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    if (!strcmp (class_name, "YaST::YCP::Float"))
+    {
+	SV *sval = callMethod (sv, "YaST::YCP::Float::value");
+	out = YCPFloat (SvNV (sval));
+	SvREFCNT_dec (sval);
+	return true;
+    }
+    else
+    {
+	return false;
+    }
+}
+
+bool
+YPerl::tryFromPerlClassString (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    if (!strcmp (class_name, "YaST::YCP::String"))
+    {
+	SV *sval = callMethod (sv, "YaST::YCP::String::value");
+	out = YCPString (SvPV_nolen (sval));
+	SvREFCNT_dec (sval);
+	return true;
+    }
+    else
+    {
+	return false;
+    }
+}
+
+bool
 YPerl::tryFromPerlClassSymbol (const char *class_name, SV *sv, YCPValue &out)
 {
     EMBEDDED_PERL_DEFS;
@@ -778,6 +840,7 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 {
     EMBEDDED_PERL_DEFS;
 
+    bool mismatch = false; // type mismatch?
     YCPValue val = YCPNull ();
 
     // Decide by the wanted type,
@@ -795,12 +858,7 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	if (sv_isobject (sv))
 	{
 	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
-	    if (!tryFromPerlClassBoolean (class_name, sv, val))
-	    {
-	    		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
-	    }
+	    mismatch = !tryFromPerlClassBoolean (class_name, sv, val);
 	}
 	else
 	{
@@ -809,44 +867,90 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
     }
     else if (wanted_type->isString ())
     {
-	// Perl relies on automatic coercion between strings and numbers
-	//
-	// So to behave more like it, instead of "if (SvXOK (sv)) SvXV (sv)"
-	// we first SvXV (sv) and only then SvXOK.
-	const char *pv = SvPV_nolen (sv);
-	if (SvPOK (sv))	val = YCPString (pv);
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
+	if (sv_isobject (sv))
+	{
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    mismatch = !tryFromPerlClassString (class_name, sv, val);
+	}
+	else
+	{
+	    // Perl relies on automatic coercion between strings and numbers
+	    // So to behave more like it,
+	    // instead of "if (SvXOK (sv)) SvXV (sv)"
+	    // we first SvXV (sv) and only then SvXOK.
+	    const char *pv = SvPV_nolen (sv);
+	    if (SvPOK (sv))
+	    {
+		val = YCPString (pv);
+	    }
+	    else
+	    {
+		mismatch = true;
+	    }
+	}
     }
     else if (wanted_type->isInteger ())
     {
-	// see isString
-	IV iv = SvIV (sv);
-	if (SvIOK (sv))	val = YCPInteger (iv);
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
+	if (sv_isobject (sv))
+	{
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    mismatch = !tryFromPerlClassInteger (class_name, sv, val);
+	}
+	else
+	{
+	    // see isString
+	    IV iv = SvIV (sv);
+	    if (SvIOK (sv))
+	    {
+		val = YCPInteger (iv);
+	    }
+	    else
+	    {
+		mismatch = true;
+	    }
+	}
     }
     else if (wanted_type->isFloat ())
     {
-	// see isString
-	NV nv = SvNV (sv);
-	if (SvNOK (sv))	val = YCPFloat (nv);
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
+	if (sv_isobject (sv))
+	{
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    mismatch = !tryFromPerlClassFloat (class_name, sv, val);
+	}
+	else
+	{
+	    // see isString
+	    NV nv = SvNV (sv);
+	    if (SvNOK (sv))
+	    {
+		val = YCPFloat (nv);
+	    }
+	    else
+	    {
+		mismatch = true;
+	    }
+
+	}
     }
     else if (wanted_type->isSymbol ())
     {
-	if (SvPOK (sv))	val = YCPSymbol (SvPV_nolen (sv));
-	else if (!sv_isobject (sv) ||
-		 !tryFromPerlClassTerm (HvNAME (SvSTASH (SvRV (sv))), sv,
-					val))
+	if (sv_isobject (sv))
 	{
-	    		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
+	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	    mismatch = !tryFromPerlClassSymbol (class_name, sv, val);
+	}
+	else
+	{
+	    // see isString
+	    const char *pv = SvPV_nolen (sv);
+	    if (SvPOK (sv))
+	    {
+		val = YCPSymbol (pv);
+	    }
+	    else
+	    {
+		mismatch = true;
+	    }
 	}
     }
 /*
@@ -861,29 +965,32 @@ no, not needed yet
 	if (sv_isobject (sv))
 	{
 	    char *class_name = HvNAME (SvSTASH (SvRV (sv)));
-	    if (!tryFromPerlClassTerm (class_name, sv, val))
-	    {
-	    		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
-	    }
+	    mismatch = !tryFromPerlClassTerm (class_name, sv, val);
 	}
 //	else if //... try from a list
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
+	else
+	{
+	    mismatch = true;
+	}
     }
     else if (wanted_type->isPath ())
     {
 	// a string
-	if (SvPOK (sv))	val = YCPPath (SvPV_nolen (sv));
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
+	// see isString
+	const char *pv = SvPV_nolen (sv);
+	if (SvPOK (sv))
+	{
+	    val = YCPPath (pv);
+	}
+	else
+	{
+	    mismatch = true;
+	}
 	// maybe allow list later?
     }
     else if (wanted_type->isList ())
     {
+	mismatch = true;
 	if (SvROK (sv))
 	{
 	    SV *ref = SvRV (sv);
@@ -891,18 +998,13 @@ no, not needed yet
 	    {
 		constListTypePtr list_type = (constListTypePtr) wanted_type;
 		val = fromPerlArray ((AV *) ref, list_type->type ());
+		mismatch = false;
 	    }
-	    else	y2error ("Expected %s, got reference to %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(ref).c_str ());
-
 	}
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
     }
     else if (wanted_type->isMap ())
     {
+	mismatch = true;
 	if (SvROK (sv))
 	{
 	    SV *ref = SvRV (sv);
@@ -912,15 +1014,9 @@ no, not needed yet
 		val = fromPerlHash ((HV *) ref,
 				    map_type->keytype (),
 				    map_type->valuetype ());
+		mismatch = false;
 	    }
-	    else	y2error ("Expected %s, got reference to %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(ref).c_str ());
-
 	}
-	else		y2error ("Expected %s, got %s",
-				 wanted_type->toString ().c_str (),
-				 debugDump(sv).c_str ());
     }
 /*
   tuple?
@@ -931,6 +1027,12 @@ no, not needed yet
 		    wanted_type->toString ().c_str (), debugDump(sv).c_str ());
     }
 
+    if (mismatch)
+    {
+	y2error ("Expected %s, got %s",
+		 wanted_type->toString ().c_str (),
+		 debugDump (sv).c_str ());
+    }
 
     return val;
 }
@@ -1047,19 +1149,28 @@ YPerl::fromPerlScalarToAny (SV * sv)
 
     YCPValue val = YCPNull ();
 
-    // Try strings only after numbers
-    // because numbers will get an additional string nature
-    // after being prited out.
-    // This is not foolproof vice versa but that should be really less common.
-    if      ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
-    else if ( SvNOK( sv ) )		val = YCPFloat  ( SvNV( sv ) );
-    else if ( SvPOK( sv ) )		val = YCPString ( SvPV_nolen( sv ) );
+    // Do not convert scalars to numbers!
+    // This may look strange, but it is better to get consistent
+    // results than expect a string and sometimes(!) get a number just
+    // because the string looks like a number.  For returning numbers,
+    // use the explicit data classes YaST::YCP::Integer.
+
+    const char *pv = SvPV_nolen (sv);
+    if (SvPOK (sv))
+    {
+	val = YCPString (pv);
+    }
     else if (sv_isobject (sv))
     {
 	char *class_name = HvNAME (SvSTASH (SvRV (sv)));
-	if (!tryFromPerlClassBoolean	(class_name, sv, val) &&
+	if (
+	    !tryFromPerlClassBoolean	(class_name, sv, val) &&
+	    !tryFromPerlClassInteger	(class_name, sv, val) &&
+	    !tryFromPerlClassFloat	(class_name, sv, val) &&
+	    !tryFromPerlClassString	(class_name, sv, val) &&
 	    !tryFromPerlClassSymbol	(class_name, sv, val) &&
-	    !tryFromPerlClassTerm	(class_name, sv, val))
+	    !tryFromPerlClassTerm	(class_name, sv, val) &&
+	    true)
 	{
 	    y2error ("Expected any, got object of class %s",
 		     class_name);
@@ -1117,6 +1228,7 @@ YPerl::fromPerlArray (AV * array, constTypePtr wanted_type)
 	    y2error ("... when converting to a list");
 	    return YCPNull ();
 	}
+
 	yList->add( v );
     }
 

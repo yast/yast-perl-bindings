@@ -28,7 +28,7 @@ use diagnostics;
 
 require Exporter;
 our @ISA = qw(Exporter);
-my @e_data = qw(Boolean Symbol Term);
+my @e_data = qw(Boolean Integer Float String Symbol Term);
 our @EXPORT_OK = @e_data;
 our %EXPORT_TAGS = ( DATA => [@e_data] );
 
@@ -81,6 +81,21 @@ sub Import ($)
 sub Boolean ($)
 {
     return new YaST::YCP::Boolean (@_);
+}
+
+sub Integer ($)
+{
+    return new YaST::YCP::Integer (@_);
+}
+
+sub Float ($)
+{
+    return new YaST::YCP::Float (@_);
+}
+
+sub String ($)
+{
+    return new YaST::YCP::String (@_);
 }
 
 sub Symbol ($)
@@ -147,6 +162,77 @@ sub value
     if (@_) { $$self = shift; }
     return $$self;
 }
+
+=head2 Integer
+
+ An explicitly typed integer, useful to put in heterogenous data structures.
+
+ use YaST::YCP qw(:DATA);
+
+ $i = Integer ("42 and more");
+ $i->value ("43, actually");
+ print $i->value, "\n";
+ return [ $i ];
+
+=cut
+
+package YaST::YCP::Integer;
+use strict;
+use warnings;
+use diagnostics;
+
+
+# an Integer is just a blessed reference to a scalar
+# just like Boolean, so use it!
+
+our @ISA = qw (YaST::YCP::Boolean);
+
+=head2 Float
+
+ An explicitly typed float, useful to put in heterogenous data structures.
+
+ use YaST::YCP qw(:DATA);
+
+ $f = Float ("3.41 is PI");
+ $f->value ("3.14 is PI");
+ print $f->value, "\n";
+ return [ $f ];
+
+=cut
+
+package YaST::YCP::Float;
+use strict;
+use warnings;
+use diagnostics;
+
+
+# a Float is just a blessed reference to a scalar
+# just like Boolean, so use it!
+
+our @ISA = qw (YaST::YCP::Boolean);
+
+=head2 String
+
+ An explicitly typed string, useful to put in heterogenous data structures.
+
+ use YaST::YCP qw(:DATA);
+
+ $s = String (42);
+ $s->value (1 + 1);
+ print $s->value, "\n";
+ return [ $s ];
+
+=cut
+
+package YaST::YCP::String;
+use strict;
+use warnings;
+use diagnostics;
+
+# a String is just a blessed reference to a scalar
+# just like Boolean, so use it!
+
+our @ISA = qw (YaST::YCP::Boolean);
 
 =head2 Symbol
 
