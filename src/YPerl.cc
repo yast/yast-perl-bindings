@@ -961,6 +961,17 @@ YPerl::fromPerlScalarToAny (SV * sv)
     if      ( SvPOK( sv ) )		val = YCPString ( SvPV_nolen( sv ) );
     else if ( SvNOK( sv ) )		val = YCPFloat  ( SvNV( sv ) );
     else if ( SvIOK( sv ) )		val = YCPInteger( SvIV( sv ) );
+    else if (sv_isobject (sv))
+    {
+	char *class_name = HvNAME (SvSTASH (SvRV (sv)));
+	if (!tryFromPerlClassBoolean	(class_name, sv, val) &&
+	    !tryFromPerlClassSymbol	(class_name, sv, val) &&
+	    !tryFromPerlClassTerm	(class_name, sv, val))
+	{
+	    y2error ("Expected any, got object of class %s",
+		     class_name);
+	}
+    }
     else if ( SvROK( sv ) )
     {
 	SV * ref = SvRV( sv );
@@ -975,53 +986,6 @@ YPerl::fromPerlScalarToAny (SV * sv)
 		val = fromPerlHash ((HV *) ref, Type::Any, Type::Any);
 		break;
 
-	    case SVt_PVMG:	// Blessed reference (perlguts)
-		// TODO: accept these also in fromPerlScalar
-		if (sv_isobject (sv)) // note sv, not ref
-		{
-		    char *class_name = HvNAME (SvSTASH (ref));
-		    if (!strcmp (class_name, "YaST::YCP::Boolean"))
-		    {
-			SV *sval = callMethod (sv, "YaST::YCP::Boolean::value");
-			val = YCPBoolean (SvTRUE (sval));
-			SvREFCNT_dec (sval);
-		    }
-		    else if (!strcmp (class_name, "YaST::YCP::Term"))
-		    {
-			SV *s_name = callMethod (sv, "YaST::YCP::Term::name");
-			YCPValue name = fromPerlScalar (s_name, Type::String);
-			SvREFCNT_dec (s_name);
-			if (name.isNull () || !name->isString ())
-			{
-			    y2internal ("YaST::YCP::Term::name"
-					" did not return a string");
-			    break;
-			}
-			SV *s_args = callMethod (sv, "YaST::YCP::Term::args");
-			YCPValue args = fromPerlScalar (s_args, Type::List ());
-			SvREFCNT_dec (s_args);
-			if (args.isNull () || !args->isList ())
-			{
-			    y2internal ("YaST::YCP::Term::args"
-					" did not return a list");
-			    break;
-			}
-			val = YCPTerm (name->asString ()->value (),
-				       args->asList ());
-		    }
-		    else
-		    {
-			y2error ("Expected any, got reference to object of class %s",
-				 class_name);
-		    }
-		}
-		else
-		{
-		    y2error ("Expected any, got reference to %s: %s",
-				 "magical scalar that is not an object",
-				 debugDump(ref).c_str ());
-		}
-		break;
 	    default:
 		y2error ("Expected any, got reference to %s",
 				 debugDump(ref).c_str ());
