@@ -79,7 +79,7 @@ Otherwise use L</Path> (which is NOT IMPLEMENTED YET).
 
 =item symbol
 
-B<YCP to Perl:> NOT IMPLEMENTED YET.
+B<YCP to Perl:> Becomes a L</Symbol>.
 
 B<Perl to YCP:> If a symbol is expected, a scalar like C<"foo">
 will be converted to C<`foo>.
@@ -87,13 +87,13 @@ Otherwise use L</Symbol>.
 
 =item term
 
-B<YCP to Perl:> NOT IMPLEMENTED YET.
+B<YCP to Perl:> Becomes a L</Term>.
 
 B<Perl to YCP:> Use L</Term>.
 
 =item byteblock
 
-B<YCP to Perl:> NOT IMPLEMENTED YET.
+B<YCP to Perl:> Becomes a scalar.
 
 B<Perl to YCP:> If a byteblock is expected, a scalar like C<"\0\1">
 will be converted to C<#[0001]>.
@@ -445,7 +445,7 @@ our @ISA = qw (YaST::YCP::Boolean);
 
  $t = new YaST::YCP::Term("CzechBox", "Accept spam", new YaST::YCP::Boolean(0));
  $t->name ("CheckBox");
- print $t->args[0], "\n";
+ print $t->args->[0], "\n";
  UIx::OpenDialog ($t);
 
 =cut
