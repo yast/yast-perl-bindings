@@ -36,9 +36,9 @@ for SCRIPT in tests/*.ycp; do
     $Y2BASE -l - -n $BASE=perl $SCRIPT testsuite > tmp.out.$BASE 2> tmp.err.$BASE
     # filter out variable information
     sed --in-place -e 's/^....-..-.. ..:..:.. \(<.> \)[^ ]* /\1/' tmp.err.$BASE
-    sed --in-place -e 's/\(([^)]*)\):[0-9]*/\1:XXX/' tmp.err.$BASE
-    diff -u $ERR tmp.err.$BASE || CASEOK=false
-    diff -u $OUT tmp.out.$BASE || CASEOK=false
+    sed --in-place -e 's/\(([^)]*)\):[0-9]\+/\1:XXX/' tmp.err.$BASE
+    diff -Nu $ERR tmp.err.$BASE || CASEOK=false
+    diff -Nu $OUT tmp.out.$BASE || CASEOK=false
 
     if ! $CASEOK; then
 	RET=1

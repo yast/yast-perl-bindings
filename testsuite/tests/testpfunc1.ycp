@@ -1,0 +1,15 @@
+//
+{
+    import "testpfunc1";
+
+    y2milestone ("rxmatch (%1, %2): %3",     "abracadabra", "[a-d]*",
+			testpfunc1::rxmatch ("abracadabra", "[a-d]*"));
+    y2milestone ("rxmatch (%1, %2): %3",     "abracadabra", "^[a-d]*$",
+			testpfunc1::rxmatch ("abracadabra", "^[a-d]*$"));
+
+    y2milestone ("lengths (%1): %2",         ["one", "two", "three"],
+			testpfunc1::lengths (["one", "two", "three"]));
+
+    y2milestone ("amap (%1): %2",         $["one": "two"],
+			testpfunc1::amap ($["one": "two"]));
+}
