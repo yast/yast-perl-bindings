@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 24 19:04:09 CET 2004 - mvidner@suse.cz
+
+- added liby2util based logging
+- 2.9.11
+
+-------------------------------------------------------------------
 Mon Feb 23 15:35:09 CET 2004 - mvidner@suse.cz
 
 - Prepend $Y2DIR/modules and $moduledir to PERL5LIB for the embedded Perl

@@ -8,7 +8,7 @@ YaST::YCP - a binary interface between Perl and YCP
 
 =head1 SYNOPSIS
 
- use YaST::YCP qw(:DATA);
+ use YaST::YCP qw(:DATA :LOGGING);
 
  YaST::YCP::Import ("SCR");
  my $m = SCR::Read (".sysconfig.displaymanager.DISPLAYMANAGER");
@@ -29,8 +29,9 @@ use diagnostics;
 require Exporter;
 our @ISA = qw(Exporter);
 my @e_data = qw(Boolean Integer Float String Symbol Term);
-our @EXPORT_OK = @e_data;
-our %EXPORT_TAGS = ( DATA => [@e_data] );
+my @e_logging = qw(y2debug y2milestone y2warning y2error y2security y2internal);
+our @EXPORT_OK = (@e_data, @e_logging);
+our %EXPORT_TAGS = ( DATA => [@e_data], LOGGING => [@e_logging] );
 
 =head2 debug
 
@@ -74,6 +75,36 @@ sub Import ($)
     # let it get our autoload
     *{"${package}::AUTOLOAD"} = \&YaST::YCP::Autoload::AUTOLOAD;
 }
+
+=head2 logging
+
+These functions go via liby2util and thus use log.conf.
+See also ycp::y2milestone.
+
+ y2debug ($message)
+ y2milestone ($message)
+ y2warning ($message)
+ y2error ($message)
+ y2security ($message)
+ y2internal ($message)
+
+=cut
+
+sub y2_logger_helper ($$)
+{
+    my ($level, $message) = @_;
+    # look _two_ frames up
+    my ($package, $filename, $line, $subroutine) = caller (2);
+    # this is a XS:
+    y2_logger ($level, "Perl", $filename, $line, $subroutine, $message);
+}
+
+sub y2debug ($)		{ y2_logger_helper (0, shift); }
+sub y2milestone ($)	{ y2_logger_helper (1, shift); }
+sub y2warning ($)	{ y2_logger_helper (2, shift); }
+sub y2error ($)		{ y2_logger_helper (3, shift); }
+sub y2security ($)	{ y2_logger_helper (4, shift); }
+sub y2internal ($)	{ y2_logger_helper (5, shift); }
 
 # shortcuts for the data types
 # for POD see packages below

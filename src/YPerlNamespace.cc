@@ -1,3 +1,9 @@
+/**
+ * $Id$
+ *
+ * This is the path from YCP to Perl.
+ */
+
 #include "YPerlNamespace.h"
 
 #include <EXTERN.h>	// Perl stuff
