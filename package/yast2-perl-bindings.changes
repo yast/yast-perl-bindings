@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 14 16:49:42 CET 2005 - mvidner@suse.cz
+
+- Do not redirect stderr to y2log (#42155, #37652).
+- 2.11.3
+
+-------------------------------------------------------------------
 Thu Jan  6 17:33:06 CET 2005 - mvidner@suse.cz
 
 - Added $TYPEINFO{ALL_METHODS} (true by default) so that
