@@ -19,7 +19,7 @@ sub Interface {
 
 BEGIN { $TYPEINFO{Version} = ["function", "string"]; }
 sub Version {
-    return ${"${self}::VERSION"};
+    return $VERSION;
 }
 
 BEGIN { $TYPEINFO{Supports} = ["function", "boolean", "string"]; }
