@@ -4,6 +4,9 @@
 
 AM_CXXFLAGS = -DY2LOG=\"Perl\"
 
+PERLLIBDIR = /to/be/defined
+PERLLIB = toBeDefined
+
 serversdir = $(execcompdir)/servers
 
 # plugin, libtool forces 'lib' prefix

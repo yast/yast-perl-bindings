@@ -4,9 +4,22 @@
 @YAST2-INIT-COMMON@
 @YAST2-INIT-PROGRAM@
 
+
 ## some common checks
 @YAST2-CHECKS-COMMON@
 @YAST2-CHECKS-PROGRAM@
+
+AC_PROGRAM_PATH(PERL, perl)
+if test -z "$PERL" ; then
+    AC_MSG_ERROR(perl is missing; please install perl 5.x or better.)
+fi
+AC_SUBST(PERL)
+
+## Find out what compiler flags an embedded Perl interpreter needs
+PERL_CFLAGS=`perl -MExtUtils::Embed -e 'ccopts -e ldopts' | tr '\n' ' '`
+
+CFLAGS="${CFLAGS} ${PERL_CFLAGS}"
+CXXFLAGS="${CXXFLAGS} ${PERL_CFLAGS}"
 
 ## and generate the output
 @YAST2-OUTPUT@
