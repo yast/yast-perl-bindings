@@ -16,6 +16,7 @@
 #include <ycp/YBlock.h>
 #include <ycp/YExpression.h>
 #include <ycp/Type.h>
+#include <ycp/YCPVoid.h>
 //#include <YCP.h>
 #include <YPerl.h>
 #include <stdio.h>
@@ -213,17 +214,21 @@ static constTypePtr parseTypeinfo (SV *ti)
  */
 class YPerlFunctionDefinition : public YBlock
 {
-    //! function name, including module name
-    string m_name;
+    //! module name
+    string m_module_name;
+    //! function name, excluding module name
+    string m_local_name;
     //! get at everything we want :-|
     SymbolEntryPtr m_symbolentry;
 
 public:
-    YPerlFunctionDefinition (const string &name,
+    YPerlFunctionDefinition (const string &module_name,
+			     const string &local_name,
 			     SymbolEntryPtr se
 	) :
 	YBlock ("TODOfile", YBlock::b_unknown/*?*/),
-	m_name (name),
+	m_module_name (module_name),
+	m_local_name (local_name),
 	m_symbolentry (se)
 	{}
 
@@ -234,8 +239,8 @@ public:
 	if (cse) return YCPNull ();
 
 	YCPList call;
-	// function name
-	call->add (YCPString (m_name));
+	// placeholder, formerly function name
+	call->add (YCPVoid ());
 	// parameters
 	// the static cast actually calls an operator involving a dynamic cast
 	YFunctionPtr m_function = static_cast<YFunctionPtr> (m_symbolentry->code ());
@@ -245,7 +250,9 @@ public:
 	}
 	// wanted return type
 	constFunctionTypePtr sig = (constFunctionTypePtr) m_symbolentry->type ();
-	return YPerl::yPerl()->call (call, sig->returnType ());
+	return YPerl::yPerl()->callInner (
+	    m_module_name, m_local_name, false /* everything as methods? */,
+	    call, sig->returnType ());
     }
 };
 
@@ -389,7 +396,7 @@ YPerlNamespace::YPerlNamespace (string name)
 	    fun_se->setCategory (SymbolEntry::c_function);
 
 	    // the function definition
-	    YBlock *fun_def = new YPerlFunctionDefinition (m_name + "::" + symbol, fun_se);
+	    YBlock *fun_def = new YPerlFunctionDefinition (m_name, symbol, fun_se);
 	    fun_f->setDefinition (fun_def);
 
 	    // enter it to the symbol table

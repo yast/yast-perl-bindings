@@ -185,6 +185,12 @@ public:
     YCPValue call( YCPList argList, constTypePtr wanted_result_type );
     
     /**
+     * Generic Perl call.
+     **/
+    YCPValue callInner (string module, string function, bool method,
+			YCPList argList, constTypePtr wanted_result_type);
+    
+    /**
      * Create a new Perl scalar value from a YCP value.
      * @param composite If an undef should go to an array/hash, it must be represented specially.
      **/
