@@ -191,7 +191,7 @@ sub new
     my $class = shift;
     my $name = shift;
     my $args = [ @_ ];
-    return bless { name => name, args => $args }, $class
+    return bless { name => $name, args => $args }, $class
 }
 
 # get/set
