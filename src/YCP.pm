@@ -17,7 +17,6 @@ YaST::YCP - a binary interface between Perl and YCP
 =head1 DATA TYPES
 
 YaST has a richer and stricter data type system than Perl.
-(TODO: see native ycp docs - what, where?)
 
 Note that the stdio-communicating agents, based on the modules
 L<YaST::SCRAgent|YaST::SCRAgent> and L<ycp|ycp>, have a similar but
@@ -56,6 +55,7 @@ if you want a specific data type.
 =item list E<lt>TE<gt>
 
 B<YCP to Perl:> A list becomes a reference to an array.
+(Note that it refers to a B<copy>.)
 
 B<Perl to YCP:> A reference to an array becomes a list.
 I<This was different before SL9.1 Beta1:>
@@ -66,6 +66,7 @@ even if the result is assigned to a list.
 =item map E<lt>T1, T2E<gt>
 
 B<YCP to Perl:> A map becomes a reference to a hash.
+(Note that it refers to a B<copy>.)
 
 B<Perl to YCP:> A reference to a hash becomes a map.
 
