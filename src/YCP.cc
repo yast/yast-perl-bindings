@@ -9,6 +9,7 @@
 #include <ycp/y2log.h>
 #include <ycp/YBlock.h>
 #include <ycp/YExpression.h>
+#include <ycp/YStatement.h>
 
 #include "EXTERN.h"
 #include "perl.h"
@@ -20,6 +21,7 @@ static
 Y2Namespace *
 getNs (const char * ns_name, const char * func_name)
 {
+#if 0
     // func_name is only for debugging
     Y2Component *c = Y2ComponentBroker::getNamespaceComponent (ns_name);
     if (c == NULL)
@@ -34,6 +36,17 @@ getNs (const char * ns_name, const char * func_name)
     {
 	y2error ("Component %p could not provide namespace %s for a Perl call of %s",
 		 c, ns_name, func_name);
+    }
+#endif
+    YSImport import (ns_name, 0);
+    Y2Namespace *ns = import.nameSpace ();
+    if (ns == NULL)
+    {
+	y2error ("Could not provide namespace %s for a Perl call of %s", ns_name, func_name);
+    }
+    else
+    {
+	import.evaluate ();
     }
     return ns;
 }
