@@ -230,6 +230,14 @@ protected:
 
     /**
      * Given that sv is an object and its class name is class_name,
+     * check whether it is YaST::YCP::Byteblock.
+     * If yes, store its value into out
+     */
+    bool tryFromPerlClassByteblock (const char *class_name, SV *sv,
+				  YCPValue &out);
+
+    /**
+     * Given that sv is an object and its class name is class_name,
      * check whether it is YaST::YCP::Integer.
      * If yes, store its value into out
      */

@@ -35,6 +35,7 @@
 
 
 #include <ycp/YCPBoolean.h>
+#include <ycp/YCPByteblock.h>
 #include <ycp/YCPFloat.h>
 #include <ycp/YCPInteger.h>
 #include <ycp/YCPList.h>
@@ -562,6 +563,11 @@ YPerl::newPerlScalar( const YCPValue & val, bool composite )
     if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
     if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
     if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
+    if ( val->isByteblock())
+    {
+	YCPByteblock b = val->asByteblock();
+	return newSVpv (reinterpret_cast<const char *> (b->value ()), b->size ());
+    }
 #if 0
 Importing YaST::YCP initializes YCP twice and makes it crash :-(
     if ( val->isTerm()    )
@@ -777,6 +783,25 @@ YPerl::tryFromPerlClassBoolean (const char *class_name, SV *sv, YCPValue &out)
     {
 	SV *sval = callMethod (sv, "YaST::YCP::Boolean::value");
 	out = YCPBoolean (SvTRUE (sval));
+	SvREFCNT_dec (sval);
+	return true;
+    }
+    else
+    {
+	return false;
+    }
+}
+
+bool
+YPerl::tryFromPerlClassByteblock (const char *class_name, SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    if (!strcmp (class_name, "YaST::YCP::Byteblock"))
+    {
+	SV *sval = callMethod (sv, "YaST::YCP::Byteblock::value");
+	STRLEN len;
+	const char * pv = SvPV (sval, len);
+	out = YCPByteblock (reinterpret_cast<const unsigned char *> (pv), len);
 	SvREFCNT_dec (sval);
 	return true;
     }
@@ -1054,6 +1079,20 @@ no, not needed yet
 	}
 	// maybe allow list later?
     }
+    else if (wanted_type->isByteblock ())
+    {
+	// see isString
+	STRLEN len;
+	const char * pv = SvPV (sv, len);
+	if (SvPOK (sv))
+	{
+	    val = YCPByteblock (reinterpret_cast<const unsigned char *> (pv), len);
+	}
+	else
+	{
+	    mismatch = true;
+	}
+    }
     else if (wanted_type->isList ())
     {
 	mismatch = true;
@@ -1231,6 +1270,7 @@ YPerl::fromPerlScalarToAny (SV * sv)
 	char *class_name = HvNAME (SvSTASH (SvRV (sv)));
 	if (
 	    !tryFromPerlClassBoolean	(class_name, sv, val) &&
+	    !tryFromPerlClassByteblock	(class_name, sv, val) &&
 	    !tryFromPerlClassInteger	(class_name, sv, val) &&
 	    !tryFromPerlClassFloat	(class_name, sv, val) &&
 	    !tryFromPerlClassString	(class_name, sv, val) &&

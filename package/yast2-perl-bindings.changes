@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar  1 18:30:05 CET 2004 - mvidner@suse.cz
+
+- added YaST::YCP::Byteblock
+
+-------------------------------------------------------------------
 Mon Mar  1 15:11:40 CET 2004 - mvidner@suse.cz
 
 - adapted to changes in yast2-core: Type::List
