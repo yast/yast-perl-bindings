@@ -15,17 +15,20 @@ plugin_LTLIBRARIES = libpy2lang_perl.la
 noinst_LTLIBRARIES = liby2lang_perl.la
 perlso_LTLIBRARIES = libYCP.la
 
-libYCP_la_LDFLAGS = -version-info 2:0
 # binary part of the Perl module
 libYCP_la_SOURCES =				\
 	YCP.cc
 
 # are there enough yast libraries?
 # check with y2base, integrate them like y2pm does
-libYCP_la_LIBADD = $(PERL_LDFLAGS)		\
+libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
+		-Xlinker --whole-archive	\
 		-lpy2plugin			\
+		-lpy2wfm			\
 		-lscr -lyui			\
-		-lycp -ly2 -ly2pm -ly2util
+		-lycp -ly2 -ly2pm -ly2util	\
+		-Xlinker --no-whole-archive	\
+		-version-info 2:0
 
 
 libpy2lang_perl_la_LDFLAGS = -version-info 2:0
