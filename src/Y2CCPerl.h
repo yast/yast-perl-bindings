@@ -20,7 +20,7 @@
 #ifndef _Y2CCPerl_h
 #define _Y2CCPerl_h
 
-#include "Y2QtComponent.h"
+#include "Y2PerlComponent.h"
 
 /**
  * @short Y2ComponentCreator that creates Perl-from-YCP bindings.

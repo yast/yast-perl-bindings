@@ -19,7 +19,7 @@
 #define y2log_component "Y2Perl"
 #include <ycp/y2log.h>
 #include "Y2PerlComponent.h"
-#include "YPerlInterpreter.h"
+#include "YPerl.h"
 
 
 Y2PerlComponent::Y2PerlComponent()
