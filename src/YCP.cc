@@ -149,7 +149,7 @@ XS(XS_YCP_call_ycp)
 	else
 	{ // no indent yet
 
-	Y2Function *func_call = ns->createFunctionCall (func_name);
+	Y2Function *func_call = ns->createFunctionCall (func_name, NULL);
 	if (func_call == NULL)
 	{
 	    y2error ("No such function %s::%s", ns_name, func_name);
