@@ -1002,9 +1002,9 @@ YPerl::fromPerlArray (AV * array, constTypePtr wanted_type)
     EMBEDDED_PERL_DEFS;
 
     YCPList yList;
-    SV * sv;
 
-    while ( ( sv = av_shift( array ) ) != &PL_sv_undef )
+    I32 last = av_len (array);
+    for (I32 i = 0; i <= last; ++i)
     {
 	// Error propagation:
 	// May be better to continue converting even if an error occurred
@@ -1012,7 +1012,13 @@ YPerl::fromPerlArray (AV * array, constTypePtr wanted_type)
 	// Then we would have to pass also an error code to indicate a failure
 	// After all, does not seem as such a good idea
 	// => abort at first failure
-	YCPValue v = fromPerlScalar (sv, wanted_type);
+	SV ** svp = av_fetch (array, i, 0 /* not lval */);
+	if (svp == NULL)
+	{
+	    y2internal ("av_fetch returned NULL for index %" IVdf, i);
+	    return YCPNull ();
+	}
+	YCPValue v = fromPerlScalar (*svp, wanted_type);
 	if (v.isNull ())
 	{
 	    y2error ("... when converting to a list");
