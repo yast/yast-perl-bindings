@@ -93,10 +93,10 @@ Y2Namespace *Y2PerlComponent::import (const char* name)
 	y2internal ("Couldn't find %s after Y2CCPerl pointed to us", name);
 	return NULL;
     }
-    
+
     module.erase (module.size () - 3 /* strlen (".pm") */);
     YCPList args;
-    args->add (YCPString(module));
+    args->add (YCPString(/*module*/ name));
 
     // load it
     YPerl::loadModule (args);
