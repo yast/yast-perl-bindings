@@ -234,11 +234,14 @@ public:
 	    m_call->add (YCPVoid ());
 	}
 
+    //! if true, the perl function is passed the module name
+    virtual bool isMethod () = 0;
+
     //! called by YEFunction::evaluate
     virtual YCPValue evaluateCall ()
     {
 	return YPerl::yPerl()->callInner (
-	    m_module_name, m_local_name, true /* everything as methods? */,
+	    m_module_name, m_local_name, isMethod (),
 	    m_call, m_type->returnType ());
     }
     
@@ -290,10 +293,34 @@ public:
 	return true;
     }
 };
+
+class Y2PerlSubCall : public Y2PerlFunctionCall {
+public:
+    Y2PerlSubCall (const string &module_name,
+			 const string &local_name,
+			 constFunctionTypePtr function_type
+	) :
+	Y2PerlFunctionCall (module_name, local_name, function_type)
+	{}
+    virtual bool isMethod () { return false; }
+};
+
+class Y2PerlMethodCall : public Y2PerlFunctionCall {
+public:
+    Y2PerlMethodCall (const string &module_name,
+			 const string &local_name,
+			 constFunctionTypePtr function_type
+	) :
+	Y2PerlFunctionCall (module_name, local_name, function_type)
+	{}
+    virtual bool isMethod () { return true; }
+};
+
 
 
 YPerlNamespace::YPerlNamespace (string name)
-    : m_name (name)
+    : m_name (name),
+      m_all_methods (true)
 {
     EMBEDDED_PERL_DEFS;
     const char * c_name = m_name.c_str ();
@@ -339,6 +366,16 @@ YPerlNamespace::YPerlNamespace (string name)
     // try to get the typeinfo, if provided
     HV *typeinfo = get_hv ((m_name + "::TYPEINFO").c_str (), create);
     //sv_dump ((SV *) typeinfo);
+
+    // is $TYPEINFO{ALL_METHODS} specified?
+    if ((SV *)typeinfo != &PL_sv_undef)
+    {
+	SV **all_methods = hv_fetch (typeinfo, "ALL_METHODS", strlen ("ALL_METHODS"), create);
+	if (all_methods != NULL)
+	{
+	    m_all_methods = SvTRUE (*all_methods);
+	}
+    }
 
     char *symbol;
     int count = 0;
@@ -451,8 +488,15 @@ Y2Function* YPerlNamespace::createFunctionCall (const string name, constFunction
     TableEntry *func_te = table ()->find (name.c_str (), SymbolEntry::c_function);
     if (func_te)
     {
-	return new Y2PerlFunctionCall (m_name, name
-	    , required_type ? required_type : (constFunctionTypePtr)func_te->sentry()->type ());
+	constTypePtr t = required_type ? required_type : (constFunctionTypePtr)func_te->sentry()->type ();
+	if (m_all_methods)
+	{
+	    return new Y2PerlMethodCall (m_name, name, t);
+	}
+	else
+	{
+	    return new Y2PerlSubCall (m_name, name, t);
+	}
     }
     y2error ("No such function %s", name.c_str ());
     return NULL;

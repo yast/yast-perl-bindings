@@ -6,8 +6,10 @@
 #SUBDIRS = examples 
 
 htmldir = $(docdir)
+txtdir = $(docdir)
 
 html_DATA = YCP-builtins-perl.html YaST__YCP.html YaPI.html
+txt_DATA = typeinfo
 CLEANFILES = $(html_DATA)
 
 builtin_perl = $(srcdir)/../src/YPerl.cc
@@ -20,4 +22,4 @@ YaST__YCP.html: $(srcdir)/../src/YCP.pm
 YaPI.html: $(srcdir)/../src/YaPI.pm
 	pod2html < $^ > $@
 
-EXTRA_DIST = $(html_DATA)
+EXTRA_DIST = $(html_DATA) $(txt_DATA)
