@@ -26,5 +26,5 @@ Summary:	-
 %dir %{perl_vendorarch}/YaST
 %{perl_vendorarch}/YaST/YCP.pm
 %{perl_vendorarch}/auto/YaST
-@moduledir@/YaPI.inc
+@moduledir@/YaPI.pm
 %doc @docdir@
