@@ -4,9 +4,6 @@
 
 AM_CXXFLAGS = -DY2LOG=\"Perl\"
 
-PERLLIBDIR = /to/be/defined
-PERLLIB = toBeDefined
-
 serversdir = $(execcompdir)/servers
 
 # plugin, libtool forces 'lib' prefix
@@ -15,8 +12,8 @@ noinst_LTLIBRARIES = liby2perl.la
 libpy2perl_la_LDFLAGS = -version-info 2:0
 liby2perl_la_LDFLAGS = -version-info 2:0
 
-libpy2perl_la_LIBADD = -L$(PERLLIBDIR) -l$(PERLLIB)
-liby2perl_la_LIBADD = $(libpy2perl_la_LIBADD)
+libpy2perl_la_LIBADD = $(PERL_LDFLAGS)
+liby2perl_la_LIBADD  = $(PERL_LDFLAGS)
 
 
 liby2perl_la_SOURCES = 				\
