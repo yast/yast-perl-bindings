@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 29 10:49:03 CEST 2004 - mvidner@suse.cz
+
+- require perl(Locale::gettext) now that YaPI.pm uses it
+- 2.9.23
+
+-------------------------------------------------------------------
 Thu Mar 25 17:54:58 CET 2004 - mvidner@suse.cz
 
 - added i18n functions to YaPI.pm (mcalmer)
