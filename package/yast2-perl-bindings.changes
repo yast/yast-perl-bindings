@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
-Tue Feb 24 19:04:09 CET 2004 - mvidner@suse.cz
+Wed Feb 25 17:43:58 CET 2004 - mvidner@suse.cz
 
 - added liby2util based logging
+- use all libraries when starting from Perl (visnov)
 - 2.9.11
 
 -------------------------------------------------------------------
