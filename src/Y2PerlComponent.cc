@@ -60,8 +60,12 @@ Y2PerlComponent::evaluate( const YCPValue & val )
 
     y2milestone ("YPerl::evaluate( %s, %s )", function.c_str(), argList->toString().c_str());
 
-    if ( function == "Call" )	return YPerl::call( argList );
-    if ( function == "Eval" )	return YPerl::eval( argList );
+    // Commands are ordered by how commonly they are called (optimization).
+    
+    if ( function == "CallVoid" )	return YPerl::callVoid( argList );
+    if ( function == "Eval" )		return YPerl::eval( argList );
+    if ( function == "Parse" )		return YPerl::parse( argList );
+    if ( function == "Destroy" )	return YPerl::destroy();
 	
     return YCPError( string ( "Undefined Perl::" ) + function );
 }

@@ -29,19 +29,27 @@
 class interpreter;
 typedef struct interpreter PerlInterpreter;
 
+class STRUCT_SV;
+typedef struct STRUCT_SV SV;
+
 
 class YPerl
 {
 public:
 
     /**
-     * Call a Perl script.
+     * Parse a Perl script.
+     **/
+    static YCPValue parse( YCPList argList );
+
+    /**
+     * Call a Perl method.
      *
      *		***MORE DOC TO FOLLOW***
      *		***MORE DOC TO FOLLOW***
      *		***MORE DOC TO FOLLOW***
      **/
-    static YCPValue call( YCPList argList );
+    static YCPValue callVoid( YCPList argList );
 
     /**
      * Evaluate a Perl expression.
@@ -67,9 +75,36 @@ public:
     /**
      * Destroy the static (singleton) YPerl object and unload the embedded Perl
      * interpreter.
+     *
+     * Returns YCPVoid().
      **/
-    static void destroy();
+    static YCPValue destroy();
 
+    /**
+     * Returns 'true' if the perl interpreter does have a parse tree, i.e. if
+     * parse() was called previously.
+     **/
+    bool haveParseTree() const { return _haveParseTree; }
+
+    /**
+     * Indicate whether or not the perl interpreter does have a parse tree.
+     **/
+    void setHaveParseTree( bool have ) { _haveParseTree = have; }
+
+    /**
+     * Create a new Perl scalar value from a YCP value.
+     **/
+    static SV * newPerlScalar( const YCPValue & val );
+
+    /**
+     * Create a Reference to a new Perl array from a YCP list.
+     **/
+    static SV * newPerlArrayRef( const YCPList & list );
+
+    /**
+     * Create a Reference to a new Perl hash from a YCP map.
+     **/
+    static SV * newPerlHashRef( const YCPMap & map );
 
 protected:
 
@@ -94,6 +129,8 @@ protected:
     // Data members.
 
     PerlInterpreter *	_perlInterpreter;
+    bool		_haveParseTree;
+
     static YPerl *	_yPerl;
 };
 

@@ -20,20 +20,21 @@ liby2perl_la_LIBADD  = $(PERL_LDFLAGS)
 liby2perl_la_SOURCES = 				\
 	YPerl.cc				\
 						\
-	perlxsi.c				
+	perlxsi.c
 
 # Auto-generated stub for dynamic loading of Perl modules.
 #
 # This results in a linker warning:
 # *** Warning: Linking the shared library libpy2perl.la against the
 # *** static library /usr/lib/perl5/.../DynaLoader.a is not portable!
-# 
+#
 # According to mls@suse.de this warning can safely be disregarded:
 # The SuSE DynaLoader is compiled with -fPIC for just this situation.
 #
 # -- sh@suse.de 2003-07-24
 perlxsi.c:
 	perl -MExtUtils::Embed -e xsinit -- -o perlxsi.c
+        # See "man perlembed"
 
 
 # the plugin adds the liby2 component interface
