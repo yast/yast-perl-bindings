@@ -1,8 +1,8 @@
 <1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base'
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
-<1> [wfm] Y2CCScript.cc(createInLevel):XXX Parsing finished
-<1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
+<1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
 <1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
+<1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
 <1> [YCP] tests/testpfunc1.ycp:5 rxmatch (abracadabra, [a-d]*): true
 <1> [YCP] tests/testpfunc1.ycp:7 rxmatch (abracadabra, ^[a-d]*$): false
 <1> [YCP] tests/testpfunc1.ycp:10 lengths (["one", "two", "three"]): [3, 3, 5]
