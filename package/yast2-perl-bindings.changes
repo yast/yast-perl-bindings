@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 19 09:14:32 CEST 2004 - mvidner@suse.cz
+
+- adapted testsuite for fix in yast2-core-2.9.80
+- 2.9.27
+
+-------------------------------------------------------------------
 Tue Apr 13 12:57:14 CEST 2004 - mvidner@suse.cz
 
 - check that a single package does not use inconsistent textdomains
