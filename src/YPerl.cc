@@ -682,6 +682,8 @@ static
 string
 debugDump (SV *sv)
 {
+    EMBEDDED_PERL_DEFS;
+
     static char *svtypes[] = {
 	"NULL",
 	"IV",
@@ -700,9 +702,21 @@ debugDump (SV *sv)
 	"PVFM",
 	"PVIO",
     };
-    U32 f = SvFLAGS (sv);
+
     std::ostringstream ss;
 
+    ss << (
+	SvIOK (sv)? "integer, ":
+	SvNOK (sv)? "float, ":
+	SvPOK (sv)? "string, ":
+	"");
+
+    if (sv_isobject (sv))
+    {
+	ss << HvNAME (SvSTASH (SvRV (sv))) << ", ";
+    }
+
+    U32 f = SvFLAGS (sv);
     ss << "SV with TYPE: "
        << svtypes[SvTYPE (sv) & 15] // just to be sure if Perl changes weirdly
 
