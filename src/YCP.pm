@@ -30,7 +30,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 my @e_data = qw(Boolean Integer Float String Symbol Term);
 my @e_logging = qw(y2debug y2milestone y2warning y2error y2security y2internal);
-our @EXPORT_OK = (@e_data, @e_logging);
+our @EXPORT_OK = (@e_data, @e_logging, "sformat");
 our %EXPORT_TAGS = ( DATA => [@e_data], LOGGING => [@e_logging] );
 
 =head2 debug
@@ -105,6 +105,31 @@ sub y2warning ($)	{ y2_logger_helper (2, shift); }
 sub y2error ($)		{ y2_logger_helper (3, shift); }
 sub y2security ($)	{ y2_logger_helper (4, shift); }
 sub y2internal ($)	{ y2_logger_helper (5, shift); }
+
+=head2 sformat
+
+Implements the sformat YCP builtin:
+
+sformat ('%2 %% %1', "a", "b") returns 'b % a'
+
+It is useful mainly for messages marked for translation.
+
+=cut
+
+sub sformat ($@)
+{
+    # don't shift
+    # now the % indices can be used for @_
+    my $format = $_[0];
+
+    # g: global, replace all occurences
+    # e: expression, not a string
+    $format =~ s{%([1-9%])}{
+	($1 eq '%') ? '%' : $_[$1]
+    }ge;
+
+    return $format;
+}
 
 # shortcuts for the data types
 # for POD see packages below
