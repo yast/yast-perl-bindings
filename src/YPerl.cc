@@ -467,7 +467,8 @@ YPerl::newPerlArrayRef( const YCPList & yList )
 
 	    if ( SvREFCNT( scalarVal ) != 1 )
 	    {
-		y2error( "Internal error: Reference count is %d (should be 1)",
+		// U32 is unsigned long, even on a Hammer
+		y2error( "Internal error: Reference count is %lu (should be 1)",
 			 SvREFCNT( scalarVal ) );
 	    }
 	}
@@ -538,7 +539,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 		}
 		else if ( SvREFCNT( scalarVal ) != 1 )
 		{
-		    y2error( "Internal error: Reference count is %d (should be 1)",
+		    y2error( "Internal error: Reference count is %lu (should be 1)",
 			     SvREFCNT( scalarVal ) );
 		}
 	    }
@@ -591,7 +592,7 @@ YPerl::fromPerlScalar( SV * sv, YCPValueType wanted_type )
 		break;
 
 	    default:
-		y2error( "Reference to unknown type #%d", SvTYPE( ref ) );
+		y2error( "Reference to unknown type #%lu", SvTYPE( ref ) );
 		break;
 	}
     }
