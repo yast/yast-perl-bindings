@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  3 16:12:06 CEST 2004 - visnov@suse.cz
+
+- return correct type for the next wanted parameter in function calls
+- 2.10.2 
+
+-------------------------------------------------------------------
 Tue Aug  3 11:00:06 CEST 2004 - visnov@suse.cz
 
 - Adapted for the new abstract function call interface

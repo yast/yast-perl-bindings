@@ -260,7 +260,9 @@ public:
      */
     virtual constTypePtr wantedParameterType () const
     {
-	return Type::Unspec;
+	// -1 for the function name
+	int params_so_far = m_call->size ()-1;
+	return m_type->parameterType (params_so_far);
     }
 
     /**
@@ -443,10 +445,12 @@ YCPValue YPerlNamespace::evaluate (bool cse)
 // ever want it to be different?
 Y2Function* YPerlNamespace::createFunctionCall (const string name, constFunctionTypePtr required_type)
 {
+    y2debug ("Creating function call for %s", name.c_str ());
     TableEntry *func_te = table ()->find (name.c_str (), SymbolEntry::c_function);
     if (func_te)
     {
-	return new Y2PerlFunctionCall (m_name, name, required_type);
+	return new Y2PerlFunctionCall (m_name, name
+	    , required_type ? required_type : (constFunctionTypePtr)func_te->sentry()->type ());
     }
     y2error ("No such function %s", name.c_str ());
     return NULL;
