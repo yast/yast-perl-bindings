@@ -487,7 +487,7 @@ YPerl::newPerlScalar( const YCPValue & val, bool composite )
     if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
     if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
     if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
-/*
+#if 0
 Importing YaST::YCP initializes YCP twice and makes it crash :-(
     if ( val->isTerm()    )
     {
@@ -505,7 +505,7 @@ Importing YaST::YCP initializes YCP twice and makes it crash :-(
 				    YCPString (
 					val->asSymbol ()->symbol ())));
     }
-*/
+#endif
     if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
     if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
