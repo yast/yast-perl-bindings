@@ -26,4 +26,6 @@
 				  "Germany":	[ "Berlin", "Bonn" ],
 				  "Russia"	:	"Moscow" ],
 			       4711 );
+    y2milestone( "Perl copyargs returned %1", ret_list );
+    
 }
