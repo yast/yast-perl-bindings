@@ -34,8 +34,8 @@ getNs (const char * ns_name, const char * func_name)
     Y2Namespace *ns = c->import (ns_name);
     if (ns == NULL)
     {
-	y2error ("Component %p could not provide namespace %s for a Perl call of %s",
-		 c, ns_name, func_name);
+	y2error ("Component %p (%s) could not provide namespace %s for a Perl call of %s",
+		 c, c->name ().c_str (), ns_name, func_name);
     }
     else
     {

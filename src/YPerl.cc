@@ -539,8 +539,6 @@ YPerl::newPerlScalar( const YCPValue & val, bool composite )
 	YCPByteblock b = val->asByteblock();
 	return newSVpv (reinterpret_cast<const char *> (b->value ()), b->size ());
     }
-#if 0
-Importing YaST::YCP initializes YCP twice and makes it crash :-(
     if ( val->isTerm()    )
     {
 	YCPTerm t = val->asTerm ();
@@ -557,7 +555,6 @@ Importing YaST::YCP initializes YCP twice and makes it crash :-(
 				    YCPString (
 					val->asSymbol ()->symbol ())));
     }
-#endif
     if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
     if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
@@ -1187,6 +1184,9 @@ YPerl::callConstructor (const char * class_name, const char * full_method_name,
     static bool module_imported = false;
     if (! module_imported)
     {
+	// It does not crash anymore, why?
+	//Importing YaST::YCP initializes YCP twice and makes it crash :-(
+
 	YCPList m;
 	m->add (YCPString ("YaST::YCP"));
 	loadModule (m);
