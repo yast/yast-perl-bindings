@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 20 16:33:15 CEST 2005 - mlazar@suse.cz
+
+- Added support for reference.
+- 2.12.0
+
+-------------------------------------------------------------------
 Mon Feb 14 16:49:42 CET 2005 - mvidner@suse.cz
 
 - Do not redirect stderr to y2log (#42155, #37652).

@@ -53,15 +53,31 @@ static constTypePtr parseTypeinfo (SV *ti)
 	    return Type::Void;
 	else if (firstWordIs (s, "boolean"))
 	    return Type::Boolean;
-	else if (firstWordIs (s, "byteblock"))
+	else if (firstWordIs (s, "&boolean")) {
+	    TypePtr r = Type::Boolean->clone ();
+	    r->asReference();
+	    return r;
+	} else if (firstWordIs (s, "byteblock"))
 	    return Type::Byteblock;
 	else if (firstWordIs (s, "integer"))
 	    return Type::Integer;
-	else if (firstWordIs (s, "float"))
+	else if (firstWordIs (s, "&integer")) {
+	    TypePtr r = Type::Integer->clone ();
+	    r->asReference();
+	    return r;
+	} else if (firstWordIs (s, "float"))
 	    return Type::Float;
-	else if (firstWordIs (s, "string"))
+	else if (firstWordIs (s, "&float")) {
+	    TypePtr r = Type::Float->clone ();
+	    r->asReference();
+	    return r;
+	} else if (firstWordIs (s, "string"))
 	    return Type::String;
-	else if (firstWordIs (s, "locale"))
+	else if (firstWordIs (s, "&string")) {
+	    TypePtr r = Type::String->clone ();
+	    r->asReference();
+	    return r;
+	} else if (firstWordIs (s, "locale"))
 	    return Type::Locale;
 	else if (firstWordIs (s, "path"))
 	    return Type::Path;
@@ -98,7 +114,7 @@ static constTypePtr parseTypeinfo (SV *ti)
 	    }
 
 	    const char *s = SvPV_nolen (*kind);
-	    if (firstWordIs (s, "list"))
+	    if (firstWordIs (s, "list") || firstWordIs (s, "&list"))
 	    {
 		// maxidx already checked
 		SV **val = av_fetch (av, 1, 0);
@@ -111,10 +127,13 @@ static constTypePtr parseTypeinfo (SV *ti)
 		}
 		else
 		{
-		    return new ListType (tp_val);
+		    ListTypePtr t = new ListType (tp_val);
+		    if (*s == '&')
+			t->asReference();
+                    return t;
 		}
 	    }
-	    else if (firstWordIs (s, "map"))
+ 	    else if (firstWordIs (s, "map") || firstWordIs (s, "&map"))
 	    {
 		if (maxidx != 2)
 		{
@@ -138,7 +157,10 @@ static constTypePtr parseTypeinfo (SV *ti)
 		}
 		else
 		{
-		    return new MapType (tp_key, tp_val);
+		    MapTypePtr t = new MapType (tp_key, tp_val);
+		    if (*s == '&')
+			t->asReference();
+		    return t;
 		}
 	    }
 	    else if (firstWordIs (s, "variable"))

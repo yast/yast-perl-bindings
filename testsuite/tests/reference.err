@@ -1,0 +1,12 @@
+<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base'
+<1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
+<1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
+<1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
+<1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
+<1> [YCP] tests/reference.ycp:19 integer: 20
+<1> [YCP] tests/reference.ycp:20 float: 6.28
+<1> [YCP] tests/reference.ycp:21 boolean: true
+<1> [YCP] tests/reference.ycp:22 string: hu-ok
+<1> [YCP] tests/reference.ycp:23 list: [8, 2, 2, 3, 4, -3]
+<1> [YCP] tests/reference.ycp:24 map: $["a":"A", "b":"y-ok", "d":"123"]
+<1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
