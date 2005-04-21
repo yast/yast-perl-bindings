@@ -46,6 +46,7 @@
 #include <ycp/YCPSymbol.h>
 #include <ycp/YCPTerm.h>
 #include <ycp/YCPVoid.h>
+#include <ycp/YCPCode.h>
 
 #include <YPerl.h>
 
@@ -409,15 +410,17 @@ YPerl::callInner (string module, string function, bool method,
     
 
     // Put arguments on the stack
+    SV **svs = new SV*[argList->size()];
 
     for ( int i=1; i < argList->size(); i++ )
     {
-	XPUSHs( sv_2mortal( newPerlScalar( argList->value(i), false ) ) );
+	svs[i] = sv_2mortal(newPerlScalar(argList->value(i), false));
+	XPUSHs(svs[i]);
     }
 
     PUTBACK;		// Make local stack pointer global
 
-    
+
     //
     // Call the function
     //
@@ -428,7 +431,6 @@ YPerl::callInner (string module, string function, bool method,
     // so far we use static methods, so call_pv is enough
     ret_count = call_pv( full_name.c_str(), calling_context );
 
-    
 
     //
     // Pop result from the stack
@@ -455,6 +457,18 @@ YPerl::callInner (string module, string function, bool method,
     }
 
     PUTBACK;		// Make local stack pointer global
+
+    // Update referenced variables
+    for ( int i=1; i < argList->size(); i++ )
+    {
+	if (argList->value(i)->isReference()) {
+	    constTypePtr type = argList->value(i)->asReference()->entry()->type();
+	    YCPValue val=fromPerlScalar(svs[i], type);
+	    argList->value(i)->asReference()->entry()->setValue(val);
+	}
+    }
+    delete[] svs;
+
     FREETMPS;		// Free temporary variables
     LEAVE;		// Close the Perl scope
 
@@ -493,10 +507,19 @@ YPerl::eval( YCPList argList )
 
 
 SV *
-YPerl::newPerlScalar( const YCPValue & val, bool composite )
+YPerl::newPerlScalar( const YCPValue & xval, bool composite )
 {
     EMBEDDED_PERL_DEFS;
-
+    
+    YCPValue val = xval;
+    if ( val->isReference()) {
+	val = val->asReference()->entry()->value();
+	if ( val->isString()  )	return newRV(newSVpv( val->asString()->value_cstr(), 0 ));
+	if ( val->isInteger() )	return newRV(newSViv( val->asInteger()->value()));
+	if ( val->isBoolean() )	return newRV(newSViv( val->asBoolean()->value() ? 1 : 0 ));
+	if ( val->isFloat()   )	return newRV(newSVnv( val->asFloat()->value() ));
+    }
+    
     if ( val->isString()  )	return newSVpv( val->asString()->value_cstr(), 0 );
     if ( val->isList()    )	return newPerlArrayRef( val->asList() );
     if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
@@ -903,6 +926,8 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	}
 	else
 	{
+	    if (SvROK(sv))
+		sv = SvRV(sv);
 	    val = YCPBoolean (SvTRUE (sv));
 	}
     }
@@ -915,6 +940,8 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	}
 	else
 	{
+	    if (SvROK(sv))
+		sv = SvRV(sv);
 	    // Perl relies on automatic coercion between strings and numbers
 	    // So to behave more like it,
 	    // instead of "if (SvXOK (sv)) SvXV (sv)"
@@ -939,6 +966,8 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	}
 	else
 	{
+	    if (SvROK(sv))
+		sv = SvRV(sv);
 	    // see isString
 	    IV iv = SvIV (sv);
 	    if (SvIOK (sv))
@@ -960,6 +989,8 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	}
 	else
 	{
+	    if (SvROK(sv))
+		sv = SvRV(sv);
 	    // see isString
 	    NV nv = SvNV (sv);
 	    if (SvNOK (sv))
