@@ -1,0 +1,11 @@
+
+include $(BASEDIR)/Makefile.swig
+
+BLOCXX_INCLUDES	= -I/usr/local/include
+BLOCXX_LDFLAGS	= -L/usr/local/lib -Xlinker -rpath -Xlinker /usr/local/lib
+BLOCXX_LIBS	= -lblocxx
+
+SWIGFLAGS	+= $(BLOCXX_INCLUDES)
+CPPFLAGS	+= $(BLOCXX_INCLUDES)
+LDFLAGS		+= $(BLOCXX_LDFLAGS)
+LDLIBS		+= $(BLOCXX_LIBS)
