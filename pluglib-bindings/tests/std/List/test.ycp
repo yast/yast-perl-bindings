@@ -1,0 +1,23 @@
+// usage:
+//
+//  method 1)
+//	cp *.pm *.so /usr/share/YaST2/modules
+//	yast test.ycp
+//
+//  method 2)
+//      ln -s . modules
+//      Y2DIR=`pwd` yast test.ycp
+
+{
+import "test_stdList";
+
+list<integer> l1 = [1, 2, 4, 8];
+list<integer> l2 = test_stdList::test_listInt(l1);
+
+y2milestone("%1 --> %2", l1, l2);
+
+test_stdList::test_listRefInt(l1);
+
+y2milestone("%1", l1);
+
+}

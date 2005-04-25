@@ -1,0 +1,14 @@
+// usage:
+//   Y2DIR=`pwd` yast test.ycp
+
+{
+
+import "Simple";
+import "Simple::xyz";
+
+any xyz = Simple::create_xyz();
+Simple::xyz::swig_x_set(xyz, 8);
+Simple::xyz::decX(xyz);
+y2milestone("xyz.x = %1", Simple::xyz::swig_x_get(xyz));
+
+}

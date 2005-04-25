@@ -1,0 +1,9 @@
+types.o: types.cc types.h
+BloCxx_wrap.cxx: \
+ BloCxx.i \
+ /usr/local/include/blocxx/Types.hpp 
+types_wrap.cxx: \
+ types.i \
+ BloCxx.i \
+ /usr/local/include/blocxx/Types.hpp \
+ types.h 

@@ -1,0 +1,43 @@
+Supported data types:
+---------------------
+
+{signed|unsigned} {char|short|int|long|long long}
+float
+double
+std::string
+
+std::list (one level only)
+std::deque (one level only)
+
+namespace BLOCXX_NAMESPACE {
+    (U)Int{8|16|32|64}
+    Real{32|64}
+    Bool
+    String
+    List (one level only)
+}
+
+* also reference and pointer to above types
+
+About namespaces:
+-----------------
+
+From swig manual:...default wrapping behavior is to flatten namespaces
+in the target language. This means that the contents of all namespaces
+are merged together in the resulting scripting language module....
+
+...Because namespaces are flattened, it is possible for symbols defined
+in different namespaces to generate a name conflict in the target
+language. To resolve this conflict, simply use %rename to disambiguate
+the declarations....
+
+
+About references and poiters:
+----------------------------- 
+
+You have to mark references and pointers to base data types (not
+required for lists, maps and std::string) with variable name "REFERENCE"
+(at least in header or in swig interface). For example:
+
+void get_int(int *REFERENCE); // pointer to integer - update value
+void print_str(char *str); // "black box" - only input

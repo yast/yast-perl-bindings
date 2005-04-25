@@ -1,0 +1,20 @@
+// usage:
+//   Y2DIR=`pwd` yast test.ycp
+
+{
+
+import "Ref";
+
+list<integer> l = [0,8,333];
+y2warning("l=%1", l);
+Ref::RListInt(l);
+y2warning("l=%1", l);
+
+integer i = 8;
+y2warning("i=%1", i);
+Ref::RInt(i);
+y2warning("i=%1", i);
+Ref::PInt(i);
+y2warning("i=%1", i);
+
+}
