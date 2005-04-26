@@ -12,11 +12,8 @@ namespace std {
 
 %typemap(in) L< T > {
     // convert from L< T > to perl scalar
-    if (!SvROK($input))
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of " #T ".\n");
-    AV *av = (AV *)SvRV($input);
-    if (SvTYPE(av) != SVt_PVAV)
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an ARRAY of " #T ".\n");
+    AV *av = (AV*)SwigDeref($input, SVt_PVAV, $argnum, "$symname");
+    if (!av) SWIG_fail;
     I32 len = av_len(av) + 1;
     $1_ltype workaround_SwigValueWrapper;
     $1 = workaround_SwigValueWrapper;
@@ -31,22 +28,16 @@ namespace std {
 }
 
 %typemap(in) L< L< T > > {
-    if (!SvROK($input))
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of array of " #T ".\n");
-    AV *av = (AV *)SvRV($input);
-    if (SvTYPE(av) != SVt_PVAV)
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an ARRAY of array of " #T ".\n");
+    AV *av = (AV*)SwigDeref($input, SVt_PVAV, $argnum, "$symname");
+    if (!av) SWIG_fail;
     I32 len = av_len(av) + 1;
     $1_ltype workaround_SwigValueWrapper;
     $1 = workaround_SwigValueWrapper;
     for (int i=0; i<len; i++) {
 	SV **sv = av_fetch(av, i, 0);
 	if (sv) {
-	    if (!SvROK(*sv))
-	        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
-	    AV *av1 = (AV *)SvRV(*sv);
-	    if (SvTYPE(av1) != SVt_PVAV)
-		SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
+	    AV *av1 = (AV*)SwigDeref(*sv, SVt_PVAV, $argnum, "$symname");
+	    if (!av1) SWIG_fail;
 	    I32 len1 = av_len(av1) + 1;
 	    L< T > l;
 	    for (int j=0; j<len1; j++) {
@@ -64,11 +55,8 @@ namespace std {
 
 %typemap(in) L< T >& (L< T > temp), L< T >* (L< T > temp) {
     // convert from reference/pointer to L< T > to perl scalar
-    if (!SvROK($input))
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of " #T ".\n");
-    AV *av = (AV *)SvRV($input);
-    if (SvTYPE(av) != SVt_PVAV)
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an ARRAY of " #T ".\n");
+    AV *av = (AV*)SwigDeref($input, SVt_PVAV, $argnum, "$symname");
+    if (!av) SWIG_fail;
     I32 len = av_len(av) + 1;
     for (int i=0; i<len; i++) {
 	SV **sv = av_fetch(av, i, 0);
@@ -82,22 +70,16 @@ namespace std {
 }
 
 %typemap(in) L< L< T > >& (L< L< T > > temp), L< L< T > >* (L< L< T > > temp) {
-    if (!SvROK($input))
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of array of " #T ".\n");
-    AV *av = (AV *)SvRV($input);
-    if (SvTYPE(av) != SVt_PVAV)
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an ARRAY of array of " #T ".\n");
+    AV *av = (AV*)SwigDeref($input, SVt_PVAV, $argnum, "$symname");
+    if (!av) SWIG_fail;
     I32 len = av_len(av) + 1;
     $1_ltype workaround_SwigValueWrapper;
     $1 = workaround_SwigValueWrapper;
     for (int i=0; i<len; i++) {
 	SV **sv = av_fetch(av, i, 0);
 	if (sv) {
-	    if (!SvROK(*sv))
-	        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
-	    AV *av1 = (AV *)SvRV(*sv);
-	    if (SvTYPE(av1) != SVt_PVAV)
-		SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
+	    AV *av1 = (AV*)SwigDeref(*sv, SVt_PVAV, $argnum, "$symname");
+	    if (!av1) SWIG_fail;
 	    I32 len1 = av_len(av1) + 1;
 	    L< T > l;
 	    for (int j=0; j<len1; j++) {
@@ -146,7 +128,7 @@ namespace std {
     unsigned int k = 0;
     int len = $1.size();
     SV **svs = new SV*[len];
-    for (L< T >::const_iterator i; i=$1.begin(); i!=$1.end(); i++) {
+    for (L< T >::const_iterator i=$1.begin(); i!=$1.end(); i++) {
 	svs[k] = sv_newmortal();
         SwigConvertToSv(svs[k++], *i);
     }

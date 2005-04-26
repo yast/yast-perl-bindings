@@ -6,3 +6,4 @@
 %include "BloCxx_Bool.i"
 %include "BloCxx_String.i"
 %include "BloCxx_List.i"
+%include "BloCxx_Hash.i"

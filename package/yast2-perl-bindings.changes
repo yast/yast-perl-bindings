@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 26 15:44:57 CEST 2005 - mlazar@suse.cz
+
+- support for one level hashes/maps in pluglib-bindings
+
+-------------------------------------------------------------------
 Tue Apr 26 11:00:49 CEST 2005 - mlazar@suse.cz
 
 - support for two level lists in pluglib-bindings

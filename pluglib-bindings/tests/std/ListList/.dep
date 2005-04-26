@@ -1,7 +1,0 @@
-test_listList.o: test_listList.cc
-test_listList_wrap.cxx: \
- test_listList.i \
- ../../../swig/LiMaL.i \
- ../../../swig/std_List.i \
- ../../../swig/std_Common.i \
- test_listList.h 
