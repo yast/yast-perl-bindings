@@ -1,0 +1,6 @@
+{
+import "test_stdHash";
+map<string,string> x = $["abc":"ABC", "xyz":"XYZ"];
+test_stdHash::
+
+}

@@ -40,5 +40,54 @@ void SwigConvertFromSv(SV* sv, unsigned int &x) { x = SvUV(sv); }
 void SwigConvertFromSv(SV* sv, unsigned long &x) { x = SvUV(sv); }
 void SwigConvertFromSv(SV* sv, unsigned long long &x) { x = strtoull(SvPV_nolen(sv), 0, 0); }
 
+/* dereference pointer */
+SV *SwigDeref(SV *input, int svtype, int argnum, const char *symname)
+{
+    if (!SvROK(input)) {
+	SWIG_SetErrorf("Type error in argument %i of %s. Expected a REFERENCE.\n", argnum, symname);
+	return NULL;
+    }
+    SV *sv = (SV *)SvRV(input);
+    switch(svtype) {
+	case SVt_PVAV:
+            if (SvTYPE(sv) != SVt_PVAV) {
+		SWIG_SetErrorf("Type error in argument %i of %s. Expected a reference to Array.\n", argnum, symname);
+		return NULL;
+	    }
+	    break;
+	case SVt_PVHV:
+            if (SvTYPE(sv) != SVt_PVHV) {
+		SWIG_SetErrorf("Type error in argument %i of %s. Expected a reference to Hash.\n", argnum, symname);
+		return NULL;
+	    }
+	    break;
+	case SVt_PV:
+            if (!SvPOK(sv)) {
+		SWIG_SetErrorf("Type error in argument %i of %s. Expected a reference to String.\n", argnum, symname);
+		return NULL;
+	    }
+	    break;
+	case SVt_NV:
+            if (!SvNOK(sv)) {
+		SWIG_SetErrorf("Type error in argument %i of %s. Expected a reference to Float.\n", argnum, symname);
+		return NULL;
+	    }
+	    break;
+	case SVt_IV:
+            if (!SvIOK(sv)) {
+		SWIG_SetErrorf("Type error in argument %i of %s. Expected a reference to Integer.\n", argnum, symname);
+		return NULL;
+	    }
+	    break;
+	default:
+            if (SvTYPE(sv) != svtype) {
+		SWIG_SetErrorf("Type error in argument %i of %s. Expected a reference to [svtype %i].\n", argnum, symname, svtype);
+		return NULL;
+	    }
+	    break;
+    }
+    return sv;
+}
+
 
 %}

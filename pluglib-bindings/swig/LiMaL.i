@@ -6,15 +6,13 @@
 %include "typemaps.i"
 
 %include "std_List.i"
+%include "std_Hash.i"
 
 %typemap(in) std::string* (std::string temp), std::string& (std::string temp),
     const std::string* (std::string temp), const std::string& (std::string temp)
 {
-    if (!SvROK($input))
-	SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to a string.\n");
-    SV *sv = (SV *)SvRV($input);
-    if (!SvPOK(sv))
-        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to a STRING.\n");
+    SV *sv = (SV*)SwigDeref($input, SVt_PV, $argnum, "$symname");
+    if (!av) SWIG_fail;
     STRLEN len;
     const char *ptr = SvPV(sv, len);
     if (!ptr)
