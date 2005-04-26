@@ -3,8 +3,7 @@
   Description: Convert swig xml wraper to $TYPEINFO in perl
   Author: Martin Lazar <mlazar@suse.cz>
 	  Martin Vidner <mvidner@suse.cz>
-  Version: 0.2
-  Usage: 
+  Usage:
     $ swig -xml example.i
     $ sabcmd swigxml2typeinfo.xsl example_wrap.xml examle_typeinfo.pm
 -->

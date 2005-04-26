@@ -1,4 +1,5 @@
 // std::list
+// author: Martin Lazar <mlazar@suse.cz>
 
 %include "std_Common.i"
 
@@ -10,6 +11,7 @@ namespace std {
 %define specialize_List(L,T)
 
 %typemap(in) L< T > {
+    // convert from L< T > to perl scalar
     if (!SvROK($input))
         SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of " #T ".\n");
     AV *av = (AV *)SvRV($input);
@@ -28,7 +30,40 @@ namespace std {
     }
 }
 
+%typemap(in) L< L< T > > {
+    if (!SvROK($input))
+        SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of array of " #T ".\n");
+    AV *av = (AV *)SvRV($input);
+    if (SvTYPE(av) != SVt_PVAV)
+        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an ARRAY of array of " #T ".\n");
+    I32 len = av_len(av) + 1;
+    $1_ltype workaround_SwigValueWrapper;
+    $1 = workaround_SwigValueWrapper;
+    for (int i=0; i<len; i++) {
+	SV **sv = av_fetch(av, i, 0);
+	if (sv) {
+	    if (!SvROK(*sv))
+	        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
+	    AV *av1 = (AV *)SvRV(*sv);
+	    if (SvTYPE(av1) != SVt_PVAV)
+		SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
+	    I32 len1 = av_len(av1) + 1;
+	    L< T > l;
+	    for (int j=0; j<len1; j++) {
+		SV **sv1 = av_fetch(av1, j, 0);
+		if (sv1) {
+		    T val;
+		    SwigConvertFromSv(*sv1, val);
+		    l.push_back(val);
+		}
+	    }
+	    $1.push_back(l);
+	}
+    }
+}
+
 %typemap(in) L< T >& (L< T > temp), L< T >* (L< T > temp) {
+    // convert from reference/pointer to L< T > to perl scalar
     if (!SvROK($input))
         SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of " #T ".\n");
     AV *av = (AV *)SvRV($input);
@@ -46,8 +81,41 @@ namespace std {
     $1 = &temp;
 }
 
+%typemap(in) L< L< T > >& (L< L< T > > temp), L< L< T > >* (L< L< T > > temp) {
+    if (!SvROK($input))
+        SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to an array of array of " #T ".\n");
+    AV *av = (AV *)SvRV($input);
+    if (SvTYPE(av) != SVt_PVAV)
+        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an ARRAY of array of " #T ".\n");
+    I32 len = av_len(av) + 1;
+    $1_ltype workaround_SwigValueWrapper;
+    $1 = workaround_SwigValueWrapper;
+    for (int i=0; i<len; i++) {
+	SV **sv = av_fetch(av, i, 0);
+	if (sv) {
+	    if (!SvROK(*sv))
+	        SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
+	    AV *av1 = (AV *)SvRV(*sv);
+	    if (SvTYPE(av1) != SVt_PVAV)
+		SWIG_croak("Type error in argument $argnum of $symname. Expected a reference to an array of ARRAY of " #T ".\n");
+	    I32 len1 = av_len(av1) + 1;
+	    L< T > l;
+	    for (int j=0; j<len1; j++) {
+		SV **sv1 = av_fetch(av1, j, 0);
+		if (sv1) {
+		    T val;
+		    SwigConvertFromSv(*sv1, val);
+		    l.push_back(val);
+		}
+	    }
+	    temp.push_back(l);
+	}
+    }
+    $1 = &temp;
+}
+
+
 %typemap(argout) L< T >&, L< T >* {
-    int len = $1->size();
     AV *av = (AV *)SvRV($input);
     av_clear(av);
     for (L< T >::const_iterator i=$1->begin(); i!=$1->end(); i++) {
@@ -57,22 +125,57 @@ namespace std {
     }
 }
 
+%typemap(argout) L< L< T > >&, L< L< T > >* {
+    AV *av = (AV *)SvRV($input);
+    av_clear(av);
+    for (L< L< T > >::const_iterator i=$1->begin(); i!=$1->end(); i++) {
+	SV * sv = newSV(0);
+	int len1 = i->size();
+	AV *av1 = newAV();
+	for (L< T >::const_iterator j=i->begin(); j!=i->end(); j++) {
+	    SV * sv = newSV(0);
+	    SwigConvertToSv(sv, *j);
+	    av_push(av1, sv);
+	}
+	SV* rv = newRV_noinc((SV*)av1);
+	av_push(av, rv);
+    }
+}
+
 %typemap(out) L< T > {
-    L< T >::const_iterator i;
-    unsigned int j;
+    unsigned int k = 0;
     int len = $1.size();
     SV **svs = new SV*[len];
-    for (i=$1.begin(), j=0; i!=$1.end(); i++, j++) {
-	svs[j] = sv_newmortal();
-        SwigConvertToSv(svs[j], *i);
+    for (L< T >::const_iterator i; i=$1.begin(); i!=$1.end(); i++) {
+	svs[k] = sv_newmortal();
+        SwigConvertToSv(svs[k++], *i);
     }
-    AV *myav = av_make(len, svs);
+    $result = newRV_noinc((SV*)av_make(len, svs));
+    sv_2mortal($result);
     delete[] svs;
-    $result = newRV_noinc((SV*) myav);
+    argvi++;
+}
+
+%typemap(out) L< L< T > > {
+    AV *av = newAV();
+    for (L< L< T > >::const_iterator i=$1.begin(); i!=$1.end(); i++) {
+	int len = i->size();
+	unsigned k = 0;
+	SV **svs = new SV*[len];
+        for (L< T >::const_iterator j=i->begin(); j!=i->end(); j++) {
+	    svs[k] = sv_newmortal();
+    	    SwigConvertToSv(svs[k++], *j);
+	}
+	av_push(av, newRV_noinc((SV*)av_make(len, svs)));
+	delete[] svs;
+    }
+    $result = newRV_noinc((SV*)av);
     sv_2mortal($result);
     argvi++;
 }
 %enddef
+
+
 
 %define specialize_stdList(T)
 specialize_List(std::list,T)
@@ -99,4 +202,5 @@ specialize_stdList(double)
 
 specialize_stdList(std::string)
 
-specialize_stdList(std::list<int>)
+
+

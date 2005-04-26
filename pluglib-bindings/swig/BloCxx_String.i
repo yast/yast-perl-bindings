@@ -1,4 +1,5 @@
 // BLOCXX_NAMESPACE::String and std::string
+// author: Martin Lazar <mlazar@suse.cz>
 
 %include "std_string.i";
 

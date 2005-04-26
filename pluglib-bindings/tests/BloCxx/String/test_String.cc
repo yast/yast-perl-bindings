@@ -13,3 +13,12 @@ String test_String(String s)
     return s;
 }
 
+
+String test_RString(String &s)
+{
+    std::cerr << "D: test_String(" << s << "): length()=" << s.length() <<
+	 ", UTF8Length=" << s.UTF8Length() << std::endl;
+    s += ".A";
+    return s;
+}
+

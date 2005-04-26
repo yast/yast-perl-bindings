@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# author: Martin Lazar <mlazar@suse.cz>
 
 while(<>){
     if (/^package (?:(.*)::)?(.*?);$/) {
@@ -7,10 +8,10 @@ while(<>){
 	system "mkdir -p 'modules/$dir'";
 	open OUT, ">>modules/$dir/$mod.pm";
     }
-    # remove prefixes
-    s/std:://g;
-    s/BLOCXX_NAMESPACE:://g;
-    s/blocxx4:://g;
+    # remove known prefixes
+    s/\bstd:://g;
+    s/\bBLOCXX_NAMESPACE:://gi;
+    s/\bblocxx[0-9]*:://gi;
 
     s/\bp\./&/g; # pointer
     s/\br\./&/g; # reference
@@ -36,8 +37,8 @@ while(<>){
     s/\bString\b/string/gi;
     
     # list && map
-    s/"(&?)(list|deque|queue|vector)<\(([^"]*)\)>"/["$1list", "$3"]/gi; #"
-    s/"(&?)map<\(([^"]*),([^"]*)\)>"/["$1map", "$2", "$3"]/gi; #"
+    while (s/"(&?)(list|deque|queue|vector)<\(([^"]*)\)>"/["$1list", "$3"]/gi) {} #"
+    while (s/"(&?)map<\(([^"]*),([^"]*)\)>"/["$1map", "$2", "$3"]/gi) {}
 
     # reference
     

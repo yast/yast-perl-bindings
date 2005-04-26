@@ -1,3 +1,4 @@
+# author: Martin Lazar <mlazar@suse.cz>
 
 include $(BASEDIR)/Makefile.swig
 
