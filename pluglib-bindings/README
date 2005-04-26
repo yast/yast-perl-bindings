@@ -32,8 +32,8 @@ language. To resolve this conflict, simply use %rename to disambiguate
 the declarations....
 
 
-About references and poiters:
------------------------------ 
+About references and pointers:
+------------------------------
 
 You have to mark references and pointers to base data types (not
 required for lists, maps and std::string) with variable name "REFERENCE"
