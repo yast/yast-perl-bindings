@@ -1,3 +1,4 @@
+# author: Martin Lazar <mlazar@suse.cz>
 
 WRAPXML_TO_TYPEINFO_XSL ?= $(BASEDIR)/stylesheets/swigxml2typeinfo.xsl
 WRAPXML_TO_TYPEINFO_FILTER ?= $(BASEDIR)/stylesheets/filter.pl

@@ -11,16 +11,17 @@ How to compile, install, and run pluglib in yast/perl
 #include "MyModule.h"
 %}
 
-   $ swig -I./swig -c++ -perl -xmlout MyModule_wrap.xml MyModule.i
-   $ sabcmd stylesheets/swigxml2typeinfo.xsl MyModule_wrap.xml | perl stylesheets/filter.pl >> MyModule.pm
+   $ mkdir modules
+   $ swig -I./swig -c++ -perl -outdir modules -xmlout MyModule_wrap.xml MyModule.i
+   $ sabcmd stylesheets/swigxml2typeinfo.xsl MyModule_wrap.xml | perl stylesheets/filter.pl
 
 2) compile:
 
    $ g++ -c MyModule.c -o MyModule.o
    $ g++ -c MyModule_wrap.cxx -o MyModule_wrap.o `perl -MExtUtils::Embed -e ccopts`
-   $ gcc -shared -o MyModule.so MyModule.o MyModule_wrap.o -lstdc++
+   $ gcc -shared -o modules/MyModule.so MyModule.o MyModule_wrap.o -lstdc++
 
 3) run perl/yast:
 
-   $ perl Use_MyModule.pl
-   $ ln -s . modules; Y2DIR=`pwd` yast2 Use_MyModule.ycp
+   $ perl -I./modules Use_MyModule.pl
+   $ Y2DIR=`pwd` yast Use_MyModule.ycp

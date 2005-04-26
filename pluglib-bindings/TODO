@@ -1,6 +1,5 @@
-- multilevel lists
 - callbacks
-- overloaded functions and functions with default values
 - hash/map
-- const references and pointers (effective implementation)
+- overloaded functions and functions with default values
 - typecheck (support for overloaded functions and methods)
+- const references and pointers (effective implementation)

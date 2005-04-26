@@ -1,3 +1,5 @@
+// author: Martin Lazar <mlazar@suse.cz>
+
 #ifndef _YAST_PERLRUN
 #define _YAST_PERLRUN
 

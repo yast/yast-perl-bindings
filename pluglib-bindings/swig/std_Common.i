@@ -1,3 +1,4 @@
+// author: Martin Lazar <mlazar@suse.cz>
 
 %{
 #include <string>
@@ -38,5 +39,6 @@ void SwigConvertFromSv(SV* sv, unsigned short &x) { x = SvUV(sv); }
 void SwigConvertFromSv(SV* sv, unsigned int &x) { x = SvUV(sv); }
 void SwigConvertFromSv(SV* sv, unsigned long &x) { x = SvUV(sv); }
 void SwigConvertFromSv(SV* sv, unsigned long long &x) { x = strtoull(SvPV_nolen(sv), 0, 0); }
+
 
 %}

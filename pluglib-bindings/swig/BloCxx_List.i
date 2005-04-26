@@ -1,4 +1,5 @@
 // BloCxx::List
+// author: Martin Lazar <mlazar@suse.cz>
 
 %include "BloCxx_Types.i"
 %include "BloCxx_Bool.i"
