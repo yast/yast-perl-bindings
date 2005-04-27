@@ -12,7 +12,7 @@
     const std::string* (std::string temp), const std::string& (std::string temp)
 {
     SV *sv = (SV*)SwigDeref($input, SVt_PV, $argnum, "$symname");
-    if (!av) SWIG_fail;
+    if (!sv) SWIG_fail;
     STRLEN len;
     const char *ptr = SvPV(sv, len);
     if (!ptr)
