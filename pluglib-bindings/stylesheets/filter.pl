@@ -1,12 +1,18 @@
 #!/usr/bin/perl
 # author: Martin Lazar <mlazar@suse.cz>
 
+$outdir = ".";
+if ($#ARGV >= 0 && $ARGV[0] =~ /--outdir=(.*)/) {
+    $outdir = $1;
+    shift;
+}
+
 while(<>){
     if (/^package (?:(.*)::)?(.*?);$/) {
 	$mod = $2;
 	($dir=$1) =~ s|::|/|g;
-	system "mkdir -p 'modules/$dir'";
-	open OUT, ">>modules/$dir/$mod.pm";
+	system "mkdir -p '$outdir/$dir'";
+	open OUT, ">>$outdir/$dir/$mod.pm";
     }
     # remove known prefixes
     s/\bstd:://g;
@@ -60,7 +66,8 @@ while(<>){
     print OUT $x . $_;
 }
 
+($progname = $0) =~ s|.*/||;
 foreach(sort keys %unknown) {
     next if /::/;
-    print STDERR "Warning: unknown data type $_\n";
+    print STDERR "$progname: Warning: unknown data type $_\n";
 }
