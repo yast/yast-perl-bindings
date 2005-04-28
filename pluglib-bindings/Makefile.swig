@@ -20,7 +20,7 @@ all: $(SO) $(PM)
 %_wrap.cxx %_wrap.xml modules/%.pm: %.i
 	@mkdir -p modules
 	swig -perl $(SWIGFLAGS) -xmlout $(<:.i=_wrap.xml) -outdir modules $<
-	sabcmd $(WRAPXML_TO_TYPEINFO_XSL) $(<:.i=_wrap.xml) | perl $(WRAPXML_TO_TYPEINFO_FILTER)
+	sabcmd $(WRAPXML_TO_TYPEINFO_XSL) $(<:.i=_wrap.xml) | perl $(WRAPXML_TO_TYPEINFO_FILTER) --outdir=modules
 
 %.o: %.cc
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -o $@ $<

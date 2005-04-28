@@ -1,0 +1,57 @@
+# -*- makefile -*- Automake include file
+
+# Wraps a pluglib for use by YaST. Done by using Swig for Perl, adding
+# type information. Compiles, installs.
+
+# expected input:
+#  PLUGLIB_MODULE = the name after %module in .i
+#  PLUGLIB_LIBRARY = the object file/library that is being wrapped
+# example:
+#  PLUGLIB_MODULE = Storage
+#  PLUGLIB_LIBRARY = .libs/liby2storage.so
+#  include $(top_srcdir)/pluglib-bindings.ami
+
+TARGET_PM = $(PLUGLIB_MODULE).pm
+TARGET_SO = $(PLUGLIB_MODULE).so
+
+# ydatadir or `pkg-config --variable=yast2dir yast2-devtools`/data ?
+# putting files to a directory owned by another package?
+# ok but then they should share prefixes (maybe not really)
+PLGB_BASEDIR = $(ydatadir)/devtools/pluglib-bindings
+
+# TODO configure
+SWIG = swig
+#SWIG = $(HOME)/pfx-swig-1.3.24/bin/swig
+SWIGFLAGS = -I$(PLGB_BASEDIR)/swig -nodefault -c++
+
+# Process the .i file, creating a wrapper for Perl and a XML parse.
+%_wrap.cc %_wrap.xml: %.i
+	$(SWIG) -perl $(SWIGFLAGS) -o $*_wrap.cc -xmlout $*_wrap.xml $<
+
+PLGB_TYPEINFO_XSL = $(PLGB_BASEDIR)/stylesheets/swigxml2typeinfo.xsl
+PLGB_TYPEINFO_FILTER = $(PLGB_BASEDIR)/stylesheets/filter.pl
+
+# Add typeinfo
+# TODO use a different xslt processor (xlstproc)? to reduce build deps
+$(TARGET_PM): %.pm: %_wrap.xml
+	sabcmd $(PLGB_TYPEINFO_XSL) $< | perl $(PLGB_TYPEINFO_FILTER)
+
+# Install the Perl modules
+PLGB_PMdir = $(moduledir)
+PLGB_PM_DATA = $(TARGET_PM)
+# Copy the directory with additional pm modules
+install-data-local:
+	test -d $(PLUGLIB_MODULE) && \
+		cp --recursive $(PLUGLIB_MODULE) $(PLGB_PMdir)
+
+# Compile the wrapper
+%_wrap.o: %_wrap.cc
+	$(CXXCOMPILE) $(PERL_CFLAGS) -c -o $@ $<
+
+# Link the wrapper and the actual library
+$(TARGET_SO): %.so: %_wrap.o $(PLUGLIB_LIBRARY)
+	$(CXX) -shared -o $@ $^
+
+# Install the library
+PLGB_SOdir = $(PERL_VENDORARCH)
+PLGB_SO_DATA = $(TARGET_SO)
