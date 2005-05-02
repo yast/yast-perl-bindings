@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  2 18:08:31 CEST 2005 - mlazar@suse.cz
+
+- restructured pluglib-bindings/swig
+- added support for lists and hashes of "black box" objects
+
+-------------------------------------------------------------------
 Tue Apr 26 15:44:57 CEST 2005 - mlazar@suse.cz
 
 - support for one level hashes/maps in pluglib-bindings

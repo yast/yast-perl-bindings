@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include <test_stdList.h>
+
 using namespace std;
 
 

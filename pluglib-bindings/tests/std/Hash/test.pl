@@ -21,6 +21,7 @@ sub Dump {
 
 
 test_stdHash::IntStr({65=>"A", 123=>"x"});
+test_stdHash::IntBool({65=>8, 123=>0});
 
 $sOut = test_stdHash::RStrStr($sWrk);
 if (Dump($sWrk) ne Dump($sOk)) {

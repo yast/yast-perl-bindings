@@ -1,12 +1,12 @@
 
-%module test_stdList
+%module test
 
 %include "LiMaL.i"
 
 specialize_sequence(abc, TO_PACK, FROM_PACK, CHECK)
 
-%include "test_stdList.h"
+%include "test.h"
 %{
-#include "test_stdList.h"
+#include "test.h"
 %}
 

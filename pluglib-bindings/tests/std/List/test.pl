@@ -36,4 +36,3 @@ print "test stdDeque::test_RefInt ... ", (Dumper($i) eq Dumper($ix2)) ? "ok\n" :
 
 test_stdDeque::test_PInt($i);
 print "test stdDeque::test_PInt ... ", (Dumper($i) eq Dumper($ix1)) ? "ok\n" : "fail\n" . Dumper($i,$ix1);
-
