@@ -3,7 +3,7 @@
 WRAPXML_TO_TYPEINFO_XSL ?= $(BASEDIR)/stylesheets/swigxml2typeinfo.xsl
 WRAPXML_TO_TYPEINFO_FILTER ?= $(BASEDIR)/stylesheets/filter.pl
 
-SWIGFLAGS	?= -I$(BASEDIR)/swig -nodefault -c++
+SWIGFLAGS	?= -I$(BASEDIR)/swig -c++
 
 CXXFLAGS	?= -g -O0
 CPPFLAGS	+= -I.

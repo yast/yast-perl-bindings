@@ -28,6 +28,15 @@ void IntStr(map<int,string> l)
     printf("}\n");
 }
 
+void IntBool(map<int,bool> l)
+{
+    printf("D: {");
+    for(map<int,bool>::iterator i = l.begin(); i!=l.end(); i++){
+	printf("%i=>%i, ", i->first, i->second);
+    }
+    printf("}\n");
+}
+
 map<int,int> IntInt(map<int,int> l)
 {
     printf("D: {");

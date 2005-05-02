@@ -1,31 +1,37 @@
-// author: Martin Lazar <mlazar@suse.cz>
+/*
+ * file:	LiMaL.i
+ * author:	Martin Lazar <mlazar@suse.cz>
+ *
+ * LiMaL typemaps
+ *
+ * $Id$
+ */
 
 %runtime "yast_perlrun.swg"
 
-%include "std_string.i"
-%include "typemaps.i"
+%include "stdc/types.i"
+%include "stl/types.i"
 
-%include "std_List.i"
-%include "std_Hash.i"
 
-%typemap(in) std::string* (std::string temp), std::string& (std::string temp),
-    const std::string* (std::string temp), const std::string& (std::string temp)
-{
-    SV *sv = (SV*)SwigDeref($input, SVt_PV, $argnum, "$symname");
-    if (!sv) SWIG_fail;
-    STRLEN len;
-    const char *ptr = SvPV(sv, len);
-    if (!ptr)
-        SWIG_croak("Undefined variable in argument $argnum of $symname.");
-    temp.assign(ptr, len);
-    $1 = &temp;
-}
+%define specialize_sequence(T, FROM_SV, TO_SV, CHECK_SV)
+    specialize_stl_sequence(T, FROM_SV, TO_SV, CHECK_SV)
+%enddef
 
-%typemap(argout) std::string*, std::string&
-{
-    SV *sv = (SV *)SvRV($input);
-    sv_setpv(sv, $1->c_str());
-}
+%define specialize_hash(KEY, KEY_FROM_SV, KEY_TO_SV, KEY_CHECK_SV, VAL, VAL_FROM_SV, VAL_TO_SV, VAL_CHECK_SV)
+    specialize_stl_hash(KEY, KEY_FROM_SV, KEY_TO_SV, KEY_CHECK_SV, VAL, VAL_FROM_SV, VAL_TO_SV, VAL_CHECK_SV)
+%enddef
 
-%typemap(argout) const std::string*, const std::string&;
-%typemap(out) std::string*, std::string&, const std::string*, const std::string&;
+
+%define apply_types(WHAT, ...)
+    apply_c_types(WHAT, __VA_ARGS__)
+    apply_stl_types(WHAT, __VA_ARGS__)
+%enddef
+
+%define apply_keytypes(WHAT, ...)
+    apply_c_keytypes(WHAT, __VA_ARGS__)
+    apply_stl_keytypes(WHAT, __VA_ARGS__)
+%enddef
+
+
+apply_types(specialize_sequence)
+apply_keytypes(apply_types, specialize_hash)
