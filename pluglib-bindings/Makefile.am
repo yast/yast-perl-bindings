@@ -8,4 +8,4 @@ amidir = `pkg-config --variable=yast2dir yast2-devtools`/data/devtools/admin/ami
 
 ami_DATA = pluglib-bindings.ami
 
-EXTRA_DIST = $(admin_DATA)
+EXTRA_DIST = $(ami_DATA)

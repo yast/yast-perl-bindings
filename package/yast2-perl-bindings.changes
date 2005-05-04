@@ -1,8 +1,20 @@
 -------------------------------------------------------------------
+Wed May  4 13:55:13 CEST 2005 - mvidner@suse.cz
+
+- Build fixes
+- 2.12.1
+
+-------------------------------------------------------------------
 Mon May  2 18:08:31 CEST 2005 - mlazar@suse.cz
 
 - restructured pluglib-bindings/swig
 - added support for lists and hashes of "black box" objects
+
+-------------------------------------------------------------------
+Thu Apr 28 12:08:59 CEST 2005 - mvidner@suse.cz
+
+- Added a generic makefile (automake include)
+  for compiling and installing pluglibs for yast
 
 -------------------------------------------------------------------
 Tue Apr 26 15:44:57 CEST 2005 - mlazar@suse.cz
@@ -13,6 +25,11 @@ Tue Apr 26 15:44:57 CEST 2005 - mlazar@suse.cz
 Tue Apr 26 11:00:49 CEST 2005 - mlazar@suse.cz
 
 - support for two level lists in pluglib-bindings
+
+-------------------------------------------------------------------
+Mon Apr 25 16:06:47 CEST 2005 - mvidner@suse.cz
+
+- Imported pluglib-bindings-0.7
 
 -------------------------------------------------------------------
 Wed Apr 20 16:33:15 CEST 2005 - mlazar@suse.cz

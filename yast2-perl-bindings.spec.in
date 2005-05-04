@@ -31,4 +31,6 @@ Summary:	-
 %{perl_vendorarch}/auto/YaST
 %dir @moduledir@
 @moduledir@/YaPI.pm
+@ydatadir@/devtools/pluglib-bindings
+@ydatadir@/devtools/admin/aminclude/pluglib-bindings.ami
 %doc @docdir@
