@@ -49,4 +49,18 @@ bool TO_STD_STRING(SV* sv, std::string *x, int size, const swig_type_info *t) {
 }
 
 %typemap(argout) const std::string*, const std::string&;
-%typemap(out) std::string*, std::string&, const std::string*, const std::string&;
+
+
+%typemap(out) std::string {
+    if (argvi >= items) EXTEND(sp, 1);	// bump stack ptr, if needed
+    char *data = const_cast<char*>($1.data());
+    sv_setpvn($result = sv_newmortal(), data, $1.size());
+    ++argvi;
+}
+
+%typemap(out) std::string*, std::string&, const std::string*, const std::string& {
+    if (argvi >= items) EXTEND(sp, 1);	// bump stack ptr, if needed
+    char *data = const_cast<char*>($1->data());
+    sv_setpvn($result = sv_newmortal(), data, $1->size());
+    ++argvi;
+}

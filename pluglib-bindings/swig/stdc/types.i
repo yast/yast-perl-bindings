@@ -7,6 +7,32 @@
  * $Id$
  */
 
+%typemap(in) SWIGTYPE {
+    // try pointer to object
+    $&1_ltype argp;
+    if (SWIG_ConvertPtr($input,(void **) &argp, $&1_descriptor,0) >= 0) {
+	$1 = *argp;
+    } else {
+	// try packed object
+	if (SWIG_ConvertPacked($input,(void **) &$1, sizeof($1_ltype), $1_descriptor,0) < 0) {
+	    SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle or $&1_mangle.\n");
+	}
+    }
+}
+
+%typemap(in) SWIGTYPE *, SWIGTYPE [], SWIGTYPE & {
+    // try pointer to object
+    if (SWIG_ConvertPtr($input,(void **) &$1, $1_descriptor,0) < 0) {
+	// try packed object
+	void *temp = (void*) malloc(sizeof($*1_ltype));
+	if (SWIG_ConvertPacked($input, temp, sizeof($*1_ltype), $*1_descriptor,0) < 0) {
+	    SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle or $*1_mangle.\n");
+	}
+	$1 = ($1_ltype)temp;
+    }
+}
+
+
 %{
 extern "C" {
 #include <stdio.h>

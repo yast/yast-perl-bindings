@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May  5 14:58:15 CEST 2005 - mlazar@suse.cz
+
+- pluglib-bindings: support for packet data as input argument to
+  functions expected reference/pointer
+- pluglib-bindings: typemap for pointer/reference to str:string output
+
+-------------------------------------------------------------------
 Wed May  4 13:55:13 CEST 2005 - mvidner@suse.cz
 
 - Build fixes

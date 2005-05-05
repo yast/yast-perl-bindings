@@ -7,7 +7,7 @@
  * $Id$
  */
 
-%runtime "yast_perlrun.swg"
+%runtime "limal_perlrun.swg"
 
 %include "stdc/types.i"
 %include "blocxx/types.i"
