@@ -46,7 +46,7 @@ install-data-local:
 
 # Compile the wrapper
 %_wrap.o: %_wrap.cc
-	$(CXXCOMPILE) $(PERL_CFLAGS) -c -o $@ $<
+	$(CXX) $(PERL_CFLAGS) -c -o $@ $<
 
 # Link the wrapper and the actual library
 $(TARGET_SO): %.so: %_wrap.o $(PLUGLIB_LIBRARY)
