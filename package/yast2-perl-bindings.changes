@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May  6 10:22:44 CEST 2005 - mlazar@suse.cz
+
+- pluglib-bindings: support for list of hash and hash of list
+
+-------------------------------------------------------------------
 Thu May  5 14:58:15 CEST 2005 - mlazar@suse.cz
 
 - pluglib-bindings: support for packet data as input argument to
