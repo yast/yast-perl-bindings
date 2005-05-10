@@ -42,7 +42,7 @@ PLGB_PM_DATA = $(TARGET_PM)
 # Copy the directory with additional pm modules
 install-data-local:
 	test -d $(PLUGLIB_MODULE) && \
-		cp --recursive $(PLUGLIB_MODULE) $(PLGB_PMdir)
+		cp --recursive $(PLUGLIB_MODULE) $(DESTDIR)$(PLGB_PMdir)
 
 # Compile the wrapper
 %_wrap.o: %_wrap.cc
