@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 10 15:23:10 CEST 2005 - arvin@suse.de
+
+- honour DESTDIR in pluglib-bindings.ami
+- 2.12.3
+
+-------------------------------------------------------------------
 Tue May 10 14:48:53 CEST 2005 - arvin@suse.de
 
 - use CXX instead of CXXCOMPILE in pluglib-bindings.ami
