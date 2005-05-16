@@ -69,10 +69,26 @@
     <xsl:text>sub New {&#10;</xsl:text>
     <xsl:text>    my $pkg = shift;&#10;</xsl:text>
     <xsl:value-of select="concat('    return ', /top/attributelist/attribute[@name='module']/@value, 'c::new_', $class, '(@_);&#10;')"/>
-    <xsl:text>}&#10;&#10;</xsl:text>
-    <xsl:text>1;&#10;</xsl:text>
+    <xsl:text>}&#10;8;&#10;</xsl:text>
 </xsl:template>
 
+<xsl:template match="enum" mode="enum">
+    <xsl:param name="class" select="/top/attributelist/attribute[@name='module']/@value"/>
+    <!--xsl:text>package </xsl:text>
+    <xsl:value-of select="/top/attributelist/attribute[@name='module']/@value"/>
+    <xsl:text>;&#10;&#10;</xsl:text-->
+    <xsl:apply-templates mode="enum">
+	<xsl:with-param name="class" select="$class"/>
+    </xsl:apply-templates>
+    <xsl:text>&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template match="enumitem" mode="enum">
+    <xsl:param name="class"/>
+    <xsl:param name="name" select="attributelist/attribute[@name='name']/@value"/>
+    <xsl:value-of select="concat('BEGIN{$TYPEINFO{',$name,'}=[&#34;function&#34;, &#34;integer&#34;]}&#10;')"/>
+    <xsl:value-of select="concat('*',$name,' = sub { $',$class,'c::',$name,' };&#10;')"/>
+</xsl:template>
 
 <xsl:template match="/">
     <xsl:text>package </xsl:text>
@@ -82,7 +98,10 @@
     <xsl:text>    %TYPEINFO = (&#10;        ALL_METHODS => 0,&#10;</xsl:text>
     <xsl:apply-templates/>
     <xsl:text>    );&#10;}&#10;&#10;</xsl:text>
+    <xsl:apply-templates mode="enum"/>
+    <xsl:text>8;&#10;</xsl:text>
     <xsl:apply-templates mode="class"/>
+    <xsl:text>8;&#10;</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
