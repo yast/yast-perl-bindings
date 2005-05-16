@@ -61,11 +61,15 @@
     <xsl:text>;&#10;</xsl:text>
     <xsl:text>BEGIN {&#10;</xsl:text>
     <xsl:text>    %TYPEINFO = (&#10;        ALL_METHODS => 0,&#10;</xsl:text>
-    <xsl:text>        new => [&#34;function&#34;, &#34;any&#34;],&#10;</xsl:text>
+    <xsl:text>        New => [&#34;function&#34;, &#34;any&#34;],&#10;</xsl:text>
     <xsl:apply-templates mode="class">
 	<xsl:with-param name="class" select="$class"/>
     </xsl:apply-templates>
-    <xsl:text>    );&#10;}&#10;&#10;</xsl:text>
+    <xsl:text>    );&#10;}&#10;</xsl:text>
+    <xsl:text>sub New {&#10;</xsl:text>
+    <xsl:text>    my $pkg = shift;&#10;</xsl:text>
+    <xsl:value-of select="concat('    return ', /top/attributelist/attribute[@name='module']/@value, 'c::new_', $class, '(@_);&#10;')"/>
+    <xsl:text>}&#10;&#10;</xsl:text>
     <xsl:text>1;&#10;</xsl:text>
 </xsl:template>
 
