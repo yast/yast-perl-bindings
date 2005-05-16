@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 16 18:12:13 CEST 2005 - mlazar@suse.cz
+
+- pluglib-bindings: support for enum in YCP
+
+-------------------------------------------------------------------
 Mon May 16 16:41:39 CEST 2005 - mlazar@suse.cz
 
 - pluglib-bindigs: support for class constructor
