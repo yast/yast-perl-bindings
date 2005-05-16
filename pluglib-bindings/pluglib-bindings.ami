@@ -22,7 +22,7 @@ PLGB_BASEDIR = $(ydatadir)/devtools/pluglib-bindings
 # TODO configure
 SWIG = swig
 #SWIG = $(HOME)/pfx-swig-1.3.24/bin/swig
-SWIGFLAGS = -I$(PLGB_BASEDIR)/swig -nodefault -c++
+SWIGFLAGS = -I$(PLGB_BASEDIR)/swig -c++
 
 # Process the .i file, creating a wrapper for Perl and a XML parse.
 %_wrap.cc %_wrap.xml: %.i
