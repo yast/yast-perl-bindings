@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 18 12:37:44 CEST 2005 - mvidner@suse.cz
+
+- pluglib-bindings: Compile wrapper using libtool so that
+  x86_64 gets -fPIC.
+- 2.12.4
+
+-------------------------------------------------------------------
 Mon May 16 18:12:13 CEST 2005 - mlazar@suse.cz
 
 - pluglib-bindings: support for enum in YCP

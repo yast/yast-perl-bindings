@@ -1,4 +1,5 @@
 # -*- makefile -*- Automake include file
+# $Id$
 
 # Wraps a pluglib for use by YaST. Done by using Swig for Perl, adding
 # type information. Compiles, installs.
@@ -44,13 +45,21 @@ install-data-local:
 	test -d $(PLUGLIB_MODULE) && \
 		cp --recursive $(PLUGLIB_MODULE) $(DESTDIR)$(PLGB_PMdir)
 
+# This is to ensure that automake generates the LTCXXCOMPILE variable.
+# We need to use LTCXXCOMPILE because libtool puts in -fPIC on some
+# architectures and also we get RPM_OPT_FLAGS via CXXCLAGS that way.
+noinst_PROGRAMS = dummy_to_have_cxxcompile
+dummy_to_have_cxxcompile_SOURCES = dummy_to_have_cxxcompile.cc
+dummy_to_have_cxxcompile.cc:
+	echo 'int main() {return 0;}' > $@
+
 # Compile the wrapper
-%_wrap.o: %_wrap.cc
-	$(CXX) $(PERL_CFLAGS) -c -o $@ $<
+.libs/%_wrap.o: %_wrap.cc
+	$(LTCXXCOMPILE) $(PERL_CFLAGS) -c -o $*_wrap.lo $<
 
 # Link the wrapper and the actual library
-$(TARGET_SO): %.so: %_wrap.o $(PLUGLIB_LIBRARY)
-	$(CXX) -shared -o $@ $^
+$(TARGET_SO): %.so: .libs/%_wrap.o $(PLUGLIB_LIBRARY)
+	$(CXXCOMPILE) -shared -o $@ $^
 
 # Install the library
 PLGB_SOdir = $(PERL_VENDORARCH)
