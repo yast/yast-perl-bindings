@@ -168,10 +168,11 @@ sub Error {
 
 =head2 i18n
 
-    use YaPI;
-    textdomain "mydomain";
+C<< use YaPI; >>
 
-Just use C<__("my text")> to mark text to be translated.
+C<< textdomain "mydomain"; >>
+
+Just use a double underscore to mark text to be translated: C<__("my text")>.
 Both C<textdomain> and C<__> are exported to the calling package.
 
 These must not be used any longer because they collide with symbols
