@@ -1,4 +1,4 @@
-/*---------------------------------------------------------------------\
+/*--- -------------------------------------------------------*- c++ -*-\
 |								       |
 |		       __   __	  ____ _____ ____		       |
 |		       \ \ / /_ _/ ___|_   _|___ \		       |
@@ -118,12 +118,13 @@ public:
     static YPerl * yPerl();
 
     /**
-     * Access the static (singleton) YPerl object. Create it if it isn't
-     * created yet. Tell it that we are an XSUB and have our own interpreter
-     *
-     * Returns 0 on error.
+     * Tell it that we are an XSUB and have our own interpreter.
+     * If there was no YPerl object, create it and lend it the interpreter
+     * (it should not delete it in its destructor).
+     * If the YPerl object exists already, assume that the interpreter
+     * did not change and do nothing.
      **/
-    static YPerl * yPerl(pTHX);
+    static void acceptInterpreter (pTHX);
 
     /**
      * Access the static (singleton) YPerl object's embedde Perl
@@ -301,6 +302,7 @@ protected:
     // Data members.
 
     PerlInterpreter *	_perlInterpreter;
+    bool		_interpreterOwnership; //!<  we create == we delete
     bool		_haveParseTree;
 
     static YPerl *	_yPerl;

@@ -90,6 +90,7 @@ static void PrependModulePath (PerlInterpreter *my_perl)
 
 YPerl::YPerl()
     : _perlInterpreter(0)
+    , _interpreterOwnership (true)
     , _haveParseTree( false )
 {
     _perlInterpreter = perl_alloc();
@@ -114,6 +115,7 @@ YPerl::YPerl()
 
 YPerl::YPerl(pTHX)
     : _perlInterpreter(aTHX)
+    , _interpreterOwnership (false)
     , _haveParseTree( false )
 {
     PrependModulePath (internalPerlInterpreter ());
@@ -121,7 +123,7 @@ YPerl::YPerl(pTHX)
 
 YPerl::~YPerl()
 {
-    if ( _perlInterpreter )
+    if (_perlInterpreter && _interpreterOwnership)
     {
 	perl_destruct( _perlInterpreter );
 	perl_free( _perlInterpreter );
@@ -138,15 +140,19 @@ YPerl::yPerl()
     return _yPerl;
 }
 
-YPerl *
-YPerl::yPerl(pTHX)
+void
+YPerl::acceptInterpreter (pTHX)
 {
     if ( ! _yPerl )
 	_yPerl = new YPerl(aTHX);
     else
-	_yPerl->_perlInterpreter = aTHX;
-
-    return _yPerl;
+    {
+	// Do not replace it
+	// There are really no multiple interpreters
+	// But if there were, we would need to call PERL_SET_CONTEXT
+	// all over the place
+//	_yPerl->_perlInterpreter = aTHX;
+    }
 }
 
 
