@@ -105,7 +105,8 @@ XS(XS_YCP_call_ycp)
     // The perl interpreter must not get reinitialized.
     // Therefore we push what we got (aTHX) to YPerl so that it does
     // not try to construct its own.
-    YPerl *yperl = YPerl::yPerl (aTHX); // access the singleton object
+    YPerl::acceptInterpreter (aTHX); // access the singleton object
+    YPerl *yperl = YPerl::yPerl (); // access the singleton object
 
     YCPValue ret_yv = YCPNull ();
 
@@ -283,7 +284,8 @@ YCPValue YCP_call_SCR (pTHX_ const char * func_name, const vector<SV *>& args)
 
     // maybe a special exceptional hack to make Path for the 1st argument?
 
-    YPerl *yperl = YPerl::yPerl (aTHX); // access the singleton object
+    YPerl::acceptInterpreter (aTHX); // access the singleton object
+    YPerl *yperl = YPerl::yPerl (); // access the singleton object
     // go through the actual parameters
     unsigned j;
     for (j = 0; j < args.size (); ++j)
@@ -366,7 +368,8 @@ YCPValue YCP_getset_variable (pTHX_ const char * ns_name, SymbolEntryPtr var_se,
     else if (n == 1)
     {
 	// set
-	YPerl *yperl = YPerl::yPerl (aTHX); // access the singleton object
+	YPerl::acceptInterpreter (aTHX); // access the singleton object
+	YPerl *yperl = YPerl::yPerl (); // access the singleton object
 	YCPValue val_yv = yperl->fromPerlScalar (args[0], var_se->type ());
 	if (val_yv.isNull ())
 	{
