@@ -91,7 +91,6 @@ static void PrependModulePath (PerlInterpreter *my_perl)
 YPerl::YPerl()
     : _perlInterpreter(0)
     , _interpreterOwnership (true)
-    , _haveParseTree( false )
 {
     _perlInterpreter = perl_alloc();
 
@@ -99,7 +98,6 @@ YPerl::YPerl()
 	perl_construct( _perlInterpreter );
 
     // Preliminary call perl_parse so the Perl interpreter is ready right away.
-    // This does _not_ affect _haveParseTree: This is intended for real code trees.
 
     const char *argv[] = { "yperl", "-e", "" };
     int	argc = DIM( argv );
@@ -116,7 +114,6 @@ YPerl::YPerl()
 YPerl::YPerl(pTHX)
     : _perlInterpreter(aTHX)
     , _interpreterOwnership (false)
-    , _haveParseTree( false )
 {
     PrependModulePath (internalPerlInterpreter ());
 }
@@ -179,79 +176,8 @@ YPerl::perlInterpreter()
     return 0;
 }
 
-/**
- * @builtin Perl::AAA_DISABLED () -> void
- * Note that with the migration to the new interpreter,
- * these builtins don't work! I will rework the docs.
- * -- mvidner
- */
 
 /**
- * @builtin Perl::Parse (string file_name) -> void
- * Loads a Perl script.
- *
- * This executes Perl "use" instructions and BEGIN blocks,
- * but not the script itself.
- *
- * Internal structures must be cleaned up by Perl::Destroy
- * before it can be called again.
- */
-YCPValue
-YPerl::parse( YCPList argList )
-{
-    PerlInterpreter * perl = YPerl::perlInterpreter();
-
-    if ( ! perl )
-	return YCPNull();
-
-    if ( argList->size() != 1 || ! argList->value(0)->isString() )
-	return YCPError( "Perl::Parse(): Bad arguments: String expected!" );
-
-    if ( yPerl()->haveParseTree() )
-	y2warning( "Perl::Parse() multiply called - memory leak? "
-		   "Try Perl::Destroy() first!" );
-
-    string script = argList->value(0)->asString()->value();
-    const char *argv[] = { "", script.c_str() };
-    int	argc = DIM( argv );
-
-    if ( perl_parse( perl,
-		     xs_init, // Init function from (generated) perlxsi.c
-		     argc,
-		     const_cast<char **> (argv),
-		     0 )	// env
-	 != 0 )
-	return YCPError( "Perl::Parse(): Parse error." );
-
-    yPerl()->setHaveParseTree( true );
-
-    return YCPVoid();
-}
-
-
-/**
- * @builtin Perl::Run () -> void
- * Runs a script loaded by Perl::Parse or Perl::LoadModule.
- *
- * Can be called repeatedly.
- */
-YCPValue
-YPerl::run( YCPList argList )
-{
-    if ( argList->size() != 0 )
-	return YCPError( "Perl::Run(): No arguments expected" );
-
-    if ( ! yPerl()->haveParseTree() )
-	return YCPError( "Perl::Run(): Use Perl::Parse() or Perl::LoadModule() before Perl::Run() !" );
-
-    perl_run( yPerl()->perlInterpreter() );
-    return YCPVoid();
-}
-
-
-/**
- * @builtin Perl::Use        (string module) -> void
- * @builtin Perl::LoadModule (string module) -> void
  * Loads a module.
  */
 YCPValue
@@ -285,8 +211,6 @@ YPerl::loadModule( YCPList argList )
     load_module( flags, name, version );
     //sv_dump (name);
 
-    yPerl()->setHaveParseTree( true );
-
 /*
     SPAGAIN;
     PUTBACK;
@@ -297,85 +221,7 @@ YPerl::loadModule( YCPList argList )
     return YCPVoid();
 }
 
-/**
- * @builtin Perl::CallVoid (string funcname, any param1, ...) -> void
- * Calls a perl function ...
- */
-YCPValue
-YPerl::callVoid( YCPList argList )
-{
-    return yPerl()->call( argList, Type::Void );
-}
 
-
-/**
- * @builtin Perl::CallString (string funcname, any param1, ...) -> string
- * Calls a perl function ...
- */
-YCPValue
-YPerl::callString( YCPList argList )
-{
-    return yPerl()->call( argList, Type::String );
-}
-
-
-/**
- * @builtin Perl::CallList (string funcname, any param1, ...) -> list
- * Calls a perl function ...
- */
-YCPValue
-YPerl::callList( YCPList argList )
-{
-    return yPerl()->call( argList, Type::List );
-}
-
-
-// there are &nbsp;s after CallBool
-/**
- * @builtin Perl::CallBoolean (string funcname, any param1, ...) -> boolean
- * @builtin Perl::CallBool    (string funcname, any param1, ...) -> boolean
- * Calls a perl function ...
- */
-YCPValue
-YPerl::callBool( YCPList argList )
-{
-    return yPerl()->call( argList, Type::Boolean );
-}
-
-
-/**
- * @builtin Perl::CallInteger (string funcname, any param1, ...) -> integer
- * @builtin Perl::CallInt     (string funcname, any param1, ...) -> integer
- * Calls a perl function ...
- */
-YCPValue
-YPerl::callInt( YCPList argList )
-{
-    return yPerl()->call( argList, Type::Integer );
-}
-
-
-YCPValue
-YPerl::call( YCPList argList, constTypePtr wanted_result_type )
-{
-    if ( argList->size() < 1 || ! argList->value(0)->isString() )
-	return YCPError( "Perl::Call(): Bad arguments: No function to execute!" );
-
-    if ( ! yPerl()->haveParseTree() )
-	return YCPError( "Perl::Call: Use Perl::Parse() or Perl::LoadModule() before Perl::Call() !" );
-
-    string functionName = argList->value(0)->asString()->value();
-    string::size_type arrowPos = functionName.find( "->" );
-    string className;
-
-    if ( arrowPos != string::npos )	// "->" in function name?
-    {
-	className = functionName.substr( 0, arrowPos );	// extract class name
-	functionName.erase( 0, arrowPos+2 );		// remove  class name and "->"
-    }
-    return callInner (className, functionName, !className.empty (),
-		      argList, wanted_result_type);
-}
 
 /**
  * @param argList arguments start 1!, 0 is dummy
@@ -488,27 +334,6 @@ YPerl::callInner (string module, string function, bool method,
     }
 
     return result;
-}
-
-
-/**
- * @builtin Perl::Eval (string perl_code) -> any
- * Evaluates Perl code and returns the result.
- */
-YCPValue
-YPerl::eval( YCPList argList )
-{
-    EMBEDDED_PERL_DEFS;
-
-    if ( argList->size() != 1 || ! argList->value(0)->isString() )
-	return YCPError( "Perl::Eval(): Bad arguments: String expected!" );
-
-    SV * result = eval_pv( argList->value(0)->asString()->value_cstr(), 1 );
-
-    if ( ! result )
-	return YCPVoid();
-
-    return yPerl()->fromPerlScalarToAny( result );
 }
 
 

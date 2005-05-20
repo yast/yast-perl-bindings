@@ -10,14 +10,9 @@ include Makefile.am.common
 ycp_examplesdir = 	$(docdir)/examples
 perl_examplesdir = 	$(docdir)/examples
 
-ycp_examples_DATA =				\
-	ArgCheck.ycp				\
-	Eval.ycp				\
-	ModEx.ycp				\
-	ModParse.ycp				\
-	ModUse.ycp				\
-	ModWithMain.ycp				\
-	Run.ycp
+FIXME
+
+ycp_examples_DATA =
 
 #for dependencies
 module_DATA =					\
@@ -29,10 +24,7 @@ module_DATA =					\
 	intermediate.ycp
 
 perl_examples_DATA =				\
-	arg_check.pl				\
 	dummy.pm				\
-	imported.pm				\
-	mod_ex.pm				\
-	mod_ex_main.pl
+	imported.pm
 
 EXTRA_DIST = $(ycp_examples_DATA) $(perl_examples_DATA)

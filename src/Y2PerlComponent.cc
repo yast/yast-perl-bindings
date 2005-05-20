@@ -47,42 +47,6 @@ void Y2PerlComponent::result( const YCPValue & )
 }
 
 
-// The old way of calling builtins has to be redone
-// TODO later
-/*
-YCPValue
-Y2PerlComponent::evaluate( const YCPValue & val )
-{
-    if ( ! val->isTerm() )
-	return YCPError( "Syntax error: Term expected" );
-
-    YCPTerm term    = val->asTerm();
-    string function = term->symbol()->symbol();
-    YCPList argList = term->args();
-
-
-    y2debug("YPerl::evaluate( %s, %s )", function.c_str(), argList->toString().c_str());
-
-    // Optimization: Commands are ordered by how frequently they are called.
-    
-    if ( function == "CallVoid" 	)	return YPerl::callVoid	( argList );
-    if ( function == "CallList" 	)	return YPerl::callList	( argList );
-    if ( function == "CallString" 	)	return YPerl::callString( argList );
-    if ( function == "CallBool" 	)	return YPerl::callBool	( argList );
-    if ( function == "CallBoolean"	)	return YPerl::callBool	( argList );
-    if ( function == "CallInt" 		)	return YPerl::callInt	( argList );
-    if ( function == "CallInteger" 	)	return YPerl::callInt	( argList );
-    if ( function == "Eval" 		)	return YPerl::eval	( argList );
-    if ( function == "Parse" 		)	return YPerl::parse	( argList );
-    if ( function == "Run" 		)	return YPerl::run	( argList );
-    if ( function == "LoadModule"	)	return YPerl::loadModule( argList );
-    if ( function == "Use"		)	return YPerl::loadModule( argList );
-    if ( function == "Destroy" 		)	return YPerl::destroy();
-	
-    return YCPError( string ( "Undefined Perl::" ) + function );
-}
-*/
-
 Y2Namespace *Y2PerlComponent::import (const char* name)
 {
     // TODO where to look for it
