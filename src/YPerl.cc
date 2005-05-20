@@ -26,7 +26,9 @@
 #include <sstream>
 #include <iomanip>
 
-#include <EXTERN.h>	// Perl stuff
+// Perl stuff
+#define PERL_NO_GET_CONTEXT     /* we want efficiency, man perlguts */
+#include <EXTERN.h>
 #include <perl.h>
 
 
@@ -62,7 +64,7 @@ EXTERN_C void xs_init( pTHX );
 YPerl * YPerl::_yPerl = 0;
 
 // prepend YCP's search path
-static void PrependModulePath (PerlInterpreter *my_perl)
+static void PrependModulePath (pTHX)
 {
     YCPPathSearch::initialize ();
 
@@ -93,7 +95,7 @@ YPerl::YPerl()
     , _interpreterOwnership (true)
 {
     _perlInterpreter = perl_alloc();
-
+    PERL_SET_CONTEXT (_perlInterpreter);
     if ( _perlInterpreter )
 	perl_construct( _perlInterpreter );
 

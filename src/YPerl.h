@@ -1,4 +1,4 @@
-/*--- -------------------------------------------------------*- c++ -*-\
+/*-----------------------------------------------------------*- c++ -*-\
 |								       |
 |		       __   __	  ____ _____ ____		       |
 |		       \ \ / /_ _/ ___|_   _|___ \		       |
@@ -20,6 +20,8 @@
 #ifndef YPerl_h
 #define YPerl_h
 
+// Perl stuff
+#define PERL_NO_GET_CONTEXT     /* we want efficiency, man perlguts */
 #include <EXTERN.h>
 #include <perl.h>
 
@@ -219,7 +221,8 @@ protected:
     static YPerl *	_yPerl;
 };
 
-//! The weird Perl macros need a PerlInterpreter * named 'my_perl' (!) almost everywhere.
-#define EMBEDDED_PERL_DEFS PerlInterpreter * my_perl = YPerl::perlInterpreter()
+//! Make sure that a Perl exists,
+//! declare and initialize the interpreter variable
+#define EMBEDDED_PERL_DEFS YPerl::yPerl(); dTHX
 
 #endif	// YPerl_h
