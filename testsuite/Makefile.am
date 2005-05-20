@@ -1,4 +1,4 @@
-TESTS_ENVIRONMENT = PERL5LIB=$(DESTDIR)$(PERL_VENDORARCH) libdir=$(libdir)
+TESTS_ENVIRONMENT = PERL5LIB=$(DESTDIR)$(PERL_VENDORARCH) prefix=$(prefix) libdir=$(libdir)
 # test-perl writes to the log :(
 # but so does test-perl-min
 TESTS = test-perl-min test-yast# test-perl
