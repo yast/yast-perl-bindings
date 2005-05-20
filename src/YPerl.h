@@ -13,7 +13,7 @@
   File:	      YPerl.h
 
   Author:     Stefan Hundhammer <sh@suse.de>
-
+  	      Martin Vidner <mvidner@suse.cz>
 /-*/
 
 
@@ -29,78 +29,6 @@
 class YPerl
 {
 public:
-
-    /**
-     * Parse a Perl script.
-     *
-     * Returns a YCPError on failure, YCPVoid on success.
-     **/
-    static YCPValue parse( YCPList argList );
-
-    /**
-     * Call a Perl function (sub) that doesn't return a value.
-     *
-     * Returns YCPVoid.
-     **/
-    static YCPValue callVoid( YCPList argList );
-    
-    /**
-     * Call a Perl function (sub) that returns multiple values (a list).
-     *
-     * Returns the sub's result as a YCPList.
-     **/
-    static YCPValue callList( YCPList argList );
-    
-    /**
-     * Call a Perl function (sub) that returns a bool value.
-     *
-     * Returns the sub's result as a YCPBool.
-     **/
-    static YCPValue callBool( YCPList argList );
-    
-    /**
-     * Call a Perl function (sub) that returns a string value.
-     *
-     * Returns the sub's result as a YCPString.
-     **/
-    static YCPValue callString( YCPList argList );
-    
-    /**
-     * Call a Perl function (sub) that returns an integer value.
-     *
-     * Returns the sub's result as a YCPInteger.
-     **/
-    static YCPValue callInt( YCPList argList );
-
-    /**
-     * Evaluate a Perl expression.
-     *
-     * Returns the expression's result in whatever type Perl returned.
-     *
-     * Remember that Perl tends to be somewhat surprising in what it returns;
-     * the return value of a search-and-replace assignment is 'true' (1) if
-     * the assignment was successful (which it usually is), not the replaced
-     * text. If in doubt, evaluate the expression you really want once more.
-     *
-     * Example:
-     *
-     *     Perl::Eval( "$x=\"Hello, World!\"; $x =~ s/Hello/Good Bye/; $x" );
-     *
-     * The final "$x" makes the expression return the contents of $x.
-     * If you omit that, you'll get the return value of the assignment
-     * ( "$x =~ s/..." ) which is probably not what you want.
-     *
-     * Beware. Perl can be strange. - But then, you wanted it ;-)
-     **/
-    static YCPValue eval( YCPList argList );
-
-    /**
-     * Run the script previously loaded with parse().
-     * 'argList' must be empty.
-     *
-     * Returns a YCPError on failure, YCPVoid on success.
-     **/
-    static YCPValue run( YCPList argList );
 
     /**
      * Load a Perl module - equivalent to "use" in Perl.
@@ -168,23 +96,7 @@ protected:
     PerlInterpreter * internalPerlInterpreter() const
 	{ return _perlInterpreter; }
 
-    /**
-     * Returns 'true' if the perl interpreter does have a parse tree, i.e. if
-     * parse() was called previously.
-     **/
-    bool haveParseTree() const { return _haveParseTree; }
-
-    /**
-     * Indicate whether or not the perl interpreter does have a parse tree.
-     **/
-    void setHaveParseTree( bool have ) { _haveParseTree = have; }
-
 public:
-    /**
-     * Generic Perl call.
-     **/
-    YCPValue call( YCPList argList, constTypePtr wanted_result_type );
-    
     /**
      * Generic Perl call.
      **/
@@ -303,7 +215,6 @@ protected:
 
     PerlInterpreter *	_perlInterpreter;
     bool		_interpreterOwnership; //!<  we create == we delete
-    bool		_haveParseTree;
 
     static YPerl *	_yPerl;
 };

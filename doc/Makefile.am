@@ -8,13 +8,9 @@
 htmldir = $(docdir)
 txtdir = $(docdir)
 
-html_DATA = YCP-builtins-perl.html YaST__YCP.html YaPI.html
+html_DATA = YaST__YCP.html YaPI.html
 txt_DATA = typeinfo
 CLEANFILES = $(html_DATA)
-
-builtin_perl = $(srcdir)/../src/YPerl.cc
-YCP-builtins-perl.html: $(builtin_perl)
-	@ybindir@/makebuiltindocs -t "Perl:: built-in functions" $^ > $@.new; mv $@.new $@
 
 YaST__YCP.html: $(srcdir)/../src/YCP.pm
 	pod2html < $^ > $@
