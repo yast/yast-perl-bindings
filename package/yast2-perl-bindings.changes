@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 20 18:40:43 CEST 2005 - mvidner@suse.cz
+
+- Enhanced for sharing a single interpreter with pluglibs written in
+  perl (perl2cpp).
+- Fixed double deletion of the interpreter when invoked from perl.
+
+-------------------------------------------------------------------
 Wed May 18 12:37:44 CEST 2005 - mvidner@suse.cz
 
 - pluglib-bindings: Compile wrapper using libtool so that

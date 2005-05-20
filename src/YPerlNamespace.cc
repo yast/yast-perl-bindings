@@ -6,7 +6,9 @@
 
 #include "YPerlNamespace.h"
 
-#include <EXTERN.h>	// Perl stuff
+// Perl stuff
+#define PERL_NO_GET_CONTEXT     /* we want efficiency, man perlguts */
+#include <EXTERN.h>
 #include <perl.h>
 
 #define y2log_component "Y2Perl"
