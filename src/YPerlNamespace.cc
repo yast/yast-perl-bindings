@@ -369,7 +369,7 @@ YPerlNamespace::YPerlNamespace (string name)
 
     I32 numsymbols = hv_iterinit (stash);
     // IVdf = Integer Value decimal format
-    y2debug ("numsymbols (%s) = %" IVdf, c_name, numsymbols);
+    y2debug ("numsymbols (%s) = %" IVdf, c_name, (IV) numsymbols);
 
     // get sorted list of symbols
     AV *symbols_av = newAV ();
