@@ -201,7 +201,7 @@ YPerl::loadModule( YCPList argList )
 	return YCPError( "Perl::loadModule() / Perl::Use() : Bad arguments: String expected!" );
 
     string module_name = argList->value(0)->asString()->value();
-    I32 flags	 = PERL_LOADMOD_NOIMPORT;	// load_module() flags are undocumented  :-(
+    U32 flags = PERL_LOADMOD_NOIMPORT;	// we do not pass arguments for import
     SV * version = 0;
     SV * name = newSVpv( module_name.c_str(), 0 );
 
@@ -416,9 +416,9 @@ YPerl::newPerlArrayRef( const YCPList & yList )
 
 	    if ( SvREFCNT( scalarVal ) != 1 )
 	    {
-		// U32 is unsigned long, even on a Hammer
-		y2internal ("Reference count is %" IVdf " (should be 1)",
-			    SvREFCNT( scalarVal ) );
+		// there is no format for U32
+		y2internal ("Reference count is %" UVuf " (should be 1)",
+			    (UV) SvREFCNT( scalarVal ) );
 	    }
 	}
 	else
@@ -488,8 +488,8 @@ YPerl::newPerlHashRef( const YCPMap & map )
 		}
 		else if ( SvREFCNT( scalarVal ) != 1 )
 		{
-		    y2internal( "Reference count is %" IVdf " (should be 1)",
-				SvREFCNT( scalarVal ) );
+		    y2internal( "Reference count is %" UVuf " (should be 1)",
+				(UV) SvREFCNT( scalarVal ) );
 		}
 	    }
 	    else
@@ -1164,7 +1164,7 @@ YPerl::fromPerlArray (AV * array, constTypePtr wanted_type)
 	SV ** svp = av_fetch (array, i, 0 /* not lval */);
 	if (svp == NULL)
 	{
-	    y2internal ("av_fetch returned NULL for index %" IVdf, i);
+	    y2internal ("av_fetch returned NULL for index %" IVdf, (IV) i);
 	    return YCPNull ();
 	}
 	YCPValue v = fromPerlScalar (*svp, wanted_type);
