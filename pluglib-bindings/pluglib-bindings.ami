@@ -7,9 +7,11 @@
 # expected input:
 #  PLUGLIB_MODULE = the name after %module in .i
 #  PLUGLIB_LIBRARY = the object file/library that is being wrapped
+#  PLUGLIB_DEPEND = dependencies
 # example:
 #  PLUGLIB_MODULE = Storage
 #  PLUGLIB_LIBRARY = .libs/liby2storage.so
+#  PLUGLIB_DEPEND = ../../src/StorageInterface.h
 #  include $(top_srcdir)/pluglib-bindings.ami
 
 TARGET_PM = $(PLUGLIB_MODULE).pm
@@ -26,7 +28,7 @@ SWIG = swig
 SWIGFLAGS = -I$(PLGB_BASEDIR)/swig -c++
 
 # Process the .i file, creating a wrapper for Perl and a XML parse.
-%_wrap.cc %_wrap.xml: %.i
+%_wrap.cc %_wrap.xml: %.i $(PLUGLIB_DEPEND)
 	$(SWIG) -perl $(SWIGFLAGS) -o $*_wrap.cc -xmlout $*_wrap.xml $<
 
 PLGB_TYPEINFO_XSL = $(PLGB_BASEDIR)/stylesheets/swigxml2typeinfo.xsl
