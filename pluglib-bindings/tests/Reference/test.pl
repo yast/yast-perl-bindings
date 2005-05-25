@@ -20,6 +20,13 @@ print "$s\n";
 Ref::PInt(\$s);
 print "$s\n";
 
+$b = 0;
+print "$b\n";
+Ref::RBool(\$b);
+print "$b\n";
+Ref::PBool(\$b);
+print "$b\n";
+
 $s = "hu";
 print "$s\n";
 8==Ref::RStr(\$s) || die;
@@ -30,3 +37,10 @@ print "$s\n";
 print "$s\n";
 8==Ref::CPStr(\$s) || die;
 print "$s\n";
+
+$b = 4;
+print "$b\n";
+Ref::REnum(\$b);
+print "$b\n";
+Ref::PEnum(\$b);
+print "$b\n";

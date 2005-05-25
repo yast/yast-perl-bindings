@@ -7,6 +7,8 @@
  * $Id$
  */
 
+%include "stdc/references.i"
+
 %typemap(in) SWIGTYPE {
     // try pointer to object
     $&1_ltype argp;
@@ -127,22 +129,52 @@ bool TO_BOOL(SV* sv, bool *x, int size, const swig_type_info *t) {
     return true;
 }
 
-bool TO_INT(SV* sv, int32_t *x, int size, const swig_type_info *t) { 
+bool TO_CHAR(SV* sv, signed char *x, int size, const swig_type_info *t) { 
     *x = SvIV(sv);
     return true;
 }
 
-bool TO_INT64(SV* sv, int64_t *x, int size, const swig_type_info *t) {
+bool TO_SHORT(SV* sv, short *x, int size, const swig_type_info *t) { 
+    *x = SvIV(sv);
+    return true;
+}
+
+bool TO_INT(SV* sv, int *x, int size, const swig_type_info *t) { 
+    *x = SvIV(sv);
+    return true;
+}
+
+bool TO_LONG(SV* sv, long *x, int size, const swig_type_info *t) { 
+    *x = SvIV(sv);
+    return true;
+}
+
+bool TO_QUAD(SV* sv, long long *x, int size, const swig_type_info *t) {
     *x = strtoll(SvPV_nolen(sv), 0, 0);
     return true;
 }
 
-bool TO_UINT(SV* sv, uint32_t *x, int size, const swig_type_info *t) {
+bool TO_UCHAR(SV* sv, unsigned char *x, int size, const swig_type_info *t) {
     *x = SvUV(sv);
     return true;
 }
 
-bool TO_UINT64(SV* sv, uint64_t *x, int size, const swig_type_info *t) { 
+bool TO_USHORT(SV* sv, unsigned short *x, int size, const swig_type_info *t) {
+    *x = SvUV(sv);
+    return true;
+}
+
+bool TO_UINT(SV* sv, unsigned int *x, int size, const swig_type_info *t) {
+    *x = SvUV(sv);
+    return true;
+}
+
+bool TO_ULONG(SV* sv, unsigned long *x, int size, const swig_type_info *t) {
+    *x = SvUV(sv);
+    return true;
+}
+
+bool TO_UQUAD(SV* sv, unsigned long long *x, int size, const swig_type_info *t) { 
     *x = strtoull(SvPV_nolen(sv), 0, 0);
     return true;
 }

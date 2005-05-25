@@ -8,7 +8,7 @@
  */
 
 %include <std_string.i>
-%include <typemaps.i>
+
 
 %{
 #include <string>

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 25 12:00:59 CEST 2005 - mlazar@suse.cz
+
+- added support for reference to enum types
+
+-------------------------------------------------------------------
 Fri May 20 18:40:43 CEST 2005 - mvidner@suse.cz
 
 - Enhanced for sharing a single interpreter with pluglibs written in
