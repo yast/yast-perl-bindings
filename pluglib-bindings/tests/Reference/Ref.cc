@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 
+#include "Ref.h"
+
 using namespace std;
 
 void ListInt(list<int> l)
@@ -25,6 +27,26 @@ void RInt(int &l)
 void PInt(int *l)
 {
     *l=*l+2;
+}
+
+void REnum(e &l)
+{
+    l=A;
+}
+
+void PEnum(e *l)
+{
+    *l=B;
+}
+
+void RBool(bool &l)
+{
+    l=true;
+}
+
+void PBool(bool *l)
+{
+    *l=false;
 }
 
 int RStr(string &l)

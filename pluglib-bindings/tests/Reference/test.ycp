@@ -17,4 +17,11 @@ y2warning("i=%1", i);
 Ref::PInt(i);
 y2warning("i=%1", i);
 
+boolean b = false;
+y2warning("b=%1", b);
+Ref::RBool(b);
+y2warning("b=%1", b);
+Ref::PBool(b);
+y2warning("b=%1", b);
+
 }
