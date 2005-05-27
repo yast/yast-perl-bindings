@@ -9,8 +9,18 @@ if ($#ARGV >= 0 && $ARGV[0] =~ /--outdir=(.*)/) {
     shift;
 }
 
+# Unknown types are assumed to be classes and represented as "any"
 my %unknown;
+# But we want enums as integers, so they must be "declared" in the input
+# in the form of the following line:
+### DECLARE enum storage::FsType
+my %enums;
+
 while(<>){
+    if (/^### DECLARE enum (.*)$/) {
+	$enums{$1} = 1;
+	next;
+    }
     if (/^package (?:(.*)::)?(.*?);$/) {
 	my $mod = $2;
 	(my $dir=$1||"") =~ s|::|/|g;
@@ -59,8 +69,12 @@ while(<>){
 	my $c = $1;
 	$x .= $`;
 	(my $b = $c) =~ s/^&//;
-	if ($b ne "map" && $b ne "list" && $b ne "integer" && $b ne "void"
-	    && $b ne "any" && $b ne "boolean" && $b ne "string" && $b ne "function")
+	if (defined $enums{$b})
+	{
+	    $c = "integer";
+	}
+	elsif (!grep {$b eq $_} ("map", "list", "any", "function",
+				 "integer", "void", "boolean", "string"))
 	{
 	    $unknown{$b}++;
 	    $c = "any";
