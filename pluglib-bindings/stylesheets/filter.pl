@@ -1,16 +1,19 @@
 #!/usr/bin/perl
 # author: Martin Lazar <mlazar@suse.cz>
+use warnings;
+use strict;
 
-$outdir = ".";
+my $outdir = ".";
 if ($#ARGV >= 0 && $ARGV[0] =~ /--outdir=(.*)/) {
     $outdir = $1;
     shift;
 }
 
+my %unknown;
 while(<>){
     if (/^package (?:(.*)::)?(.*?);$/) {
-	$mod = $2;
-	($dir=$1) =~ s|::|/|g;
+	my $mod = $2;
+	(my $dir=$1||"") =~ s|::|/|g;
 	system "mkdir -p '$outdir/$dir'";
 	open OUT, ">>$outdir/$dir/$mod.pm";
     }
@@ -50,12 +53,12 @@ while(<>){
     # reference
     
     # all other
-    $x = "";
+    my $x = "";
     while (/"([^"]*)"/) { #"
 	$_ = $';
-	$c = $1;
+	my $c = $1;
 	$x .= $`;
-	($b = $c) =~ s/^&//;
+	(my $b = $c) =~ s/^&//;
 	if ($b ne "map" && $b ne "list" && $b ne "integer" && $b ne "void"
 	    && $b ne "any" && $b ne "boolean" && $b ne "string" && $b ne "function")
 	{
@@ -67,7 +70,7 @@ while(<>){
     print OUT $x . $_;
 }
 
-($progname = $0) =~ s|.*/||;
+(my $progname = $0) =~ s|.*/||;
 foreach(sort keys %unknown) {
     next if /::/;
     print STDERR "$progname: Warning: unknown data type $_\n";
