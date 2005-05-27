@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri May 27 13:47:57 CEST 2005 - mvidner@suse.cz
+
+- In TYPEINFO, represent enums as integers, not any.
+- Do not grow the generated pm's infinitely, remove them before
+  apending to them.
+- Added PLUGLIB_DEPEND (arvin)
+
+-------------------------------------------------------------------
 Wed May 25 12:00:59 CEST 2005 - mlazar@suse.cz
 
 - added support for reference to enum types

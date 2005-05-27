@@ -72,6 +72,12 @@
     <xsl:text>}&#10;8;&#10;</xsl:text>
 </xsl:template>
 
+<xsl:template match="enum/attributelist/attribute[@name='enumtype']" mode="enum-declare">
+  <xsl:text>### DECLARE enum </xsl:text>
+  <xsl:value-of select="@value" />
+  <xsl:text>&#10;</xsl:text>
+</xsl:template>
+
 <xsl:template match="enum" mode="enum">
     <xsl:param name="class" select="/top/attributelist/attribute[@name='module']/@value"/>
     <!--xsl:text>package </xsl:text>
@@ -91,6 +97,7 @@
 </xsl:template>
 
 <xsl:template match="/">
+    <xsl:apply-templates mode="enum-declare"/>
     <xsl:text>package </xsl:text>
     <xsl:value-of select="/top/attributelist/attribute[@name='module']/@value"/>
     <xsl:text>;&#10;</xsl:text>
