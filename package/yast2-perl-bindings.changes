@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun  1 14:17:45 CEST 2005 - mlazar@suse.cz
+
+- added support for perl objects (via YCPExternal type)
+
+-------------------------------------------------------------------
 Fri May 27 13:47:57 CEST 2005 - mvidner@suse.cz
 
 - In TYPEINFO, represent enums as integers, not any.

@@ -49,11 +49,13 @@
 #include <ycp/YCPTerm.h>
 #include <ycp/YCPVoid.h>
 #include <ycp/YCPCode.h>
+#include <ycp/YCPExternal.h>
 
 #include <YPerl.h>
 
 #define DIM(ARRAY)	( sizeof( ARRAY )/sizeof( ARRAY[0] ) )
 
+#define YCP_EXTERNAL_MAGIC "Reference to perl object (v1.0)"
 
 
 // Stub for dynamic loading of Perl modules as xs_init function for perl_parse().
@@ -358,6 +360,14 @@ YPerl::newPerlScalar( const YCPValue & xval, bool composite )
     if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
     if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
     if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
+    if ( val->isExternal()) {
+	YCPExternal ex = val->asExternal();
+	if (ex->magic() != string(YCP_EXTERNAL_MAGIC)) {
+	    y2error("Unexpected magic '%s'.", (ex->magic()).c_str());
+	    return 0;
+	}
+	return newRV_inc((SV*)(ex->payload()));
+    }
     if ( val->isByteblock())
     {
 	YCPByteblock b = val->asByteblock();
@@ -597,6 +607,25 @@ YPerl::tryFromPerlClassBoolean (const char *class_name, SV *sv, YCPValue &out)
 	return false;
     }
 }
+
+void perl_class_destructor(void *ref, string magic)
+{
+    if (YPerl::_yPerl && magic == string(YCP_EXTERNAL_MAGIC)) {
+	y2debug("perl-bindings YCPExternal destructor");
+	dTHX;
+	SvREFCNT_dec((SV*)ref);
+    }
+}
+
+void YPerl::fromPerlClassToExternal(const char *class_name, SV *sv, YCPValue &out)
+{
+    SV * ref = SvRV(sv);
+    SvREFCNT_inc(ref);
+    
+    YCPExternal ex(ref, string(YCP_EXTERNAL_MAGIC), &perl_class_destructor);
+    out = ex;
+}
+
 
 bool
 YPerl::tryFromPerlClassByteblock (const char *class_name, SV *sv, YCPValue &out)
@@ -1117,8 +1146,7 @@ YPerl::fromPerlScalarToAny (SV * sv)
 	    !tryFromPerlClassTerm	(class_name, sv, val) &&
 	    true)
 	{
-	    y2error ("Expected any, got object of class %s",
-		     class_name);
+	    fromPerlClassToExternal(class_name, sv, val);
 	}
     }
     else if ( SvROK( sv ) )

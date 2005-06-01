@@ -142,6 +142,11 @@ protected:
 			 const char * full_method_name,
 			 YCPList args);
     /**
+     * Store reference to object to YCPExternal and increase refernce count to perl object.
+     */
+    void fromPerlClassToExternal (const char *class_name, SV *sv, YCPValue &out);
+
+    /**
      * Given that sv is an object and its class name is class_name,
      * check whether it is YaST::YCP::Boolean.
      * If yes, store its value into out
@@ -218,6 +223,7 @@ protected:
     PerlInterpreter *	_perlInterpreter;
     bool		_interpreterOwnership; //!<  we create == we delete
 
+public:
     static YPerl *	_yPerl;
 };
 
