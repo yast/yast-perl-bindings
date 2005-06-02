@@ -5,7 +5,6 @@ SUBDIRS = blocxx generic stdc stl
 
 swig_DATA = \
 	BloCxx.i \
-	LiMaL.i \
-	limal_perlrun.swg
+	LiMaL.i
 
 EXTRA_DIST = $(swig_DATA)
