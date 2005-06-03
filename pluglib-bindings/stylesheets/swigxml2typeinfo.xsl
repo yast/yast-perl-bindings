@@ -15,7 +15,7 @@
 <!-- disable copying of text and attrs -->
 <xsl:template match="text()|@*"/>
 
-<xsl:template match="cdecl/attributelist/parmlist/parm/attributelist">
+<xsl:template match="attributelist/parmlist/parm/attributelist" mode="parmlist">
     <xsl:param name="type" select="attribute[@name='type']/@value"/>
     <xsl:value-of select="concat(', &#34;', $type, '&#34;')"/>    
 </xsl:template>
@@ -28,7 +28,7 @@
     <xsl:choose>
 	<xsl:when test="$view='globalfunctionHandler'">
 	    <xsl:value-of select="concat('        ', $name,' => [&#34;function&#34;, &#34;', $type, '&#34;')"/>
-	    <xsl:apply-templates select="parmlist"/>
+	    <xsl:apply-templates select="parmlist" mode="parmlist"/>
 	    <xsl:text>],&#10;</xsl:text>
 	</xsl:when>
     </xsl:choose>
@@ -42,7 +42,7 @@
     <xsl:choose>
 	<xsl:when test="$view='memberfunctionHandler'">
 	    <xsl:value-of select="concat('        ', $name,' => [&#34;function&#34;, &#34;', $type, '&#34;, &#34;any&#34;')"/>
-	    <xsl:apply-templates select="parmlist"/>
+	    <xsl:apply-templates select="parmlist" mode="parmlist"/>
 	    <xsl:text>],&#10;</xsl:text>
 	</xsl:when>
 	<xsl:when test="$view='variableHandler'">
@@ -50,6 +50,15 @@
 	    <xsl:value-of select="concat('        swig_', $name, '_set => [&#34;function&#34;, &#34;void&#34;, &#34;any&#34;, &#34;', $type, '&#34;],&#10;')"/>
 	</xsl:when>
     </xsl:choose>
+</xsl:template>
+
+<xsl:template match="constructor/attributelist" mode="constructor">
+    <xsl:param name="class"/>
+    <xsl:if test="attribute[@name='decl']/@value!='f(p.SV).'"> <!-- skip perl2cpp default constructor -->
+	<xsl:value-of select="'        new => [&#34;function&#34;, &#34;any&#34;'"/>
+	<xsl:apply-templates select="parmlist" mode="parmlist"/>
+	<xsl:text>],&#10;</xsl:text>
+    </xsl:if>
 </xsl:template>
 
 <xsl:template match="class" mode="class">
@@ -61,15 +70,14 @@
     <xsl:text>;&#10;</xsl:text>
     <xsl:text>BEGIN {&#10;</xsl:text>
     <xsl:text>    %TYPEINFO = (&#10;        ALL_METHODS => 0,&#10;</xsl:text>
-    <xsl:text>        New => [&#34;function&#34;, &#34;any&#34;],&#10;</xsl:text>
+    <xsl:apply-templates select="constructor" mode="constructor">
+	<xsl:with-param name="class" select="$class"/>
+    </xsl:apply-templates>
     <xsl:apply-templates mode="class">
 	<xsl:with-param name="class" select="$class"/>
     </xsl:apply-templates>
     <xsl:text>    );&#10;}&#10;</xsl:text>
-    <xsl:text>sub New {&#10;</xsl:text>
-    <xsl:text>    my $pkg = shift;&#10;</xsl:text>
-    <xsl:value-of select="concat('    return ', /top/attributelist/attribute[@name='module']/@value, 'c::new_', $class, '(@_);&#10;')"/>
-    <xsl:text>}&#10;8;&#10;</xsl:text>
+    <xsl:text>&#10;8;&#10;</xsl:text>
 </xsl:template>
 
 <xsl:template match="enum/attributelist/attribute[@name='enumtype']" mode="enum-declare">

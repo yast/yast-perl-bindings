@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun  3 14:54:58 CEST 2005 - mlazar@suse.cz
+
+- pluglib-bindings: improved constructors in TYPEINFO
+
+-------------------------------------------------------------------
 Wed Jun  1 14:21:40 CEST 2005 - mlazar@suse.cz
 
 - removed limal_perlrun.swg (not needed sinc YCP support external data types)
