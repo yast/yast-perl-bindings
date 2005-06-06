@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun  6 17:35:24 CEST 2005 - mvidner@suse.cz
+
+- Fixed build after introducing remote namespaces in yast2-core.
+- 2.12.5
+
+-------------------------------------------------------------------
 Fri Jun  3 14:54:58 CEST 2005 - mlazar@suse.cz
 
 - pluglib-bindings: improved constructors in TYPEINFO
