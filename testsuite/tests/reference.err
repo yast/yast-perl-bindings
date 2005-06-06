@@ -9,4 +9,5 @@
 <1> [YCP] tests/reference.ycp:22 string: hu-ok
 <1> [YCP] tests/reference.ycp:23 list: [8, 2, 2, 3, 4, -3]
 <1> [YCP] tests/reference.ycp:24 map: $["a":"A", "b":"y-ok", "d":"123"]
+<1> [wfm] WFMSubAgent.cc(WFMSubAgent):XXX Deleting SubAgent: 0 scr
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'

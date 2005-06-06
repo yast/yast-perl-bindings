@@ -316,6 +316,11 @@ public:
 	m_call->add (YCPVoid ());
 	return true;
     }
+
+    /**
+     * Something for remote namespaces
+     */
+    virtual string name () const { return m_local_name; }
 };
 
 class Y2PerlSubCall : public Y2PerlFunctionCall {

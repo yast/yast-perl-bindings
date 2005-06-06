@@ -4,5 +4,6 @@
 <1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
 <1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
 <1> [YCP] tests/testpfunc2.ycp:5 nested: Hello, world
+<1> [wfm] WFMSubAgent.cc(WFMSubAgent):XXX Deleting SubAgent: 0 scr
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
 <1> [Y2Perl] YPerl.cc(destroy):XXX Shutting down embedded Perl interpreter.
