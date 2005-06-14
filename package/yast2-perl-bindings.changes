@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 14 15:25:13 CEST 2005 - mlazar@suse.cz
+
+- Fixed enums in TYPEINFO (again and better).
+
+-------------------------------------------------------------------
 Tue Jun 14 15:10:03 CEST 2005 - mlazar@suse.cz
 
 - Fixed enums in TYPEINFO.

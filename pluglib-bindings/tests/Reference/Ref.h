@@ -11,8 +11,8 @@ void RListInt(std::list<int>&);
 void RInt(int& x);
 void PInt(int* x);
 
-enum e Enum(enum e x);
-void REnum(enum e& x);
+e Enum(e x);
+void REnum(e& x);
 void PEnum(enum e* x);
 
 void RBool(bool& x);

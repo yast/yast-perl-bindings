@@ -69,9 +69,9 @@ while(<>){
 	my $c = $1;
 	$x .= $`;
 	(my $b = $c) =~ s/^&//;
-	if ($b =~ /^enum / && defined $enums{$'})
+	if (defined $enums{$b} || $b =~ /^enum /)
 	{
-	    $c =~ s/enum .*/integer/;
+	    $c = ($c =~ /^&/) ? "&integer" : "integer";
 	}
 	elsif (!grep {$b eq $_} ("map", "list", "any", "function",
 				 "integer", "void", "boolean", "string"))
