@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 14 15:10:03 CEST 2005 - mlazar@suse.cz
+
+- Fixed enums in TYPEINFO.
+
+-------------------------------------------------------------------
 Mon Jun  6 17:35:24 CEST 2005 - mvidner@suse.cz
 
 - Fixed build after introducing remote namespaces in yast2-core.
