@@ -24,4 +24,23 @@ y2warning("b=%1", b);
 Ref::PBool(b);
 y2warning("b=%1", b);
 
+string s = "hu";
+y2warning("s=%1", s);
+Ref::RStr(s);
+y2warning("s=%1", s);
+Ref::PStr(s);
+y2warning("s=%1", s);
+Ref::CRStr(s);
+y2warning("s=%1", s);
+Ref::CPStr(s);
+y2warning("s=%1", s);
+
+integer e = 4;
+y2warning("e=%1", e);
+Ref::REnum(e);
+y2warning("e=%1", e);
+Ref::PEnum(e);
+y2warning("e=%1", e);
+
+
 }

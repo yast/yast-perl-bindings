@@ -29,6 +29,11 @@ void PInt(int *l)
     *l=*l+2;
 }
 
+e Enum(e l)
+{
+    return l;
+}
+
 void REnum(e &l)
 {
     l=A;
