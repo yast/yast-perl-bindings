@@ -4,8 +4,10 @@ use warnings;
 use strict;
 
 my $outdir = ".";
-if ($#ARGV >= 0 && $ARGV[0] =~ /--outdir=(.*)/) {
-    $outdir = $1;
+my $strip = 0;
+while ($#ARGV >= 0 && $ARGV[0] =~ /^--([^=]+)(?:=(.*))?/) {
+    $outdir = $2 if defined $2 && $1 eq "outdir";
+    $strip = $2 if defined $2 && $1 eq "strip";
     shift;
 }
 
@@ -24,9 +26,12 @@ while(<>){
     if (/^package (?:(.*)::)?(.*?);$/) {
 	my $mod = $2;
 	(my $dir=$1||"") =~ s|::|/|g;
+	for(1..$strip) { $dir =~ s|^[^/]*/?||;}
 	system "mkdir -p '$outdir/$dir'";
 	open OUT, ">>$outdir/$dir/$mod.pm";
     }
+    next if /^\s*perlObject(OK|2str)? =>/; # skip internal perl2cpp methods
+    
     # remove known prefixes
     s/\bstd:://g;
     s/\bBLOCXX_NAMESPACE:://gi;
