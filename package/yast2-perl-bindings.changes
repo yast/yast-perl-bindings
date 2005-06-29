@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 29 10:53:03 CEST 2005 - mlazar@suse.cz
+
+- pluglib-bindings: added --strip option to filter.pl
+- YPerl.cc: better debug messages for perl_class_destructor
+
+-------------------------------------------------------------------
 Tue Jun 14 15:25:13 CEST 2005 - mlazar@suse.cz
 
 - Fixed enums in TYPEINFO (again and better).
