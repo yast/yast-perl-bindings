@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul  1 16:52:45 CEST 2005 - mlazar@suse.cz
+
+- quick workaround for "problems with corrupted memory when using
+  C++/ycp interface of libstorage", see yast2-hacker
+
+-------------------------------------------------------------------
 Wed Jun 29 10:53:03 CEST 2005 - mlazar@suse.cz
 
 - pluglib-bindings: added --strip option to filter.pl
