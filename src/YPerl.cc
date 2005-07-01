@@ -613,7 +613,7 @@ void perl_class_destructor(void *ref, string magic)
     if (YPerl::_yPerl && magic == string(YCP_EXTERNAL_MAGIC)) {
 	y2debug("perl-bindings YCPExternal destructor [[[");
 	dTHX;
-	SvREFCNT_dec((SV*)ref);
+//	SvREFCNT_dec((SV*)ref);
 	y2debug("perl-bindings YCPExternal destructor ]]]");
     }
 }
