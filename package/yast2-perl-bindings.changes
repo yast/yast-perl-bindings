@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 11 08:31:03 CEST 2005 - visnov@suse.cz
+
+- Fix packages needed for build 
+- 2.12.6
+
+-------------------------------------------------------------------
 Fri Jul  1 16:52:45 CEST 2005 - mlazar@suse.cz
 
 - quick workaround for "problems with corrupted memory when using
