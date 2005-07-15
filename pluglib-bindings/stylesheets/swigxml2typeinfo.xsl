@@ -55,7 +55,7 @@
 <xsl:template match="constructor/attributelist" mode="constructor">
     <xsl:param name="class"/>
     <xsl:if test="attribute[@name='decl']/@value!='f(p.SV).'"> <!-- skip perl2cpp default constructor -->
-	<xsl:value-of select="'        new => [&#34;function&#34;, &#34;any&#34;'"/>
+	<xsl:value-of select="'        new => [&#34;function&#34;, &#34;any&#34;, &#34;string&#34;'"/>
 	<xsl:apply-templates select="parmlist" mode="parmlist"/>
 	<xsl:text>],&#10;</xsl:text>
     </xsl:if>
