@@ -2,11 +2,12 @@
 Fri Jul 15 10:08:39 CEST 2005 - mlazar@suse.cz
 
 - fixed "problem with corrupted memory when using C++/ycp interface..."
+- 2.12.7
 
 -------------------------------------------------------------------
 Mon Jul 11 08:31:03 CEST 2005 - visnov@suse.cz
 
-- Fix packages needed for build 
+- Fix packages needed for build
 - 2.12.6
 
 -------------------------------------------------------------------
