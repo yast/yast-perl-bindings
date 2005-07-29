@@ -33,13 +33,3 @@ in different namespaces to generate a name conflict in the target
 language. To resolve this conflict, simply use %rename to disambiguate
 the declarations....
 
-
-About references and pointers:
-------------------------------
-
-You have to mark references and pointers to base data types (not
-required for lists, maps and std::string) with variable name "REFERENCE"
-(at least in header or in swig interface). For example:
-
-void get_int(int *REFERENCE); // pointer to integer - update value
-void print_str(char *str); // "black box" - only input
