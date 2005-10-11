@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 11 11:16:51 CEST 2005 - mvidner@suse.cz
+
+- Functions without TYPEINFO are no longer made available as
+  any Foo(...), because it is useless and only complicates error
+  cases.
+- 2.13.0
+
+-------------------------------------------------------------------
 Wed Jul 20 10:49:43 CEST 2005 - arvin@suse.de
 
 - added libxml2 and libxml2-devel to neededforbuild
