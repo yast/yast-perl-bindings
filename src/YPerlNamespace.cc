@@ -448,7 +448,11 @@ YPerlNamespace::YPerlNamespace (string name)
 		// not a y2warning, because there may be functions
 		// pushed from 3rd party Perl modules
 		y2debug ("No $TYPEINFO{%s}", symbol);
-		sym_tp = new FunctionType (Type::Any);
+		// no longer make them available with an arbitrary signature.
+		// that leads to weird errors when dealing with
+		// misplaced TYPEINFOs
+		continue;
+		// sym_tp = new FunctionType (Type::Any);
 	    }
 
 
