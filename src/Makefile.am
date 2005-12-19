@@ -29,9 +29,6 @@ libYCP_la_SOURCES =				\
 # But it does not work.
 libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 		-Xlinker --whole-archive	\
-		-lpy2plugin			\
-		-lpy2program			\
-		-lpy2stdio			\
 		-lpy2scr			\
 		-lpy2wfm			\
 		-lscr -lyui			\
