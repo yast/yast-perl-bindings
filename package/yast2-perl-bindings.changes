@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jan 25 15:15:20 CET 2006 - mvidner@suse.cz
+
+- Return 1 as true value. 8 causes perl warnings if there are too
+  many of them (#144296).
+- pluglib-bindings.ami: clean the _wrap.* files too.
+- 2.13.2
+
+-------------------------------------------------------------------
 Mon Dec 19 16:38:26 CET 2005 - mvidner@suse.cz
 
 - Do not link libraries that were merged with liby2 in yast2-core.
