@@ -72,3 +72,5 @@ $(TARGET_SO): %.so: .libs/%_wrap.o $(PLUGLIB_LIBRARY)
 # Install the library
 PLGB_SOdir = $(PERL_VENDORARCH)
 PLGB_SO_DATA = $(TARGET_SO)
+
+CLEANFILES = $(PLUGLIB_MODULE)_wrap.*
