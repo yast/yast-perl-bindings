@@ -77,7 +77,7 @@
 	<xsl:with-param name="class" select="$class"/>
     </xsl:apply-templates>
     <xsl:text>    );&#10;}&#10;</xsl:text>
-    <xsl:text>&#10;8;&#10;</xsl:text>
+    <xsl:text>&#10;1;&#10;</xsl:text>
 </xsl:template>
 
 <xsl:template match="enum/attributelist/attribute[@name='enumtype']" mode="enum-declare">
@@ -114,9 +114,9 @@
     <xsl:apply-templates/>
     <xsl:text>    );&#10;}&#10;&#10;</xsl:text>
     <xsl:apply-templates mode="enum"/>
-    <xsl:text>8;&#10;</xsl:text>
+    <xsl:text>1;&#10;</xsl:text>
     <xsl:apply-templates mode="class"/>
-    <xsl:text>8;&#10;</xsl:text>
+    <xsl:text>1;&#10;</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
