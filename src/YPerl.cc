@@ -341,6 +341,44 @@ YPerl::callInner (string module, string function, bool method,
 }
 
 
+/**
+ * @return a new SV or 0 if the value does not have the right type
+ */
+static
+SV *
+newPerlReferenceableScalar (const YCPValue& val)
+{
+    EMBEDDED_PERL_DEFS;
+    if (val->isString ())
+	return newSVpv (val->asString ()->value_cstr (), 0);
+    if (val->isBoolean ())
+	return newSViv (val->asBoolean ()->value () ? 1 : 0);
+    if (val->isInteger ())
+    {
+	long long int lli = val->asInteger ()->value ();
+	// Perl does not have limit constants, but templates help
+	if (std::numeric_limits<IVTYPE>::min() <= lli &&
+	    lli <= std::numeric_limits<UVTYPE>::max())
+	{
+	    if (lli <= std::numeric_limits<IVTYPE>::max())
+		return newSViv (lli);
+	    else
+		return newSVuv (lli);
+	}
+	else
+	{
+	    // make a string
+	    char buf[80];
+	    snprintf (buf, sizeof (buf), "%lld", lli);
+	    return newSVpv (buf, 0);
+	}
+    }
+    if (val->isFloat ())
+	return newSVnv (val->asFloat ()->value ());
+
+    return 0;
+}
+
 SV *
 YPerl::newPerlScalar( const YCPValue & xval, bool composite )
 {
@@ -349,17 +387,16 @@ YPerl::newPerlScalar( const YCPValue & xval, bool composite )
     YCPValue val = xval;
     if ( val->isReference()) {
 	val = val->asReference()->entry()->value();
-	if ( val->isString()  )	return newRV(newSVpv( val->asString()->value_cstr(), 0 ));
-	if ( val->isInteger() )	return newRV(newSViv( val->asInteger()->value()));
-	if ( val->isBoolean() )	return newRV(newSViv( val->asBoolean()->value() ? 1 : 0 ));
-	if ( val->isFloat()   )	return newRV(newSVnv( val->asFloat()->value() ));
+	SV * sv = newPerlReferenceableScalar (val);
+	if (sv)
+	    return newRV (sv);
     }
-    
-    if ( val->isString()  )	return newSVpv( val->asString()->value_cstr(), 0 );
+
+    SV * sv = newPerlReferenceableScalar (val);
+    if (sv)			return sv;
+
     if ( val->isList()    )	return newPerlArrayRef( val->asList() );
     if ( val->isMap()     )	return newPerlHashRef( val->asMap() );
-    if ( val->isInteger() )	return newSViv( val->asInteger()->value() );
-    if ( val->isBoolean() )	return newSViv( val->asBoolean()->value() ? 1 : 0 );
     if ( val->isExternal()) {
 	YCPExternal ex = val->asExternal();
 	if (ex->magic() != string(YCP_EXTERNAL_MAGIC)) {
@@ -389,7 +426,6 @@ YPerl::newPerlScalar( const YCPValue & xval, bool composite )
 				    YCPString (
 					val->asSymbol ()->symbol ())));
     }
-    if ( val->isFloat()   )	return newSVnv( val->asFloat()->value() );
     if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
     // YuCK, stringify
@@ -647,6 +683,47 @@ YPerl::tryFromPerlClassByteblock (const char *class_name, SV *sv, YCPValue &out)
     }
 }
 
+static
+bool
+getInteger (SV *sv, YCPValue &out)
+{
+    EMBEDDED_PERL_DEFS;
+    // #127896: go via string but do not unnecessarily convert
+    // if we already have a (short) integer value
+    if (SvIOK (sv))
+    {
+	if (SvIsUV (sv))
+	    out = YCPInteger (SvUV (sv));
+	else
+	    out = YCPInteger (SvIV (sv));
+	return true;
+    }
+    else
+    {
+	const char *pv = SvPV_nolen (sv);
+	if (SvPOK (sv))
+	{
+	    char *errptr;
+	    long long int lli = strtoll (pv, &errptr, 10);
+	    if (*errptr != '\0')
+	    {
+		y2error ("not a number");
+	    }
+	    else if (errno == ERANGE)
+	    {
+		y2error ("out of range");
+	    }
+	    else
+	    {
+		out = YCPInteger (lli);
+		return true;
+	    }
+	}
+    }
+    out = YCPVoid ();
+    return false;
+}
+
 bool
 YPerl::tryFromPerlClassInteger (const char *class_name, SV *sv, YCPValue &out)
 {
@@ -654,7 +731,7 @@ YPerl::tryFromPerlClassInteger (const char *class_name, SV *sv, YCPValue &out)
     if (!strcmp (class_name, "YaST::YCP::Integer"))
     {
 	SV *sval = callMethod (sv, "YaST::YCP::Integer::value");
-	out = YCPInteger (SvIV (sval));
+	getInteger (sval, out);
 	SvREFCNT_dec (sval);
 	return true;
     }
@@ -831,16 +908,7 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	{
 	    if (SvROK(sv))
 		sv = SvRV(sv);
-	    // see isString
-	    IV iv = SvIV (sv);
-	    if (SvIOK (sv))
-	    {
-		val = YCPInteger (iv);
-	    }
-	    else
-	    {
-		mismatch = true;
-	    }
+	    mismatch = !getInteger (sv, val);
 	}
     }
     else if (wanted_type->isFloat ())
