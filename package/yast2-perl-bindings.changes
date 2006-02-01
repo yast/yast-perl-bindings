@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb  1 16:43:25 CET 2006 - mvidner@suse.cz
+
+- Fixed passing large integers between YCP and Perl (converting
+  to/from strings if necessary), up to signed long long (#127896).
+- Use BuildRequires.
+- 2.13.3
+
+-------------------------------------------------------------------
 Wed Jan 25 15:15:20 CET 2006 - mvidner@suse.cz
 
 - Return 1 as true value. 8 causes perl warnings if there are too
