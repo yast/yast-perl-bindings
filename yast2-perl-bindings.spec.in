@@ -1,9 +1,11 @@
 @HEADER-COMMENT@
 
-
 @HEADER@
-BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-core-devel yast2-devtools yast2-packagemanager-devel
+BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-core-devel yast2-devtools libzypp-devel
+# libzypp-devel is missing .la requires
+BuildRequires:	boost-devel dbus-1-devel hal-devel
 
+Requires:	perl
 # for YaPI.pm
 Requires:	perl(Locale::gettext)
 
@@ -17,6 +19,7 @@ Summary:	-
 @BUILD@
 
 @INSTALL@
+rm @plugindir@/libpy2lang_perl.la
 
 @CLEAN@
 
@@ -24,7 +27,6 @@ Summary:	-
 %defattr (-, root, root)
 @plugindir@/libpy2lang_perl.so.*
 @plugindir@/libpy2lang_perl.so
-@plugindir@/libpy2lang_perl.la
 # libYCP goes elsewhere
 %dir %{perl_vendorarch}/YaST
 %{perl_vendorarch}/YaST/YCP.pm

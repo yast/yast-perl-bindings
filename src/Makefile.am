@@ -34,7 +34,7 @@ libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 		-lscr -lyui			\
 		-lycp -ly2			\
 		-Xlinker --no-whole-archive	\
-		-ly2pm -ly2util			\
+		-lzypp -ly2util			\
 		-version-info 2:0
 
 
@@ -45,7 +45,7 @@ liby2lang_perl_la_LDFLAGS = -version-info 2:0
 
 # the yast libraries are apparently necessary when we're loaded by perl.
 libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)	\
-		-lycp -ly2 -ly2pm -ly2util
+		-lycp -ly2 -lzypp -ly2util
 #libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)
 
 liby2lang_perl_la_LIBADD  = $(PERL_LDFLAGS)
