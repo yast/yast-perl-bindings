@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  2 17:19:42 CET 2006 - mvidner@suse.cz
+
+- Replaced yast2-packagemanager by libzypp.
+- Require perl, do not package .la file (lint and build warnings).
+- 2.13.4
+
+-------------------------------------------------------------------
 Wed Feb  1 16:43:25 CET 2006 - mvidner@suse.cz
 
 - Fixed passing large integers between YCP and Perl (converting
