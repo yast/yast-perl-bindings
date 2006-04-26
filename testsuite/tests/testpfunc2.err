@@ -1,4 +1,4 @@
-<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base'
+<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base' '-l' '-' '-n' 'testpfunc2=perl' 'tests/testpfunc2.ycp' 'testsuite'
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
 <1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
 <1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
