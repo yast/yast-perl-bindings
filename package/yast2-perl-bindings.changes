@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr 26 00:47:36 CEST 2006 - ro@suse.de
+
+- hack to fix testsuite (change in yast2-core)
+
+-------------------------------------------------------------------
 Thu Feb  2 17:19:42 CET 2006 - mvidner@suse.cz
 
 - Replaced yast2-packagemanager by libzypp.
