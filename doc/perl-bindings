@@ -1,0 +1,122 @@
+$Id$
+
+** Writing YaST modules in Perl
+
+Martin Vidner, http://en.opensuse.org/User:Mvidner
+
+* Location
+
+By a YaST module we mean a file that can be used by the import
+statement in YCP. Perl modules should be located in the same
+directories as YCP ones. That is, usually in
+/usr/share/YaST2/modules.
+
+* TYPEINFO
+
+YCP has stricter type checking than Perl and therefore Perl modules
+need to provide additional type information to be usable by YaST.
+This information is put in the module-global variable %TYPEINFO and
+should be initialized in the BEGIN block.
+
+Here is an example:
+
+--- PerlHello.pm
+#! /usr/bin/perl
+# A first example of a YaST module in Perl
+
+package PerlHello;
+
+BEGIN { $TYPEINFO{Hello} = ["function", "void"]; }
+sub Hello
+{
+    print "Hello, YaST\n";
+}
+
+1;
+---
+
+Only functions can be made visible to YaST. To access variables, write
+wrapper functions.
+
+A function TYPEINFO is a list reference of the form
+
+["function", return_TYPEINFO, argument0_TYPEINFO, argument1_TYPEINFO, ...].
+
+Types of return values and arguments are either simple:
+
+"any"
+"void"
+"boolean"
+"integer"
+"float"
+"string"
+
+# FIXME: argument _names_
+# FIXME: and documentation
+# FIXME: YPerlNamespace.cc::parseTypeinfo knows more, including "&"
+
+or structured:
+
+["list", value_TYPEINFO]
+["map", key_TYPEINFO, value_TYPEINFO]
+
+In YCP, it is possible to omit the types contained in lists and maps
+to mean "any". In TYPEINFOS, these are mandatory.
+
+* Package name as the first argument
+
+Note an important convention. PerlFunc::PlusOne is declared as
+returning and receiving one integer but in fact it expects a package
+name as the first parameter.
+
+--- PerlFunc.pm
+# ...
+BEGIN { $TYPEINFO{PlusOne} = ["function", "integer", "integer"]; }
+sub PlusOne
+{
+    my $package = shift;
+    my $i = shift;
+    return $i + 1;
+}
+# ...
+---
+
+If we call it from Perl, we must use the arrow operator:
+"my $i = PerlFunc->PlusOne(41);"
+
+This feature can be controlled by the special boolean entry
+$TYPEINFO{ALL_METHODS}. The default is true. For SWIG generated
+typeinfos, it is set to false.
+
+* Data Representation
+
+When passed from YCP to Perl, the basic types (boolean, integer,
+float, string) appear as scalars. Lists and maps appear as references
+to arrays and hashes (but these refer to copies, not to the original
+data). Nil is represented as undef.
+
+When passed from Perl to YCP, the reverse holds. When YCP expects a
+boolean, integer, float, or string, pass a scalar. When YCP expects a
+list or a map, pass a reference to an array or to a hash.
+
+But there is a catch in the case when YCP does not specify the type
+which it wants (saying "any"). In that case, all simple scalars will
+be passed to YCP as strings, even if they have a numeric value. This
+situation can bite especially when returning complex maps. Use
+YaST::YCP.pm to specify a different type.
+
+# FIXME: example to illustrate the gotcha
+
+Also note that we have not mentioned the YCP specific types like path,
+symbol, term, and byteblock. Use YaST::YCP.pm for these.
+
+For detailed information, see the documentation for YaST::YCP.pm
+
+* Calling YaST Back
+
+YaST::YCP::Import "Report";
+Report->Error ("Out of chocolate");
+
+# FIXME: explain more
+# FIXME: SCR
+# ? SCR->Error

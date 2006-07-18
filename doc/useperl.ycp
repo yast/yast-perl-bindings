@@ -1,0 +1,12 @@
+// Usage:
+// sudo tail -0f /var/log/YaST2/y2log &
+// Y2DIR=. /sbin/yast2 useperl.ycp
+{
+    import "PerlHello";
+    import "PerlFunc";
+
+    PerlHello::Hello ();
+
+    integer i = PerlFunc::PlusOne (41);
+    y2milestone ("got %1", i);
+}
