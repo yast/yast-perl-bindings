@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 18 16:11:21 CEST 2006 - mvidner@suse.cz
+
+- Documentation updates: doc/typeinfo replaced with doc/perl-bindings,
+  doc/useperl.ycp, doc/modules/*.pm
+
+-------------------------------------------------------------------
 Fri Jun  9 17:07:50 CEST 2006 - mvidner@suse.cz
 
 - Reenabled testsuite, needs libzypp r3558 (#182672).
