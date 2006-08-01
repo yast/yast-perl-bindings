@@ -3,7 +3,7 @@
 #
 
 # see examples/Makefile.am for why it is disabled
-#SUBDIRS = examples 
+#UBDIRS = examples 
 SUBDIRS = modules
 
 htmldir = $(docdir)
