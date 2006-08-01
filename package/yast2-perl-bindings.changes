@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug  1 10:41:20 CEST 2006 - mvidner@suse.cz
+
+- Documented how YaST::YCP::Import differs from YCP import.
+
+-------------------------------------------------------------------
 Tue Jul 18 16:11:21 CEST 2006 - mvidner@suse.cz
 
 - Documentation updates: doc/typeinfo replaced with doc/perl-bindings,
