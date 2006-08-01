@@ -171,6 +171,14 @@ END {
  YaST::YCP::Import "Namespace";
  Namespace->foo ("bar");
 
+Imports a YaST namespace (in YCP or Perl or any supported language).
+Equivalent to YCP C<import>, similar to Perl C<use>.
+
+If C<Namespace> is in YCP, its constructor is executed later than if
+it were imported from YCP. This can have subtle effects, for example
+in testsuites. To get closer to the YCP import behavior, call
+C<Import> from a C<BEGIN> block.
+
 =cut
 
 sub Import ($)
