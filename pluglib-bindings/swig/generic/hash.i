@@ -7,6 +7,10 @@
  * $Id$
  */
 
+#ifndef SWIG_SetErrorf
+#define SWIG_SetErrorf(msg, ...) Perl_croak(aTHX_ msg, __VA_ARGS__)
+#endif
+
 %define specialize_generic_hash(HASH, KEY, KEY_FROM_SV, KEY_TO_SV, KEY_CHECK_SV,
     VAL, VAL_FROM_SV, VAL_TO_SV, VAL_CHECK_SV)
 
