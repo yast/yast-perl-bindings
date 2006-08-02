@@ -42,6 +42,14 @@ bool TO_STD_STRING(SV* sv, std::string *x, int size, const swig_type_info *t) {
     $1 = &temp;
 }
 
+#if SWIG_VERSION > 0x010327
+/* workaround for swig-1.3.29 which would use the freearg typemap from
+ * <typemaps/ptrtypes.swg> otherwise. CHANGES of 2005-12-27:
+ * http://swig.cvs.sourceforge.net/*checkout*/swig/SWIG/CHANGES.current?revision=1.504
+ */
+%typemap(freearg) const std::string& "";
+#endif
+
 %typemap(argout) std::string*, std::string&
 {
     SV *sv = (SV *)SvRV($input);

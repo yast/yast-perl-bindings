@@ -7,6 +7,10 @@
  * $Id$
  */
 
+#ifndef SWIG_SetErrorf
+#define SWIG_SetErrorf(msg, ...) Perl_croak(aTHX_ msg, __VA_ARGS__)
+#endif
+
 %define specialize_generic_sequence(L, T, FROM_SV, TO_SV, CHECK_SV)
     specialize_one_level_sequence(L, T, FROM_SV, TO_SV, CHECK_SV)
     specialize_two_level_sequence(L, T, FROM_SV, TO_SV, CHECK_SV)
