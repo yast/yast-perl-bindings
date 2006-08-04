@@ -10,9 +10,13 @@ YaPI - common functions for modules implementing YaST API
 
 =cut
 
-# substituted by configure
-use lib '@yast2dir4perl@/modules';
-
+BEGIN {
+    # substituted by configure
+    my $modules = '@yast2dir4perl@/modules';
+    # unconditional 'use lib' could override a "use lib ." that
+    # we do during compilation, #197099
+    grep { $_ eq $modules } @INC or unshift(@INC, $modules);
+}
 use strict;
 
 use Exporter;

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug  4 12:21:02 CEST 2006 - mvidner@suse.cz
+
+- Removed a search path that is added elsewhere already and here just
+  breaks compilation is some cases (#197099).
+- 2.13.7
+
+-------------------------------------------------------------------
 Wed Aug  2 16:48:58 CEST 2006 - mvidner@suse.cz
 
 - Fixed SWIG typemaps for swig-1.3.29, thanks mmarek.
