@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug  7 15:53:28 CEST 2006 - mvidner@suse.cz
+
+- Fixed the SWIG fix not to end a comment prematurely.
+- 2.13.8
+
+-------------------------------------------------------------------
 Fri Aug  4 12:21:02 CEST 2006 - mvidner@suse.cz
 
 - Removed a search path that is added elsewhere already and here just
