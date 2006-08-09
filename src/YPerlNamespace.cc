@@ -384,7 +384,8 @@ YPerlNamespace::YPerlNamespace (string name)
 	char *symbol;
 	I32 symlen;
 
-	(void) hv_iternextsv (stash, &symbol, &symlen);
+	HE *he = hv_iternext (stash);
+	symbol = hv_iterkey (he, &symlen);
 	// we could optimize here by putting only interesting symbols
 	// into the array and thus reducing the sort time. later.
 	av_push (symbols_av, newSVpv (symbol, symlen));
