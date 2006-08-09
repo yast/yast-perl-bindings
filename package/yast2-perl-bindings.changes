@@ -3,7 +3,7 @@ Wed Aug  9 12:29:27 CEST 2006 - mvidner@suse.cz
 
 - Use the Import class when calling a YCP function
   so that the log is not flooded with "import (Foo)" (#197845).
-- 2.13.8
+- 2.13.9
 
 -------------------------------------------------------------------
 Mon Aug  7 15:53:28 CEST 2006 - mvidner@suse.cz
