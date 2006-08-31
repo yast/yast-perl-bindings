@@ -11,7 +11,15 @@
 
 /* for compatibility with older SWIG versions */
 #if SWIG_VERSION <= 0x010327
-#define SWIG_ConvertPacked(obj, p, s, type) SWIG_ConvertPacked(obj, p, s, type, 0)
+%{
+#define SWIG_ConvertPacked0(obj, p, s, type) \
+        SWIG_ConvertPacked (obj, p, s, type, 0)
+%}
+#else
+%{
+#define SWIG_ConvertPacked0(obj, p, s, type) \
+        SWIG_ConvertPacked (obj, p, s, type)
+%}
 #endif
 
 %typemap(in) SWIGTYPE {
@@ -21,7 +29,7 @@
 	$1 = *argp;
     } else {
 	// try packed object
-	if (SWIG_ConvertPacked($input,(void **) &$1, sizeof($1_ltype), $1_descriptor) < 0) {
+	if (SWIG_ConvertPacked0($input,(void **) &$1, sizeof($1_ltype), $1_descriptor) < 0) {
 	    SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle or $&1_mangle.\n");
 	}
     }
@@ -32,7 +40,7 @@
     if (SWIG_ConvertPtr($input,(void **) &$1, $1_descriptor,0) < 0) {
 	// try packed object
 	void *temp = (void*) malloc(sizeof($*1_ltype));
-	if (SWIG_ConvertPacked($input, temp, sizeof($*1_ltype), $*1_descriptor) < 0) {
+	if (SWIG_ConvertPacked0($input, temp, sizeof($*1_ltype), $*1_descriptor) < 0) {
 	    SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle or $*1_mangle.\n");
 	}
 	$1 = ($1_ltype)temp;
@@ -55,7 +63,7 @@ bool FROM_PACK(SV *sv, void *ptr, int size, swig_type_info *t) {
 }
 
 bool TO_PACK(SV *sv, void *ptr, int size, swig_type_info *t) {
-    return SWIG_ConvertPacked(sv, ptr, size, t) == 0;
+    return SWIG_ConvertPacked0(sv, ptr, size, t) == 0;
 }
 
 bool FROM_BOOL(SV *sv, const bool *x, int size, const swig_type_info *t) {
