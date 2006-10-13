@@ -11,6 +11,7 @@
 #include <ycp/YBlock.h>
 #include <ycp/YExpression.h>
 #include <ycp/YStatement.h>
+#include <ycp/Import.h>
 #include <yui/YUIComponent.h>
 #include <wfm/Y2WFMComponent.h>
 
@@ -26,20 +27,11 @@ static
 Y2Namespace *
 getNs (const char * ns_name, const char * func_name)
 {
-    // func_name is only for debugging
-    Y2Component *c = Y2ComponentBroker::getNamespaceComponent (ns_name);
-    if (c == NULL)
-    {
-	y2error ("No component can provide namespace %s for a Perl call of %s",
-		 ns_name, func_name);
-	return NULL;
-    }
-
-    Y2Namespace *ns = c->import (ns_name);
+    Import import(ns_name);	// has a static cache
+    Y2Namespace *ns = import.nameSpace();
     if (ns == NULL)
     {
-	y2error ("Component %p (%s) could not provide namespace %s for a Perl call of %s",
-		 c, c->name ().c_str (), ns_name, func_name);
+	y2error ("... for a Perl call of %s", func_name);
     }
     else
     {
