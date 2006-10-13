@@ -1,4 +1,58 @@
 -------------------------------------------------------------------
+Mon Oct  2 09:38:55 CEST 2006 - mvidner@suse.cz
+
+- Fixed LDFLAGS for a fix in automake-1.9b.
+- 2.13.11
+
+-------------------------------------------------------------------
+Thu Aug 31 15:40:12 CEST 2006 - mvidner@suse.cz
+
+- Fixed SWIG typemaps to really work with 1.3.27.
+- 2.13.10
+
+-------------------------------------------------------------------
+Wed Aug  9 15:23:41 CEST 2006 - mvidner@suse.cz
+
+- Using YCPValue::valuetype_str() for better error messages.
+
+-------------------------------------------------------------------
+Wed Aug  9 12:29:27 CEST 2006 - mvidner@suse.cz
+
+- Use the Import class when calling a YCP function
+  so that the log is not flooded with "import (Foo)" (#197845).
+- 2.13.9
+
+-------------------------------------------------------------------
+Mon Aug  7 15:53:28 CEST 2006 - mvidner@suse.cz
+
+- Fixed the SWIG fix not to end a comment prematurely.
+- 2.13.8
+
+-------------------------------------------------------------------
+Fri Aug  4 12:21:02 CEST 2006 - mvidner@suse.cz
+
+- Removed a search path that is added elsewhere already and here just
+  breaks compilation is some cases (#197099).
+- 2.13.7
+
+-------------------------------------------------------------------
+Wed Aug  2 16:48:58 CEST 2006 - mvidner@suse.cz
+
+- Fixed SWIG typemaps for swig-1.3.29, thanks mmarek.
+- 2.13.6
+
+-------------------------------------------------------------------
+Tue Aug  1 10:41:20 CEST 2006 - mvidner@suse.cz
+
+- Documented how YaST::YCP::Import differs from YCP import.
+
+-------------------------------------------------------------------
+Tue Jul 18 16:11:21 CEST 2006 - mvidner@suse.cz
+
+- Documentation updates: doc/typeinfo replaced with doc/perl-bindings,
+  doc/useperl.ycp, doc/modules/*.pm
+
+-------------------------------------------------------------------
 Fri Jun  9 17:07:50 CEST 2006 - mvidner@suse.cz
 
 - Reenabled testsuite, needs libzypp r3558 (#182672).

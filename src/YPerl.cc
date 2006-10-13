@@ -428,8 +428,7 @@ YPerl::newPerlScalar( const YCPValue & xval, bool composite )
     }
     if ( val->isVoid()    )	return composite? newSV (0): &PL_sv_undef;
 
-    // YuCK, stringify
-    y2error ("Unhandled conversion from YCP type #%d", val->valuetype ());
+    y2error ("Unhandled conversion from YCP type %s", val->valuetype_str ());
     return 0;
 }
 

@@ -5,6 +5,8 @@ BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-c
 # libzypp-devel is missing .la requires
 BuildRequires:	boost-devel dbus-1-devel hal-devel
 
+# YCPValue::valuetype_str()
+Requires:	yast2-core >= 2.13.28
 Requires:	perl
 # for YaPI.pm
 Requires:	perl(Locale::gettext)

@@ -3,7 +3,6 @@
 #
 
 AM_CXXFLAGS = -DY2LOG=\"Perl\" -DMODULEDIR=\"$(moduledir)\"
-AM_LDFLAGS = -L$(libdir) -L$(plugindir)
 
 perlpmdir = $(PERL_VENDORARCH)/YaST
 perlsodir = $(PERL_VENDORARCH)/auto/YaST/YCP
@@ -28,6 +27,7 @@ libYCP_la_SOURCES =				\
 # with the assumption that it would bring in the other plugins.
 # But it does not work.
 libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
+		-L$(libdir) -L$(plugindir)	\
 		-Xlinker --whole-archive	\
 		-lpy2scr			\
 		-lpy2wfm			\
