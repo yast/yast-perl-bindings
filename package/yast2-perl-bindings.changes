@@ -1,6 +1,8 @@
 -------------------------------------------------------------------
-Tue Feb  6 15:44:32 CET 2007 - mvidner@suse.cz
+Tue Feb  6 16:24:12 CET 2007 - mvidner@suse.cz
 
+- pluglib-bindings.ami: Detect if sablot fails.
+  Prevents mysterious failure with LibStorage.pm.
 - Enabled building in a non-/usr prefix.
 
 -------------------------------------------------------------------
