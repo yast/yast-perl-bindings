@@ -4,8 +4,9 @@
 
 AM_CXXFLAGS = -DY2LOG=\"Perl\" -DMODULEDIR=\"$(moduledir)\"
 
-perlpmdir = $(PERL_VENDORARCH)/YaST
-perlsodir = $(PERL_VENDORARCH)/auto/YaST/YCP
+MY_PERL_VENDORARCH = $(subst /usr,$(prefix),$(PERL_VENDORARCH))
+perlpmdir = $(MY_PERL_VENDORARCH)/YaST
+perlsodir = $(MY_PERL_VENDORARCH)/auto/YaST/YCP
 
 perlpm_DATA = YCP.pm
 
@@ -45,6 +46,7 @@ liby2lang_perl_la_LDFLAGS = -version-info 2:0
 
 # the yast libraries are apparently necessary when we're loaded by perl.
 libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)	\
+		-L$(libdir) -L$(plugindir)	\
 		-lycp -ly2 -lzypp -ly2util
 #libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)
 
