@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun  1 16:07:25 CEST 2007 - mvidner@suse.cz
+
+- pluglib-bindings: do not create nearly empty '.pm' for STL classes
+- 2.15.1
+
+-------------------------------------------------------------------
 Tue Feb  6 16:24:12 CET 2007 - mvidner@suse.cz
 
 - pluglib-bindings.ami: Detect if sablot fails.

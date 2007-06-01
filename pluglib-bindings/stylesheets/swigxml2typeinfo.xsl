@@ -61,7 +61,7 @@
     </xsl:if>
 </xsl:template>
 
-<xsl:template match="class" mode="class">
+<xsl:template match="class[attributelist/attribute[@name='sym_name']]" mode="class">
     <xsl:param name="class" select="attributelist/attribute[@name='sym_name']/@value"/>
     <xsl:text>package </xsl:text>
     <xsl:value-of select="/top/attributelist/attribute[@name='module']/@value"/>
