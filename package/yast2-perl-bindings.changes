@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Fri Aug 10 18:10:19 CEST 2007 - mvidner@suse.cz
+
+- Finished integrating Feature #120292, UI as a namespace callable
+  from yast2-*-bindings.
+- 2.15.2
+
+-------------------------------------------------------------------
+Wed Aug  8 09:26:52 CEST 2007 - mvidner@suse.cz
+
+- Adapted to changes in yast2-core needed for making UI callable from
+  yast2-*-bindings.
+- 2.15.1.1
+
+-------------------------------------------------------------------
 Fri Jun  1 16:07:25 CEST 2007 - mvidner@suse.cz
 
 - pluglib-bindings: do not create nearly empty '.pm' for STL classes

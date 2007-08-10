@@ -32,7 +32,7 @@ libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 		-Xlinker --whole-archive	\
 		-lpy2scr			\
 		-lpy2wfm			\
-		-lscr -lyui			\
+		-lscr -lpy2UI			\
 		-lycp -ly2			\
 		-Xlinker --no-whole-archive	\
 		${ZYPP_LIBS} -ly2util		\
