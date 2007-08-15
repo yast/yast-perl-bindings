@@ -122,8 +122,20 @@ require Exporter;
 our @ISA = qw(Exporter);
 my @e_data = qw(Boolean Byteblock Integer Float String Symbol Term);
 my @e_logging = qw(y2debug y2milestone y2warning y2error y2security y2internal);
-our @EXPORT_OK = (@e_data, @e_logging, "sformat");
-our %EXPORT_TAGS = ( DATA => [@e_data], LOGGING => [@e_logging] );
+my @e_ui = qw(BarGraph Bottom CheckBox ColoredLabel ComboBox Date
+DownloadProgress DumbTab DummySpecialWidget Empty Frame HBox HCenter
+HMultiProgressMeter HSpacing HSquash HStretch HVCenter HVSquash
+HVStretch HWeight Heading IconButton Image IntField Label Left LogView
+MarginBox MenuButton MinHeight MinSize MinWidth MultiLineEdit
+MultiSelectionBox PackageSelector PatternSelector PartitionSplitter
+Password PkgSpecial ProgressBar PushButton RadioButton
+RadioButtonGroup ReplacePoint RichText Right SelectionBox Slider Table
+TextEntry Time Top Tree VBox VCenter VMultiProgressMeter VSpacing
+VSquash VStretch VWeight Wizard
+id opt
+);
+our @EXPORT_OK = (@e_data, @e_logging, @e_ui, "sformat");
+our %EXPORT_TAGS = ( DATA => [@e_data], LOGGING => [@e_logging], UI => [@e_ui] );
 
 =head2 debug
 
@@ -290,6 +302,90 @@ sub Term ($@)
 {
     return new YaST::YCP::Term (@_);
 }
+
+# shortcuts for UI terms
+
+sub termize
+{
+    (undef, undef, undef, my $name) = caller(1);
+    return Term (substr ($name, 11), @_);	# skip "YaST::YCP::"
+}
+
+# make symbols out of plain scalars(strings)
+sub symbolize
+{
+    return map { ref($_)? $_ : Symbol($_) } @_;
+}
+
+sub BarGraph	(@) {return termize(@_);}
+sub Bottom	(@) {return termize(@_);}
+sub CheckBox	(@) {return termize(@_);}
+sub ColoredLabel	(@) {return termize(@_);}
+sub ComboBox	(@) {return termize(@_);}
+sub Date	(@) {return termize(@_);}
+sub DownloadProgress	(@) {return termize(@_);}
+sub DumbTab	(@) {return termize(@_);}
+sub DummySpecialWidget	(@) {return termize(@_);}
+sub Empty	(@) {return termize(@_);}
+sub Frame	(@) {return termize(@_);}
+sub HBox	(@) {return termize(@_);}
+sub HCenter	(@) {return termize(@_);}
+sub HMultiProgressMeter	(@) {return termize(@_);}
+sub HSpacing	(@) {return termize(@_);}
+sub HSquash	(@) {return termize(@_);}
+sub HStretch	(@) {return termize(@_);}
+sub HVCenter	(@) {return termize(@_);}
+sub HVSquash	(@) {return termize(@_);}
+sub HVStretch	(@) {return termize(@_);}
+sub HWeight	(@) {return termize(@_);}
+sub Heading	(@) {return termize(@_);}
+sub IconButton	(@) {return termize(@_);}
+sub Image	(@) {return termize(@_);}
+sub IntField	(@) {return termize(@_);}
+sub Label	(@) {return termize(@_);}
+sub Left	(@) {return termize(@_);}
+sub LogView	(@) {return termize(@_);}
+sub MarginBox	(@) {return termize(@_);}
+sub MenuButton	(@) {return termize(@_);}
+sub MinHeight	(@) {return termize(@_);}
+sub MinSize	(@) {return termize(@_);}
+sub MinWidth	(@) {return termize(@_);}
+sub MultiLineEdit	(@) {return termize(@_);}
+sub MultiSelectionBox	(@) {return termize(@_);}
+sub PackageSelector	(@) {return termize(@_);}
+sub PatternSelector	(@) {return termize(@_);}
+sub PartitionSplitter	(@) {return termize(@_);}
+sub Password	(@) {return termize(@_);}
+sub PkgSpecial	(@) {return termize(@_);}
+sub ProgressBar	(@) {return termize(@_);}
+sub PushButton	(@) {return termize(@_);}
+sub RadioButton	(@) {return termize(@_);}
+sub RadioButtonGroup	(@) {return termize(@_);}
+sub ReplacePoint	(@) {return termize(@_);}
+sub RichText	(@) {return termize(@_);}
+sub Right	(@) {return termize(@_);}
+sub SelectionBox	(@) {return termize(@_);}
+sub Slider	(@) {return termize(@_);}
+sub Table	(@) {return termize(@_);}
+sub TextEntry	(@) {return termize(@_);}
+sub Time	(@) {return termize(@_);}
+sub Top	(@) {return termize(@_);}
+sub Tree	(@) {return termize(@_);}
+sub VBox	(@) {return termize(@_);}
+sub VCenter	(@) {return termize(@_);}
+sub VMultiProgressMeter	(@) {return termize(@_);}
+sub VSpacing	(@) {return termize(@_);}
+sub VSquash	(@) {return termize(@_);}
+sub VStretch	(@) {return termize(@_);}
+sub VWeight	(@) {return termize(@_);}
+sub Wizard	(@) {return termize(@_);}
+
+# make symbols from scalar arguments
+# so that id("ok") does the same as YCP `id(`ok)
+# and opt("notify", "immediate") the asme as YCP `opt(`notify, `immediate)
+sub id	(@) {return termize(symbolize(@_));}
+sub opt	(@) {return termize(symbolize(@_));}
+
 
 # by defining AUTOLOAD in a separate package, undefined functions in
 # the main one will be detected

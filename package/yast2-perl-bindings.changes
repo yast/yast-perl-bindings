@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 15 18:36:43 CEST 2007 - mvidner@suse.cz
+
+- UI from Perl: added examples and helper functions (F#120292).
+- 2.15.3
+
+-------------------------------------------------------------------
 Fri Aug 10 18:10:19 CEST 2007 - mvidner@suse.cz
 
 - Finished integrating Feature #120292, UI as a namespace callable

@@ -2,9 +2,7 @@
 # Makefile.am for perl-bindings/doc
 #
 
-# see examples/Makefile.am for why it is disabled
-#UBDIRS = examples 
-SUBDIRS = modules
+SUBDIRS = modules examples
 
 htmldir = $(docdir)
 txtdir = $(docdir)
