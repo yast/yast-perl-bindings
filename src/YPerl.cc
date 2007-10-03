@@ -25,6 +25,7 @@
 #include <iosfwd>
 #include <sstream>
 #include <iomanip>
+#include <limits>
 
 // Perl stuff
 #define PERL_NO_GET_CONTEXT     /* we want efficiency, man perlguts */

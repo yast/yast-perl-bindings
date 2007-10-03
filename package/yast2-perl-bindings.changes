@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct  3 16:37:46 CEST 2007 - mvidner@suse.cz
+
+- Fixed compilation errors with GCC 4.3 by adding missing includes.
+- 2.16.0
+
+-------------------------------------------------------------------
 Wed Aug 15 18:36:43 CEST 2007 - mvidner@suse.cz
 
 - UI from Perl: added examples and helper functions (F#120292).
