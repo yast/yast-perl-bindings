@@ -559,7 +559,7 @@ debugDump (SV *sv)
 {
     EMBEDDED_PERL_DEFS;
 
-    static char *svtypes[] = {
+    static const char *svtypes[] = {
 	"NULL",
 	"IV",
 	"NV",
