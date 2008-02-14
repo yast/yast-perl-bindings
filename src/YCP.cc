@@ -12,7 +12,7 @@
 #include <ycp/YExpression.h>
 #include <ycp/YStatement.h>
 #include <ycp/Import.h>
-#include <yui/YUIComponent.h>
+#include <ycp-ui/YUIComponent.h>
 #include <wfm/Y2WFMComponent.h>
 
 #define PERL_NO_GET_CONTEXT     /* we want efficiency, man perlguts */
