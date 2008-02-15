@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 15 17:24:38 CET 2008 - coolo@suse.de
+
+- fix build against newer yui
+- 2.16.1
+
+-------------------------------------------------------------------
 Wed Oct  3 16:37:46 CEST 2007 - mvidner@suse.cz
 
 - Fixed compilation errors with GCC 4.3 by adding missing includes.
