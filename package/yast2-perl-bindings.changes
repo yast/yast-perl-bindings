@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 20 17:34:24 CET 2008 - coolo@suse.de
+
+- adapt testsuite results to latest debug output
+- 2.16.2
+
+-------------------------------------------------------------------
 Fri Feb 15 17:24:38 CET 2008 - coolo@suse.de
 
 - fix build against newer yui
