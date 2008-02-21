@@ -1,12 +1,14 @@
 @HEADER-COMMENT@
 
 @HEADER@
-BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-core-devel yast2-devtools libzypp-devel
+BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-core-devel yast2-devtools libzypp-devel yast2-ycp-ui-bindings-devel
 # libzypp-devel is missing .la requires
 BuildRequires:	boost-devel dbus-1-devel hal-devel
 
 # YCPValue::valuetype_str()
-Requires:	yast2-core >= 2.13.28
+Requires:	yast2-core >= 2.16.37
+BuildRequires:  yast2-ycp-ui-bindings-devel >= 2.16.37
+Requires:       yast2-ycp-ui-bindings       >= 2.16.37
 Requires:	perl
 # for YaPI.pm
 Requires:	perl(Locale::gettext)
