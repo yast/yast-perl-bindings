@@ -285,8 +285,10 @@ YPerl::callInner (string module, string function, bool method,
     string full_name = module + "::" + function;
     int ret_count = 0;
     
+    // G_EVAL: prevent errors from making Perl (and the rest of YaST) die
+    // (FATE 412)
     // so far we use static methods, so call_pv is enough
-    ret_count = call_pv( full_name.c_str(), calling_context );
+    ret_count = call_pv( full_name.c_str(), calling_context | G_EVAL);
 
 
     //
@@ -294,6 +296,13 @@ YPerl::callInner (string module, string function, bool method,
     //
 
     SPAGAIN;		// Copy global stack pointer to local one
+
+    // if the eval catches an exception, undef is returned
+    // and we check $@ (ERRSV)
+    if (SvTRUE(ERRSV))
+    {
+	ycp2error ("Perl wanted to die: %s", SvPV_nolen(ERRSV));
+    }
 
     YCPValue result = fromPerlScalar (POPs, wanted_result_type);
 
