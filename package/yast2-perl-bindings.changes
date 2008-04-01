@@ -2,7 +2,7 @@
 Mon Mar 31 16:36:21 CEST 2008 - mvidner@suse.cz
 
 - Trap Perl exceptions so that simple bugs don't kill the whole YaST
-  (FATE 412).
+  (fate#412).
 - 2.16.5
 
 -------------------------------------------------------------------
