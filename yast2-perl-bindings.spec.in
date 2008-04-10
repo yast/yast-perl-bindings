@@ -1,9 +1,7 @@
 @HEADER-COMMENT@
 
 @HEADER@
-BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-core-devel yast2-devtools libzypp-devel yast2-ycp-ui-bindings-devel
-# libzypp-devel is missing .la requires
-BuildRequires:	boost-devel dbus-1-devel hal-devel
+BuildRequires:	blocxx-devel curl-devel gcc-c++ libxcrypt-devel rpm-devel yast2-core-devel yast2-devtools yast2-ycp-ui-bindings-devel
 
 # YCPValue::valuetype_str()
 Requires:	yast2-core >= 2.16.37
