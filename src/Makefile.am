@@ -35,7 +35,7 @@ libYCP_la_LDFLAGS = $(PERL_LDFLAGS)		\
 		-lscr -lpy2UI			\
 		-lycp -ly2			\
 		-Xlinker --no-whole-archive	\
-		${ZYPP_LIBS} -ly2util		\
+		-ly2util		\
 		-version-info 2:0
 
 
@@ -47,7 +47,7 @@ liby2lang_perl_la_LDFLAGS = -version-info 2:0
 # the yast libraries are apparently necessary when we're loaded by perl.
 libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)	\
 		-L$(libdir) -L$(plugindir)	\
-		-lycp -ly2 ${ZYPP_LIBS} -ly2util
+		-lycp -ly2 -ly2util
 #libpy2lang_perl_la_LIBADD = $(PERL_LDFLAGS)
 
 liby2lang_perl_la_LIBADD  = $(PERL_LDFLAGS)
@@ -85,7 +85,7 @@ libpy2lang_perl_la_SOURCES =				\
 CLEANFILES = \
 	perlxsi.c
 
-INCLUDES = -I$(srcdir)/include -I$(includedir) ${ZYPP_CFLAGS}
+INCLUDES = -I$(srcdir)/include -I$(includedir)
 
 # generated from YaPI.pm.in by configure
 nodist_module_DATA = YaPI.pm

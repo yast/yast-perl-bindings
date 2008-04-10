@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 10 15:02:43 CEST 2008 - mvidner@suse.cz
+
+- No need to link with libzypp here (fate#302119).
+- 2.16.6
+
+-------------------------------------------------------------------
 Mon Mar 31 16:36:21 CEST 2008 - mvidner@suse.cz
 
 - Trap Perl exceptions so that simple bugs don't kill the whole YaST
