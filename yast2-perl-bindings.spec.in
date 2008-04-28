@@ -22,6 +22,7 @@ Summary:	-
 
 @INSTALL@
 rm $RPM_BUILD_ROOT/@plugindir@/libpy2lang_perl.la
+rm $RPM_BUILD_ROOT/%{perl_vendorarch}/auto/YaST/YCP/libYCP.la
 
 @CLEAN@
 
@@ -32,7 +33,9 @@ rm $RPM_BUILD_ROOT/@plugindir@/libpy2lang_perl.la
 # libYCP goes elsewhere
 %dir %{perl_vendorarch}/YaST
 %{perl_vendorarch}/YaST/YCP.pm
-%{perl_vendorarch}/auto/YaST
+%dir %{perl_vendorarch}/auto/YaST
+%dir %{perl_vendorarch}/auto/YaST/YCP
+%{perl_vendorarch}/auto/YaST/YCP/libYCP.so*
 %dir @moduledir@
 @moduledir@/YaPI.pm
 @ydatadir@/devtools/pluglib-bindings
