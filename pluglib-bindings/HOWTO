@@ -1,7 +1,7 @@
 How to compile, install, and run pluglib in yast/perl
 -----------------------------------------------------
 
-1) generate swig wraper (with typeinfo):
+1) generate swig wrapper (with typeinfo):
 
    $ cat MyModule.i
 %module MyModule
