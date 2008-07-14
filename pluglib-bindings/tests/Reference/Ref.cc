@@ -29,6 +29,17 @@ void PInt(int *l)
     *l=*l+2;
 }
 
+void RLLong(long long int& x)
+{
+    x *= 3;
+}
+
+void PLLong(long long int* x)
+{
+    x += 3;
+}
+
+
 e Enum(e l)
 {
     return l;

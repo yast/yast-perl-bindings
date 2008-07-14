@@ -11,6 +11,9 @@ void RListInt(std::list<int>&);
 void RInt(int& x);
 void PInt(int* x);
 
+void RLLong(long long int& x);
+void PLLong(long long int* x);
+
 e Enum(e x);
 void REnum(e& x);
 void PEnum(enum e* x);
