@@ -20,6 +20,14 @@ print "$s\n";
 Ref::PInt(\$s);
 print "$s\n";
 
+# bnc#408829
+$s = 5000000000;
+print "$s\n";
+Ref::RLLong(\$s);
+print "$s\n";
+Ref::PLLong(\$s);
+print "$s\n";
+
 $b = 0;
 print "$b\n";
 Ref::RBool(\$b);

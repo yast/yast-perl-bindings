@@ -17,6 +17,14 @@ y2warning("i=%1", i);
 Ref::PInt(i);
 y2warning("i=%1", i);
 
+// bnc#408829
+integer l = 5000000000;
+y2warning("l=%1", l);
+Ref::RLLong(l);
+y2warning("l=%1", l);
+Ref::PLLong(l);
+y2warning("l=%1", l);
+
 boolean b = false;
 y2warning("b=%1", b);
 Ref::RBool(b);
