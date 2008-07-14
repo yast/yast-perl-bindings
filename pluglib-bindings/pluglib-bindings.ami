@@ -72,7 +72,8 @@ $(TARGET_SO): %.so: .libs/%_wrap.o $(PLUGLIB_LIBRARY)
 	$(CXXCOMPILE) -shared -o $@ $^
 
 # Install the library
-PLGB_SOdir = $(PERL_VENDORARCH)
+MY_PERL_VENDORARCH = $(subst /usr,$(prefix),$(PERL_VENDORARCH))
+PLGB_SOdir = $(MY_PERL_VENDORARCH)
 PLGB_SO_DATA = $(TARGET_SO)
 
 CLEANFILES = $(PLUGLIB_MODULE)_wrap.*

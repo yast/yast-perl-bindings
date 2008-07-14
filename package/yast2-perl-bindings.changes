@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 14 17:34:03 CEST 2008 - mvidner@suse.cz
+
+- Respect prefix when installing pluglibs.
+
+-------------------------------------------------------------------
 Mon Apr 28 13:51:33 CEST 2008 - mvidner@suse.cz
 
 - Removed superfluous .la file (bnc#223733).
