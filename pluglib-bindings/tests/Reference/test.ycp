@@ -18,12 +18,12 @@ Ref::PInt(i);
 y2warning("i=%1", i);
 
 // bnc#408829
-integer l = 5000000000;
-y2warning("l=%1", l);
-Ref::RLLong(l);
-y2warning("l=%1", l);
-Ref::PLLong(l);
-y2warning("l=%1", l);
+integer y = 5000000000;
+y2warning("y=%1", y);
+Ref::RLLong(y);
+y2warning("y=%1", y);
+Ref::PLLong(y);
+y2warning("y=%1", y);
 
 boolean b = false;
 y2warning("b=%1", b);
@@ -33,6 +33,7 @@ Ref::PBool(b);
 y2warning("b=%1", b);
 
 string s = "hu";
+Ref::RLLong(s);
 y2warning("s=%1", s);
 Ref::RStr(s);
 y2warning("s=%1", s);

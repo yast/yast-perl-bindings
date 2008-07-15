@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 15 12:52:33 CEST 2008 - mvidner@suse.cz
+
+- Allow string representation of large numbers in SWIG typemaps for
+  "integer &" (bnc#408829).
+
+-------------------------------------------------------------------
 Mon Jul 14 17:34:03 CEST 2008 - mvidner@suse.cz
 
 - Respect prefix when installing pluglibs.

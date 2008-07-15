@@ -36,7 +36,7 @@ void RLLong(long long int& x)
 
 void PLLong(long long int* x)
 {
-    x += 3;
+    *x += 3;
 }
 
 

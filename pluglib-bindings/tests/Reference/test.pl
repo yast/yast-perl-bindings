@@ -1,54 +1,68 @@
 #!/usr/bin/perl
+use Test::More tests => 18;
 
 use lib "./modules";
 use Ref;
-use Data::Dumper;
+#use Devel::Peek;
 
 $ln = [];
 Ref::RListInt($ln);
-print Dumper($ln);
+ok(@$ln == (), "ref to empty list");
 
 $l = [0, 8, 333];
-print Dumper($l);
 Ref::RListInt($l);
-print Dumper($l);
+is_deeply($l, [1, 9, 334], "ref to non-empty list");
 
 $s = 8;
-print "$s\n";
 Ref::RInt(\$s);
-print "$s\n";
+ok($s == 16, "ref to int");
 Ref::PInt(\$s);
-print "$s\n";
+ok($s == 18, "ptr to int");
 
 # bnc#408829
-$s = 5000000000;
-print "$s\n";
-Ref::RLLong(\$s);
-print "$s\n";
-Ref::PLLong(\$s);
-print "$s\n";
+# start as number
+$y = 5000000000;
+#Dump($y);
+Ref::RLLong(\$y);
+ok($y == 15000000000, "ref to llong");
+Ref::PLLong(\$y);
+ok($y == 15000000003, "ptr to llong");
+
+# start as string
+$y = "5000000000";
+#Dump($y);
+Ref::RLLong(\$y);
+ok($y == 15000000000, "ref to llong");
+Ref::PLLong(\$y);
+ok($y == 15000000003, "ptr to llong");
+
+# error cases
+$y = "zillion";
+Ref::RLLong(\$y);
+ok($y == 0, " non-numeric string becomes zero");
+$y = [];
+eval { Ref::RLLong(\$y); };
+like($@, qr/Type error in argument 1/, " list produces exception");
 
 $b = 0;
-print "$b\n";
 Ref::RBool(\$b);
-print "$b\n";
+ok($b, "ref to bool");
 Ref::PBool(\$b);
-print "$b\n";
+ok(! $b, "ptr to bool");
 
 $s = "hu";
-print "$s\n";
-8==Ref::RStr(\$s) || die;
-print "$s\n";
-8==Ref::PStr(\$s) || die;
-print "$s\n";
-8==Ref::CRStr(\$s) || die;
-print "$s\n";
-8==Ref::CPStr(\$s) || die;
-print "$s\n";
+Ref::RStr(\$s);
+ok($s eq "hu.A",   "ref to string");
+Ref::PStr(\$s);
+ok($s eq "hu.A.B", "ptr to string");
+
+$r = Ref::CRStr(\$s);
+ok($r == 8, "ref to const string");
+$r = Ref::CPStr(\$s);
+ok($r == 8, "ptr to const string");
 
 $b = 4;
-print "$b\n";
 Ref::REnum(\$b);
-print "$b\n";
+ok($b == 0, "ref to enum");
 Ref::PEnum(\$b);
-print "$b\n";
+ok($b == 1, "ptr to enum");

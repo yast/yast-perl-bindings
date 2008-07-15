@@ -40,9 +40,12 @@
 %typemap(in) long long *(long long dvalue), long long &(long long dvalue)
 {
   SV *sv;
-  if (!SvROK($input) || !(sv = SvRV($input)) || !SvIOK(sv)) {
-    SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to INTEGER.\n");
+  if (!SvROK($input) ||
+      !(sv = SvRV($input)) ||
+      !(SvIOK(sv) || SvNOK(sv) || SvPOK(sv)) ) {
+    SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to INTEGER_IN_STRING.\n");
   }
+  char * coerce = SvPV_nolen(sv);
   TO_QUAD(sv, &dvalue, sizeof(dvalue), $1_descriptor);
   $1 = &dvalue;
 }
@@ -50,9 +53,12 @@
 %typemap(in) unsigned long long *(unsigned long long dvalue), unsigned long long &(unsigned long long dvalue)
 {
   SV *sv;
-  if (!SvROK($input) || !(sv = SvRV($input)) || !SvIOK(sv)) {
-    SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to INTEGER.\n");
+  if (!SvROK($input) ||
+      !(sv = SvRV($input)) ||
+      !(SvIOK(sv) || SvNOK(sv) || SvPOK(sv)) ) {
+    SWIG_croak("Type error in argument $argnum of $symname. Expected a REFERENCE to INTEGER_IN_STRING.\n");
   }
+  char * coerce = SvPV_nolen(sv);
   TO_UQUAD(sv, &dvalue, sizeof(dvalue), $1_descriptor);
   $1 = &dvalue;
 }
