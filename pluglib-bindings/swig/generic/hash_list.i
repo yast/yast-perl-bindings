@@ -30,7 +30,7 @@
     while(HE *he=hv_iternext(hv)) {
 	KEY key;
 	if (!KEY_FROM_SV(hv_iterkeysv(he), &key, sizeof(KEY), $descriptor(KEY))) {
-	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to hash<%1,???>.\n", SWIG_TypePrettyName($descriptor(KEY)));
+	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to hash<%1,?>.\n", SWIG_TypePrettyName($descriptor(KEY)));
 	    SWIG_fail;
 	}
 	SV *rv = (SV*)hv_iterval(hv,he);
@@ -68,7 +68,7 @@
     while(HE *he=hv_iternext(hv)) {
 	KEY key;
 	if (!KEY_FROM_SV(hv_iterkeysv(he), &key, sizeof(KEY), $descriptor(KEY))) {
-	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to hash<%1,???>.\n", SWIG_TypePrettyName($descriptor(KEY)));
+	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to hash<%1,?>.\n", SWIG_TypePrettyName($descriptor(KEY)));
 	    SWIG_fail;
 	}
 	SV *rv = (SV*)hv_iterval(hv,he);
@@ -149,7 +149,7 @@
 	SV **sv = av_fetch(av, i, 0);
 	HV *hv;
 	if (!sv || !*sv || !SvROK(*sv) || !(hv = (HV*)SvRV(*sv)) || SvTYPE(hv)!=SVt_PVHV ) {
-	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to array of HASH.\n");
+	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to array of HASH.\n", "dummy");
 	    SWIG_fail;
 	}
 	HASH< KEY, VAL > inner;
@@ -184,7 +184,7 @@
 	SV **sv = av_fetch(av, i, 0);
 	HV *hv;
 	if (!sv || !*sv || !SvROK(*sv) || !(hv = (HV*)SvRV(*sv)) || SvTYPE(hv)!=SVt_PVHV ) {
-	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to array of HASH.\n");
+	    SWIG_SetErrorf("Type error in argument $argnum of $symname. Expected a reference to array of HASH.\n", "dummy");
 	    SWIG_fail;
 	}
 	HASH< KEY, VAL > inner;
