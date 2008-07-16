@@ -102,6 +102,29 @@
     delete[] svs;
     argvi++;
 }
+
+// FIXME apply this everywhere else in the library
+// also check how much is still needed (send upstream?)
+// where to put naturalvar?
+
+// grr, this differs only in s/\./->/
+%typemap(out) L< T >&, L< T >*
+{
+    /* convert from ref/ptr L< T > to perl SV (TODO only ref tested) */
+    
+    unsigned int k = 0;
+    int len = $1->size();
+    SV **svs = new SV*[len];
+    for (L< T >::iterator i=$1->begin(); i!=$1->end(); i++) {
+	svs[k] = sv_newmortal();
+        TO_SV(svs[k++], &(*i), sizeof(T), $descriptor(T));
+    }
+    $result = newRV_noinc((SV*)av_make(len, svs));
+    sv_2mortal($result);
+    delete[] svs;
+    argvi++;
+}
+
 %enddef
 
 
