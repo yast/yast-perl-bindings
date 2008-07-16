@@ -1,4 +1,4 @@
-# author: Martin Lazar <mlazar@suse.cz>
+# author: Martin Lazar <mlazar@suse.cz> -*- Makefile -*-
 
 WRAPXML_TO_TYPEINFO_XSL ?= $(BASEDIR)/stylesheets/swigxml2typeinfo.xsl
 WRAPXML_TO_TYPEINFO_FILTER ?= $(BASEDIR)/stylesheets/filter.pl
@@ -16,6 +16,9 @@ SRCS ?= $(wildcard *.cc)
 OBJS ?= $(SRCS:.cc=.o)
 
 all: $(SO) $(PM)
+
+# do not delete %_wrap.cxx
+.SECONDARY:
 
 %_wrap.cxx %_wrap.xml modules/%.pm: %.i
 	@mkdir -p modules
@@ -40,3 +43,6 @@ modules/%.so: $(OBJS) %_wrap.o
 
 clean:
 	rm -rf *_wrap.* *.o modules .dep
+
+check:
+	./test.pl
