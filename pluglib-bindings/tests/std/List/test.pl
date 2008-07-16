@@ -1,11 +1,25 @@
 #!/usr/bin/perl
+use Test::More tests => 2;
 
 use lib "./modules";
 use test_stdList;
 use test_stdDeque;
+use test_stdDeque::mystruct;
 
 use Data::Dumper;
-#use Devel::Peek;
+use Devel::Peek;
+
+$m = test_stdDeque::mystruct->new();
+$n = $m->swig_numbers_get();
+is_deeply($n, [], "empty number list");
+
+$m->swig_numbers_set([7, 7, 7]);
+$n = $m->swig_numbers_get();
+is_deeply($n, [7, 7, 7], "filled number list");
+
+# FIXME make this a test, make other tests,
+# split package, run test automatically,
+# publish notes
 
 $i=[1,2,8,-10];
 $ix1 = [ @$i ];
