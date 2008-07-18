@@ -665,6 +665,7 @@ void perl_class_destructor(void *ref, string magic)
 
 void YPerl::fromPerlClassToExternal(const char *class_name, SV *sv, YCPValue &out)
 {
+    EMBEDDED_PERL_DEFS;
     SV * ref = SvRV(sv);
     SvREFCNT_inc(ref);
     
