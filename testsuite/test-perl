@@ -34,7 +34,7 @@ for SCRIPT in $TDIR/*.pl; do
     echo ----- $BASE
     CASEOK=true
     # y2log to stderr, take specified namespace from Perl
-    $PERL $SCRIPT > tmp.out.$BASE 2> tmp.err.$BASE || CASEOK=false
+    Y2SILENTSEARCH=1 $PERL $SCRIPT > tmp.out.$BASE 2> tmp.err.$BASE || CASEOK=false
 #strace -eopen    $PERL $SCRIPT 2>&1 |grep -v ENOENT > t.out
     # filter out variable information
     sed --in-place -e 's/^....-..-.. ..:..:.. \(<.> \)[^ ]* /\1/' tmp.err.$BASE

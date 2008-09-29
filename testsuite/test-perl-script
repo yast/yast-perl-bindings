@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export Y2SILENTSEARCH=1
+
+./test-perl-min
+
+exit $?
