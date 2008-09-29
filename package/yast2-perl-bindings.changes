@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 29 14:25:15 CEST 2008 - visnov@suse.cz
+
+- Fixed testsuite
+- 2.17.2 
+
+-------------------------------------------------------------------
 Fri Jul 18 12:01:25 CEST 2008 - mvidner@suse.cz
 
 - Fixed a missing declaration uncovered by a change in yast2-core.

@@ -37,7 +37,7 @@ for SCRIPT in $TDIR/*.ycp; do
     echo ----- $BASE
     CASEOK=true
     # y2log to stderr, take specified namespace from Perl
-    $Y2BASE -l - -n $BASE=perl $SCRIPT testsuite > tmp.out.$BASE 2> tmp.err.$BASE
+    Y2SILENTSEARCH=1 $Y2BASE -l - -n $BASE=perl $SCRIPT testsuite > tmp.out.$BASE 2> tmp.err.$BASE
     # filter out variable information
     sed --in-place -e 's/^....-..-.. ..:..:.. \(<.> \)[^ ]* /\1/' tmp.err.$BASE
     sed --in-place -e 's/\(([^)]*)\):[0-9]\+/\1:XXX/' tmp.err.$BASE

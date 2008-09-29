@@ -7,4 +7,5 @@
 <1> [YCP] tests/testpfunc2.ycp:5 nested: Hello, world
 <1> [wfm] WFMSubAgent.cc(~WFMSubAgent):XXX Deleting SubAgent: 0 scr
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
+<1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'
 <1> [Y2Perl] YPerl.cc(destroy):XXX Shutting down embedded Perl interpreter.

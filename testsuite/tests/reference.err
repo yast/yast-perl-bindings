@@ -12,3 +12,4 @@
 <1> [YCP] tests/reference.ycp:24 map: $["a":"A", "b":"y-ok", "d":"123"]
 <1> [wfm] WFMSubAgent.cc(~WFMSubAgent):XXX Deleting SubAgent: 0 scr
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
+<1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'
