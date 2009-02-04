@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  4 16:11:10 CET 2009 - mvidner@suse.cz
+
+- Added logging functions YaST::YCP::y2useritem and y2usernote (FATE#100386).
+- 2.18.0
+
+-------------------------------------------------------------------
 Mon Sep 29 14:25:15 CEST 2008 - visnov@suse.cz
 
 - Fixed testsuite
