@@ -4,6 +4,7 @@
  * This is the path from Perl to YCP. It defines XSUBs.
  */
 
+#include <y2util/y2changes.h>
 #include <y2/Y2Namespace.h>
 #include <y2/Y2Component.h>
 #include <y2/Y2ComponentCreator.h>
@@ -61,6 +62,22 @@ XS(XS_YCP_y2_logger)
     const char * function = SvPV_nolen (ST (4));
     const char * message = SvPV_nolen (ST (5));
     y2_logger (level, comp, file, line, function, "%s", message);
+    XSRETURN_EMPTY;
+}
+
+XS(XS_YCP_y2_changes_logger); /* prototype to pass -Wmissing-prototypes */
+XS(XS_YCP_y2_changes_logger)
+{
+    // defines "items", the number of arguments
+    dXSARGS;
+    if (items != 2)
+    {
+	y2internal ("y2_changes_logger must have 2 arguments");
+	XSRETURN_EMPTY;
+    }
+    logcategory_t level = (logcategory_t) SvIV (ST (0));
+    const char * message = SvPV_nolen (ST (1));
+    y2changes_function (level, "%s", message);
     XSRETURN_EMPTY;
 }
 
@@ -482,7 +499,7 @@ XS(boot_YaST__YCP)
     dXSARGS;
     // get rid of warning: unused variable `I32 items'
     I32 __attribute__ ((unused)) foo = items;
-    char* file = __FILE__;
+    const char* file = __FILE__;
 
     XS_VERSION_BOOTCHECK ;
 
@@ -492,5 +509,6 @@ XS(boot_YaST__YCP)
     newXS("YaST::YCP::close_components", XS_YCP_close_components, file);
     newXS("YaST::YCP::init_ui",  XS_YCP_init_ui, file);
     newXS("YaST::YCP::y2_logger", XS_YCP_y2_logger, file);
+    newXS("YaST::YCP::y2_changes_logger", XS_YCP_y2_changes_logger, file);
     XSRETURN_YES;
 }

@@ -121,7 +121,7 @@ use diagnostics;
 require Exporter;
 our @ISA = qw(Exporter);
 my @e_data = qw(Boolean Byteblock Integer Float String Symbol Term);
-my @e_logging = qw(y2debug y2milestone y2warning y2error y2security y2internal);
+my @e_logging = qw(y2debug y2milestone y2warning y2error y2security y2internal y2useritem y2usernote);
 my @e_ui = qw(BarGraph Bottom CheckBox ColoredLabel ComboBox Date
 DownloadProgress DumbTab DummySpecialWidget Empty Frame HBox HCenter
 HMultiProgressMeter HSpacing HSquash HStretch HVCenter HVSquash
@@ -233,12 +233,22 @@ sub y2_logger_helper ($@)
 	       join (" ", @_));
 }
 
+sub y2_changes_logger_helper ($@)
+{
+    my $level = shift;
+    # this is a XS:
+    y2_changes_logger ($level, join (" ", @_));
+}
+
 sub y2debug (@)		{ y2_logger_helper (0, @_); }
 sub y2milestone (@)	{ y2_logger_helper (1, @_); }
 sub y2warning (@)	{ y2_logger_helper (2, @_); }
 sub y2error (@)		{ y2_logger_helper (3, @_); }
 sub y2security (@)	{ y2_logger_helper (4, @_); }
 sub y2internal (@)	{ y2_logger_helper (5, @_); }
+
+sub y2useritem (@)	{ y2_changes_logger_helper (0, @_); }
+sub y2usernote (@)	{ y2_changes_logger_helper (1, @_); }
 
 =head2 sformat
 
