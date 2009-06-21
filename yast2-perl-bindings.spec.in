@@ -11,7 +11,7 @@ Requires:	perl
 # for YaPI.pm
 Requires:	perl(Locale::gettext)
 
-Summary:	-
+Summary:	YaST2 - Perl Bindings
 
 %description
 -
