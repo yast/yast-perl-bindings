@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 26 08:22:31 UTC 2009 - lslezak@suse.cz
+
+- added versioned perl dependency (require a specific perl version)
+- 2.19.0
+
+-------------------------------------------------------------------
 Wed Feb  4 16:11:10 CET 2009 - mvidner@suse.cz
 
 - Added logging functions YaST::YCP::y2useritem and y2usernote (FATE#100386).
