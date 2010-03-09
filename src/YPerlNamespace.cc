@@ -425,7 +425,8 @@ YPerlNamespace::YPerlNamespace (string name)
 //		 GvSV (glob), GvAV (glob), GvHV (glob), GvCV (glob));
 
 	// is it a code value, a sub?
-	if (GvCV (glob))
+	// bnc#585757 - troubles with Perl during building YaST modules
+	if (isGV(glob) && GvCV (glob))
 	{
 	    y2debug ("Processing sub %s", symbol);
 	    // get the type information or make it up
