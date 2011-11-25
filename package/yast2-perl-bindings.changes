@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 25 12:23:13 UTC 2011 - coolo@suse.com
+
+- add libtool as buildrequire to avoid implicit dependency
+
+-------------------------------------------------------------------
 Tue Mar  9 10:20:10 CET 2010 - juhliarik@suse.cz
 
 - added check for "glob" (bnc#585757)
