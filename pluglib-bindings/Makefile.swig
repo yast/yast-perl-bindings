@@ -5,7 +5,7 @@ WRAPXML_TO_TYPEINFO_FILTER ?= $(BASEDIR)/stylesheets/filter.pl
 
 SWIGFLAGS	?= -I$(BASEDIR)/swig -c++
 
-CXXFLAGS	?= -g -O0
+CXXFLAGS	?= -g -O0 -fPIC
 CPPFLAGS	+= -I.
 LDFLAGS		?= -shared
 LDLIBS		?= -lstdc++

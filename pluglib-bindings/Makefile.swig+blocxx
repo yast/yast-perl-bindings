@@ -2,8 +2,8 @@
 
 include $(BASEDIR)/Makefile.swig
 
-BLOCXX_INCLUDES	= -I/usr/local/include
-BLOCXX_LDFLAGS	= -L/usr/local/lib -Xlinker -rpath -Xlinker /usr/local/lib
+BLOCXX_INCLUDES	= -I/usr/include
+BLOCXX_LDFLAGS	= -L/usr/lib -Xlinker -rpath -Xlinker /usr/lib
 BLOCXX_LIBS	= -lblocxx
 
 SWIGFLAGS	+= $(BLOCXX_INCLUDES)

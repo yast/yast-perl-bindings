@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iterator>
+#include <cstdio>
 
 #include <blocxx/String.hpp>
 #include <blocxx/Map.hpp>
