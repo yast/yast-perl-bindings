@@ -509,18 +509,18 @@ YPerl::newPerlHashRef( const YCPMap & map )
     // Fill hash
     //
 
-    for ( YCPMapIterator it = map->begin(); it != map->end(); ++it )
+    for ( YCPMap::const_iterator it = map->begin(); it != map->end(); ++it )
     {
 	string keyStr;
 
-	if      ( it.key()->isString() )	keyStr = it.key()->asString()->value();
-	else if ( it.key()->isSymbol() )	keyStr = it.key()->asSymbol()->symbol();
-	else if ( it.key()->isInteger() )	keyStr = it.key()->toString();
+	if      ( it->first->isString() )	keyStr = it->first->asString()->value();
+	else if ( it->first->isSymbol() )	keyStr = it->first->asSymbol()->symbol();
+	else if ( it->first->isInteger() )	keyStr = it->first->toString();
 
 	if ( keyStr.empty() )
 	{
 	    y2error( "Couldn't convert YCP map key '%s' to Perl hash key",
-		     it.key()->toString().c_str() );
+		     it->first->toString().c_str() );
 	}
 	else
 	{
@@ -528,7 +528,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 	    // Add one key / value pair
 	    //
 
-	    SV * scalarVal = newPerlScalar( it.value(), true );
+	    SV * scalarVal = newPerlScalar( it->second, true );
 
 	    if ( scalarVal )
 	    {
@@ -537,7 +537,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 		if ( ret == 0 )
 		{
 		    y2error( "Couldn't insert Perl hash value '%s' => '%s'",
-			     keyStr.c_str(), it.value()->toString().c_str() );
+			     keyStr.c_str(), it->second->toString().c_str() );
 
 		    SvREFCNT_dec( scalarVal );	// Free scalar (avoid memory leak)
 		}
@@ -550,7 +550,7 @@ YPerl::newPerlHashRef( const YCPMap & map )
 	    else
 	    {
 		y2error( "Couldn't convert YCP map value '%s' to Perl hash value",
-			 it.value()->toString().c_str() );
+			 it->second->toString().c_str() );
 	    }
 	}
     }
