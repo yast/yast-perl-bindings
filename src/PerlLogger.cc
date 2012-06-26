@@ -20,22 +20,22 @@
 #include "PerlLogger.h"
 #include <ycp/ExecutionEnvironment.h>
 
-extern ExecutionEnvironment ee;
 
 void
 PerlLogger::error (string error_message)
 {
-    y2_logger (LOG_ERROR,"Perl",ee.filename ().c_str ()
-	,ee.linenumber (),"","%s", error_message.c_str ());
+    y2_logger(LOG_ERROR, "Perl", YaST::ee.filename().c_str(),
+	      YaST::ee.linenumber(), "", "%s", error_message.c_str());
 }
 
 
 void
 PerlLogger::warning (string warning_message)
 {
-    y2_logger (LOG_ERROR,"Perl",ee.filename ().c_str ()
-	,ee.linenumber (),"","%s", warning_message.c_str ());
+    y2_logger(LOG_ERROR, "Perl", YaST::ee.filename().c_str(),
+	      YaST::ee.linenumber(), "", "%s", warning_message.c_str());
 }
+
 
 PerlLogger*
 PerlLogger::instance ()
