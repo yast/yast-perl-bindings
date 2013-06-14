@@ -1,10 +1,9 @@
 PLGB_BASEDIR = $(ydatadir)/devtools/pluglib-bindings
 swigdir = $(PLGB_BASEDIR)/swig
 
-SUBDIRS = blocxx generic stdc stl
+SUBDIRS = generic stdc stl
 
 swig_DATA = \
-	BloCxx.i \
 	LiMaL.i
 
 EXTRA_DIST = $(swig_DATA)

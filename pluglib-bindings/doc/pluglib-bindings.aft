@@ -1,6 +1,8 @@
 *Title: pluglib-bindings documentation
 *Author: Martin Lazar <mlazar@suse.cz>
 
+(This markup is Almost Free Text, http://www.maplefish.com/todd/aft.html)
+
 This package allow use C/C++ LiMaL library in YCP. It use SWIG for
 generate Perl wrapper and XML representation of C/C++ header file. YCP
 type information (TYPEINFO) is then generated from the XML file.
@@ -14,8 +16,9 @@ language. Interface file (|.i| extension) describe data types and input
 and output arguments of functions. It also contains typemaps. Description
 of types and functions use the same syntax as C/C++ header file. So you
 can use real header file and just include typemaps. Pluglib-bindings
-offers two sets of typemaps: |LiMaL.i| and |BloCxx.i|. The first is for
-libraries using only STL. The second is for libraries using BloCxx.
+offers the |LiMaL.i| typemap for
+libraries using only STL. BloCxx support via |BloCxx.i| has been dropped
+following the drop of BloCxx from openSUSE.
 
 
 ** Supported data types
@@ -31,22 +34,14 @@ libraries using only STL. The second is for libraries using BloCxx.
 		* |std::deque| (one and two level only)
 		* |std::map| (one level only)
 
-	[BloCxx types]
-		* (|U|)|Int8|/|16|/|32|/|64|
-		* |Real32|, |Real64|
-		* |Bool|
-		* |String|
-		* |List| (one and two level only)
-		* |Map| (one level only)
-
 Also pointers and references to this data types are supported.
 
 
 ** Pluglib-bindings typemaps internal
 
-For each family of data types (|stdc|, |stl| and |blocxx|) exist
+For each family of data types (|stdc| and |stl|) exist
 individual directory contains file |types.i| which is included from main
-interface file (|LiMaL.i| or |BloCxx.i|). This file defines typemaps for
+interface file (|LiMaL.i|). This file defines typemaps for
 corresponding elementary data types (e.g.: strings). For compound data
 types using C++ templates (lists, hashes) we used modular system of
 macros.
@@ -57,7 +52,7 @@ Problem with C++ templates is that compiler need to know concrete data
 type in compilation time. Swig have to generate wrappers for all used
 data types. To achieve this swig have to have defined typemaps for all
 possible types. All typemaps definition for STL-like sequences
-(|std::deque<*>|, |std::list<*>|, |BloCxx::List<*>|, ...) are the same,
+(|std::deque<*>|, |std::list<*>|, ...) are the same,
 except for conversion of elementary types.
 
 File |generic/sequence.i| contains generic sequence typemaps for onle
@@ -79,19 +74,15 @@ In |stl/sequence.i| is macros specializing generic sequence:
 |specialize__stl__sequence(T, FROM_SV, TO_SV, CHECK_SV)|. It specialize
 generic sequence with |std::list|, |std::deque|, |std::vector| and
 |std::slist|. However, elementary data types have to be specialized.
-Similarly, |blocxx/sequence.i| contains macro
-|specialize__blocxx__sequence| which specialize generic sequence with
-|BloCxx::List|.
 
 Finaly, in |LiMal.i| is defined macro
 
 	specialize_sequence(T, FROM_SV, TO_SV, CHECK_SV)
 
-which call |specialize__stl__sequencce|. Similarly, in |BloCxx.i| this
-macro call |specialize__blocxx__sequence|. So, in your interface file, you
+which call |specialize__stl__sequence|. So, in your interface file, you
 can define all sequnce typemas with given elementary data type by
 calling macro |specialize__sequence| regardless of which compoud types
-you use (STL or BloCxx).  Common C++ and STL/BloCxx data types are
+you use.  Common C++ and STL data types are
 already specialized, so you have to specialize only user defined types
 (eg. list of structures).
 
@@ -120,9 +111,7 @@ There are also functions called |FROM__PACK| and |TO__PACK| which store
 piece of memory as perl string of hex digits (eg. for structures).
 
 In |stl/string.i| they are converter functions fot STL strings:
-|FROM__STL__STRING| and |TO__STL__STRIN|. Similarly in |blocxx/string.i|
-are converter function for BloCxx string: |FROM__BLOCXX__STRING| and
-|TO__BLOCXX__STRING|.
+|FROM__STL__STRING| and |TO__STL__STRING|.
 
 
 *** Hashes typemaps
@@ -139,15 +128,13 @@ In |stl/hash.i| is macro called |specialize__stl__hash| which specialize
 generic hash with |std::map| and generic hash of lists and list of hash
 with |std::map| (hash) and |std::list|, |std::deque|, |std::vector|, and
 |std::slist| (list). You have to specialize only key type and value
-type. Similary, in |blocxx/hash.i| is macro |specialize__blocxx__hash|
-which specialize generic hashes with |BloCxx::Map| (hash) and
-|BloCxx::List| (list). There also exists macro
+type. There also exists macro
 
 	specialize_hash(KEY, KEY_FROM_SV, KEY_TO_SV, KEY_CHECK_SV, VAL,\
 VAL_FROM_SV, VAL_TO_SV, VAL_CHECK_SV)
 
-which specialize hash typemaps regradless of which compoud types you use
-(STL or BloCxx).  Common C++ and STL/BloCxx data types are already
+which specialize hash typemaps regradless of which compoud types you use.
+Common C++ and STL data types are already
 specialized, so you have to specialize only user defined types (eg. hash
 of structures).
 
