@@ -34,8 +34,6 @@ while(<>){
     
     # remove known prefixes
     s/\bstd:://g;
-    s/\bBLOCXX_NAMESPACE:://gi;
-    s/\bblocxx[0-9]*:://gi;
 
     s/\bp\./&/g; # pointer
     s/\br\./&/g; # reference

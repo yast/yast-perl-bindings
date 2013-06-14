@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 14 10:16:08 UTC 2013 - mvidner@suse.com
+
+- Removed BloCXX support (FATE#313242).
+- 2.24.0
+
+-------------------------------------------------------------------
 Tue Jun 26 13:57:24 CEST 2012 - aschnell@suse.de
 
 - adapted to namespace changes in yast2-core
