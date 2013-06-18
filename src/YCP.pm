@@ -420,7 +420,9 @@ sub AUTOLOAD
 
     my @components = split ("::", $AUTOLOAD);
     my $func = pop (@components);
-    return YaST::YCP::call_ycp (join ("::", @components), $func, @_);
+
+    my ($package, $filename, $line) = caller();
+    return YaST::YCP::call_ycp (join ("::", @components), $func, $filename, $line, @_);
 }
 
 =head2 Boolean

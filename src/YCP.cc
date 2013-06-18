@@ -102,12 +102,18 @@ XS(XS_YCP_call_ycp)
     // calling convention:
     //  namespace name (without trailing ::)
     //  function name
+    //  source file name
+    //  source line number
     //  function arguments
-    if (items < 2 || !SvPOK (ST (0)) || !SvPOK (ST (1)))
+    if (items < 4 || !SvPOK (ST (0)) || !SvPOK (ST (1)) || !SvPOK (ST (2)) || !SvIOK (ST (3)))
     {
-	y2internal ("Perl called YCP without specifying a namespace and a name");
+	y2internal ("Perl called YCP without specifying a namespace, name, caller source file and line number");
 	XSRETURN_EMPTY;
     }
+
+    // set the current source location
+    YaST::ee.setFilename(SvPV_nolen (ST (2)));
+    YaST::ee.setLinenumber(SvIV(ST (3)));
 
     const char * ns_name = SvPV_nolen (ST (0));
     const char * func_name = SvPV_nolen (ST (1));
@@ -123,9 +129,9 @@ XS(XS_YCP_call_ycp)
     // access the parameters via a vector because using dXSARGS more
     // than once per XSUB call messes up Perl call stacks
     vector<SV *> args;
-    args.reserve (items - 2);
+    args.reserve (items - 4);
     I32 i;
-    for (i = 2; i < items; ++i)
+    for (i = 4; i < items; ++i)
     {
 	args.push_back (ST (i));
     }
