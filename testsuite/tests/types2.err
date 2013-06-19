@@ -7,6 +7,5 @@
 <1> [YCP] tests/types2.ycp:6 termloop: `MyTerm ("Hi", "42")
 <1> [YCP] tests/types2.ycp:7 termloop nt: `NestedTerm (`id ("42"), `MyTerm ("Hi", "42"))
 <1> [YCP] tests/types2.ycp:8 termreverse: `mreTyM ("42", "Hi")
-<1> [wfm] WFMSubAgent.cc(~WFMSubAgent):XXX Deleting SubAgent: 0 scr
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
 <1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'
