@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 18 18:25:00 UTC 2013 - lslezak@suse.cz
+
+- set the source location when calling YaST functions outside Perl,
+  fixes wrong location in y2log
+- 2.24.1
+
+-------------------------------------------------------------------
 Fri Jun 14 10:16:08 UTC 2013 - mvidner@suse.com
 
 - Removed BloCXX support (FATE#313242).
