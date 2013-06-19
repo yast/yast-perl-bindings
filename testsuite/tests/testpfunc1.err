@@ -8,6 +8,5 @@
 <1> [YCP] tests/testpfunc1.ycp:7 rxmatch (abracadabra, ^[a-d]*$): false
 <1> [YCP] tests/testpfunc1.ycp:10 lengths (["one", "two", "three"]): [3, 3, 5]
 <1> [YCP] tests/testpfunc1.ycp:13 amap ($["one":"two"]): $["a":"1", "b":"two"]
-<1> [wfm] WFMSubAgent.cc(~WFMSubAgent):XXX Deleting SubAgent: 0 scr
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
 <1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'
