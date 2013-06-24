@@ -1,7 +1,0 @@
-//
-{
-    import "simple1";
-
-
-    y2milestone ("%1", simple1::hello ());
-}

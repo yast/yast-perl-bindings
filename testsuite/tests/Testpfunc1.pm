@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-package testpfunc1;
+package Testpfunc1;
 use warnings;
 use strict;
 
