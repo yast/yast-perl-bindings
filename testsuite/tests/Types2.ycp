@@ -1,0 +1,9 @@
+//
+{
+    import "Types2";
+    term t = `MyTerm ("Hi", 42);
+    term nt = `NestedTerm (`id (42), t);
+    y2milestone ("termloop: %1",    Types2::termloop (t));
+    y2milestone ("termloop nt: %1", Types2::termloop (nt));
+    y2milestone ("termreverse: %1", Types2::termreverse (t));
+}

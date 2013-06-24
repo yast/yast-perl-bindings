@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-package reference;
+package Reference;
 
 use warnings;
 use strict;

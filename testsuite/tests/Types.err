@@ -1,9 +1,10 @@
-<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base' '-l' '-' '-n' 'simple1=perl' 'tests/simple1.ycp' 'testsuite'
+<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base' '-l' '-' '-n' 'Types=perl' 'tests/Types.ycp' 'testsuite'
 <1> [ui-component] YUIComponentCreator.cc(createInternal):XXX Creating UI component for ""
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
-<1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
 <1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
+<1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
 <1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
-<1> [YCP] tests/simple1.ycp:6 Hello, world
+<1> [YCP] tests/Types.ycp:4 bool1: false
+<1> [YCP] tests/Types.ycp:5 bool2: false
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
 <1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'

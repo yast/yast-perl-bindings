@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jun 24 13:13:11 UTC 2013 - lslezak@suse.cz
+
+- testsuite: forward compatibility with YCP to Ruby conversion,
+  all modules have to start with an uppercase letter (Ruby
+  convention for module names)
+- 2.24.2
+
+-------------------------------------------------------------------
 Tue Jun 18 18:25:00 UTC 2013 - lslezak@suse.cz
 
 - set the source location when calling YaST functions outside Perl,

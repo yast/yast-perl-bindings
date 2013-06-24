@@ -1,12 +1,12 @@
-<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base' '-l' '-' '-n' 'testpfunc1=perl' 'tests/testpfunc1.ycp' 'testsuite'
+<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base' '-l' '-' '-n' 'Testpfunc1=perl' 'tests/Testpfunc1.ycp' 'testsuite'
 <1> [ui-component] YUIComponentCreator.cc(createInternal):XXX Creating UI component for ""
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
 <1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
 <1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
 <1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
-<1> [YCP] tests/testpfunc1.ycp:5 rxmatch (abracadabra, [a-d]*): true
-<1> [YCP] tests/testpfunc1.ycp:7 rxmatch (abracadabra, ^[a-d]*$): false
-<1> [YCP] tests/testpfunc1.ycp:10 lengths (["one", "two", "three"]): [3, 3, 5]
-<1> [YCP] tests/testpfunc1.ycp:13 amap ($["one":"two"]): $["a":"1", "b":"two"]
+<1> [YCP] tests/Testpfunc1.ycp:5 rxmatch (abracadabra, [a-d]*): true
+<1> [YCP] tests/Testpfunc1.ycp:7 rxmatch (abracadabra, ^[a-d]*$): false
+<1> [YCP] tests/Testpfunc1.ycp:10 lengths (["one", "two", "three"]): [3, 3, 5]
+<1> [YCP] tests/Testpfunc1.ycp:13 amap ($["one":"two"]): $["a":"1", "b":"two"]
 <1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
 <1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'

@@ -1,6 +1,6 @@
 //
 {
-    import "reference";
+    import "Reference";
     
     integer i = 12;
     float f = 3.14;
@@ -9,12 +9,12 @@
     list<integer> l = [0, 1, 2, 3, 4];
     map<string,string> m = $["a":"x", "b":"y", "c":"z", "d":"123"];
     
-    reference::refInt(i);
-    reference::refFloat(f);
-    reference::refBool(b);
-    reference::refString(s);
-    reference::refListInt(l);
-    reference::refMapStringString(m);
+    Reference::refInt(i);
+    Reference::refFloat(f);
+    Reference::refBool(b);
+    Reference::refString(s);
+    Reference::refListInt(l);
+    Reference::refMapStringString(m);
 
     y2milestone ("integer: %1", i);
     y2milestone ("float: %1", f);
