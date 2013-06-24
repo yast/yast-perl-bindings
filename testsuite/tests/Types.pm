@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-package types;
+package Types;
 
 use warnings;
 use strict;

@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-package long;
+package Long;
 
 use warnings;
 use strict;

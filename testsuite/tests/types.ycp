@@ -1,6 +1,0 @@
-//
-{
-    import "types";
-    y2milestone ("bool1: %1", types::bool1 ());
-    y2milestone ("bool2: %1", types::bool2 ());
-}

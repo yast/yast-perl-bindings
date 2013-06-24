@@ -1,4 +1,4 @@
-package simple1;
+package A::Nested;
 
 BEGIN { $TYPEINFO{hello} = ["function", "string"]; }
 sub hello
