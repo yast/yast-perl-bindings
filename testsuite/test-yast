@@ -41,6 +41,7 @@ for SCRIPT in $TDIR/*.ycp; do
     # filter out variable information
     sed --in-place -e 's/^....-..-.. ..:..:.. \(<.> \)[^ ]* /\1/' tmp.err.$BASE
     sed --in-place -e 's/\(([^)]*)\):[0-9]\+/\1:XXX/' tmp.err.$BASE
+    sed --in-place -e '/^<[0-9]> \[\(liby2\|wfm\|ui-component\)\] /d' tmp.err.$BASE
     diff -Nu $ERR tmp.err.$BASE || CASEOK=false
     diff -Nu $OUT tmp.out.$BASE || CASEOK=false
 
