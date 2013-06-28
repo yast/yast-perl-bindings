@@ -1,9 +1,4 @@
-<1> [liby2] genericfrontend.cc(main):XXX Launched YaST2 component 'y2base' '-l' '-' '-n' 'Long=perl' 'tests/Long.ycp' 'testsuite'
-<1> [ui-component] YUIComponentCreator.cc(createInternal):XXX Creating UI component for ""
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
-<1> [wfm] Y2WFMComponent.cc(SetLanguage):XXX GET encoding for C:  ANSI_X3.4-1968
-<1> [wfm] Y2CCWFM.cc(createInLevel):XXX Parsing finished
-<1> [liby2] genericfrontend.cc(main):XXX YAST_IS_RUNNING is yes
 <1> [YCP] tests/Long.ycp:4 3*2**30: 3221225472
 <1> [YCP] tests/Long.ycp:5 3*2**30: 3221225472 (class)
 <1> [YCP] tests/Long.ycp:6 3*2**40: 3298534883328
@@ -28,5 +23,3 @@
 <1> [YCP] tests/Long.ycp:19 loop 3 * 2**30: 3221225472 class
 <1> [YCP] tests/Long.ycp:18 loop 7 * 2**30: 7516192768
 <1> [YCP] tests/Long.ycp:19 loop 7 * 2**30: 7516192768 class
-<1> [liby2] genericfrontend.cc(main):XXX Finished YaST2 component 'y2base'
-<1> [liby2] genericfrontend.cc(main):XXX Exiting with client return value 'nil'
