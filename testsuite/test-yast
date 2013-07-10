@@ -39,8 +39,11 @@ for SCRIPT in $TDIR/*.ycp; do
     # y2log to stderr, take specified namespace from Perl
     Y2SILENTSEARCH=1 $Y2BASE -l - -n $BASE=perl $SCRIPT testsuite > tmp.out.$BASE 2> tmp.err.$BASE
     # filter out variable information
+    # - timestamp
     sed --in-place -e 's/^....-..-.. ..:..:.. \(<.> \)[^ ]* /\1/' tmp.err.$BASE
-    sed --in-place -e 's/\(([^)]*)\):[0-9]\+/\1:XXX/' tmp.err.$BASE
+    # - line numbers: [component] whatever_without_space_or_colon:999
+    sed --in-place -e 's/\(\[[^]]*\] [^: ]*\):[0-9]\+/\1:XXX/' tmp.err.$BASE
+    # filter out uninteresting components
     sed --in-place -e '/^<[0-9]> \[\(liby2\|wfm\|ui-component\)\] /d' tmp.err.$BASE
     diff -Nu $ERR tmp.err.$BASE || CASEOK=false
     diff -Nu $OUT tmp.out.$BASE || CASEOK=false

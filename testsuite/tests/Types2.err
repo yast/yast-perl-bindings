@@ -1,4 +1,4 @@
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
-<1> [YCP] tests/Types2.ycp:6 termloop: `MyTerm ("Hi", "42")
-<1> [YCP] tests/Types2.ycp:7 termloop nt: `NestedTerm (`id ("42"), `MyTerm ("Hi", "42"))
-<1> [YCP] tests/Types2.ycp:8 termreverse: `mreTyM ("42", "Hi")
+<1> [YCP] tests/Types2.ycp:XXX termloop: `MyTerm ("Hi", "42")
+<1> [YCP] tests/Types2.ycp:XXX termloop nt: `NestedTerm (`id ("42"), `MyTerm ("Hi", "42"))
+<1> [YCP] tests/Types2.ycp:XXX termreverse: `mreTyM ("42", "Hi")

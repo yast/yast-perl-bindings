@@ -1,0 +1,46 @@
+# C
+*.o
+*.lo
+*.la
+.deps
+.libs
+# autotools
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+config.cache
+config.guess
+config.h
+config.h.in
+config.log
+config.status
+config.sub
+configure
+depcomp
+install-sh
+ltmain.sh
+lt*.m4
+libtool
+libtool.m4
+missing
+stamp-h1
+test-driver
+# devtools
+.dep
+*.ami
+/Makefile.am
+/Makefile.am.common
+configure.in
+doc/autodocs/*.html
+# pod to html
+doc/*.html
+doc/*.tmp
+# generated from .in
+src/YaPI.pm
+# XS stuff
+src/perlxsi.c
+# tests
+testsuite/*.log
+testsuite/*.trs
+testsuite/tmp.*
