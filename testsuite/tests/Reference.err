@@ -1,7 +1,7 @@
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
-<1> [YCP] tests/Reference.ycp:19 integer: 20
-<1> [YCP] tests/Reference.ycp:20 float: 6.28
-<1> [YCP] tests/Reference.ycp:21 boolean: true
-<1> [YCP] tests/Reference.ycp:22 string: hu-ok
-<1> [YCP] tests/Reference.ycp:23 list: [8, 2, 2, 3, 4, -3]
-<1> [YCP] tests/Reference.ycp:24 map: $["a":"A", "b":"y-ok", "d":"123"]
+<1> [YCP] tests/Reference.ycp:XXX integer: 20
+<1> [YCP] tests/Reference.ycp:XXX float: 6.28
+<1> [YCP] tests/Reference.ycp:XXX boolean: true
+<1> [YCP] tests/Reference.ycp:XXX string: hu-ok
+<1> [YCP] tests/Reference.ycp:XXX list: [8, 2, 2, 3, 4, -3]
+<1> [YCP] tests/Reference.ycp:XXX map: $["a":"A", "b":"y-ok", "d":"123"]
