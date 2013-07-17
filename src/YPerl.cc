@@ -212,7 +212,9 @@ YPerl::loadModule( YCPList argList )
     // the name is unref'd by load_module, so it must not be mortal
     // on the contrary, we ref it so that the file name gets preserved for debugging
     // :-( does not work
-    newRV (name);
+    SV * unused = newRV (name); // this memory leak is not worth debugging
+    (void) unused;
+
     load_module( flags, name, version );
     //sv_dump (name);
 
@@ -369,7 +371,8 @@ newPerlReferenceableScalar (const YCPValue& val)
 	long long int lli = val->asInteger ()->value ();
 	// Perl does not have limit constants, but templates help
 	if (std::numeric_limits<IVTYPE>::min() <= lli &&
-	    lli <= std::numeric_limits<UVTYPE>::max())
+            (lli < 0 ||
+             (unsigned long long) lli <= std::numeric_limits<UVTYPE>::max()))
 	{
 	    if (lli <= std::numeric_limits<IVTYPE>::max())
 		return newSViv (lli);
@@ -666,7 +669,6 @@ void perl_class_destructor(void *ref, string magic)
 
 void YPerl::fromPerlClassToExternal(const char *class_name, SV *sv, YCPValue &out)
 {
-    EMBEDDED_PERL_DEFS;
     SV * ref = SvRV(sv);
     SvREFCNT_inc(ref);
     
