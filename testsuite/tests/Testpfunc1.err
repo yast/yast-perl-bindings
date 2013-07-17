@@ -1,5 +1,5 @@
 <1> [Y2Perl] Y2PerlComponent.cc(Y2PerlComponent):XXX Creating Y2PerlComponent
-<1> [YCP] tests/Testpfunc1.ycp:5 rxmatch (abracadabra, [a-d]*): true
-<1> [YCP] tests/Testpfunc1.ycp:7 rxmatch (abracadabra, ^[a-d]*$): false
-<1> [YCP] tests/Testpfunc1.ycp:10 lengths (["one", "two", "three"]): [3, 3, 5]
-<1> [YCP] tests/Testpfunc1.ycp:13 amap ($["one":"two"]): $["a":"1", "b":"two"]
+<1> [YCP] tests/Testpfunc1.ycp:XXX rxmatch (abracadabra, [a-d]*): true
+<1> [YCP] tests/Testpfunc1.ycp:XXX rxmatch (abracadabra, ^[a-d]*$): false
+<1> [YCP] tests/Testpfunc1.ycp:XXX lengths (["one", "two", "three"]): [3, 3, 5]
+<1> [YCP] tests/Testpfunc1.ycp:XXX amap ($["one":"two"]): $["a":"1", "b":"two"]

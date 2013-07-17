@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 10 14:38:30 UTC 2013 - mvidner@suse.cz
+
+- testsuite: ignore line numbers, properly (gh#yast/ycp-killer#554)
+- 2.24.5
+
+-------------------------------------------------------------------
 Mon Jul  1 08:42:30 UTC 2013 - lslezak@suse.cz
 
 - Removed useless BuildRequires: curl-devel and rpm-devel
