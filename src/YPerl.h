@@ -103,7 +103,7 @@ public:
      * Generic Perl call.
      **/
     YCPValue callInner (string module, string function, bool method,
-			YCPList argList, constTypePtr wanted_result_type);
+			YCPList argList, constFunctionTypePtr function_type);
     
     /**
      * Create a new Perl scalar value from a YCP value.

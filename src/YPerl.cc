@@ -233,7 +233,7 @@ YPerl::loadModule( YCPList argList )
  */
 YCPValue
 YPerl::callInner (string module, string function, bool method,
-		  YCPList argList, constTypePtr wanted_result_type)
+		  YCPList argList, constFunctionTypePtr function_type)
 {
     EMBEDDED_PERL_DEFS;
 
@@ -304,6 +304,7 @@ YPerl::callInner (string module, string function, bool method,
 	ycp2error ("Perl wanted to die: %s", SvPV_nolen(ERRSV));
     }
 
+    constTypePtr wanted_result_type = function_type->returnType ();
     YCPValue result = fromPerlScalar (POPs, wanted_result_type);
 
     // If we called it with G_ARRAY, we would have to pop all return
@@ -327,10 +328,10 @@ YPerl::callInner (string module, string function, bool method,
     // Update referenced variables
     for ( int i=1; i < argList->size(); i++ )
     {
-	if (argList->value(i)->isReference()) {
-	    constTypePtr type = argList->value(i)->asReference()->entry()->type();
-	    YCPValue val=fromPerlScalar(svs[i], type);
-	    argList->value(i)->asReference()->entry()->setValue(val);
+        constTypePtr type = function_type->parameterType(i - 1);
+        if (type->isReference()) {
+            YCPValue val=fromPerlScalar(svs[i], type);
+            argList->value(i)->asReference()->entry()->setValue(val);
 	}
     }
     delete[] svs;

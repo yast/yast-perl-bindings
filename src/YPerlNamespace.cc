@@ -266,7 +266,7 @@ public:
     {
 	return YPerl::yPerl()->callInner (
 	    m_module_name, m_local_name, isMethod (),
-	    m_call, m_type->returnType ());
+	    m_call, m_type);
     }
     
        /**
