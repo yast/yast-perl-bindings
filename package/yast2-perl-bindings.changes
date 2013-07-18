@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 17 14:28:10 UTC 2013 - mvidner@suse.cz
+
+- Fix type conversion for parameters passed by reference
+  (gh#yast/ycp-killer#486)
+- 2.24.6
+
+-------------------------------------------------------------------
 Wed Jul 10 14:38:30 UTC 2013 - mvidner@suse.cz
 
 - testsuite: ignore line numbers, properly (gh#yast/ycp-killer#554)
