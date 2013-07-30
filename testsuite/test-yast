@@ -28,8 +28,8 @@ ln -s $PLUGDIR $Y2DIR/plugin
 trap "rm -f $Y2DIR/modules $Y2DIR/plugin" EXIT TERM
 
 RET=0
-for SCRIPT in $TDIR/*.ycp; do
-    BASE=${SCRIPT%.ycp}
+for SCRIPT in $TDIR/*.rb; do
+    BASE=${SCRIPT%.rb}
     OUT=$BASE.out
     ERR=$BASE.err
     BASE=${BASE#$TDIR/}
@@ -45,6 +45,8 @@ for SCRIPT in $TDIR/*.ycp; do
     sed --in-place -e 's/\(\[[^]]*\] [^: ]*\):[0-9]\+/\1:XXX/' tmp.err.$BASE
     # filter out uninteresting components
     sed --in-place -e '/^<[0-9]> \[\(liby2\|wfm\|ui-component\)\] /d' tmp.err.$BASE
+    # client call contains absolute path, ignore the line
+    sed --in-place '/^<1> \[Ruby\] yast\/wfm.rb:XXX Call client /d' tmp.err.$BASE
     diff -Nu $ERR tmp.err.$BASE || CASEOK=false
     diff -Nu $OUT tmp.out.$BASE || CASEOK=false
 
