@@ -1,6 +1,0 @@
-//
-{
-    import "A::Nested";
-
-    y2milestone ("nested: %1", A::Nested::hello ());
-}
