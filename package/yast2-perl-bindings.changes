@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 31 08:36:40 UTC 2013 - yast-devel@opensuse.org
+
+- converted from YCP to Ruby by YCP Killer
+  (https://github.com/yast/ycp-killer)
+- version 3.0.0
+
+-------------------------------------------------------------------
 Wed Jul 17 14:28:10 UTC 2013 - mvidner@suse.cz
 
 - Fix type conversion for parameters passed by reference
