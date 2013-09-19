@@ -13,6 +13,7 @@ config.cache
 config.guess
 config.h
 config.h.in
+config.h.in~
 config.log
 config.status
 config.sub
@@ -31,7 +32,7 @@ test-driver
 *.ami
 /Makefile.am
 /Makefile.am.common
-configure.in
+configure.ac
 doc/autodocs/*.html
 # pod to html
 doc/*.html
@@ -44,3 +45,4 @@ src/perlxsi.c
 testsuite/*.log
 testsuite/*.trs
 testsuite/tmp.*
+package/*.tar.bz2
