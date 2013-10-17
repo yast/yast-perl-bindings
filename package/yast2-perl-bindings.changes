@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 17 14:13:21 UTC 2013 - mvidner@suse.com
+
+- Fix untranslated texts in yast2-users: call bindtextdomain
+  with YaST locale directory to find mo-files (bnc#845600).
+- 3.1.1
+
+-------------------------------------------------------------------
 Thu Sep 19 12:52:20 UTC 2013 - lslezak@suse.cz
 
 - do not use *.spec.in template, use *.spec file with RPM macros
