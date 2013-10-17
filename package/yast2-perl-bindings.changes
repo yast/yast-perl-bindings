@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 17 14:13:21 UTC 2013 - mvidner@suse.com
+
+- Fix untranslated texts in yast2-users: call bindtextdomain
+  with YaST locale directory to find mo-files (bnc#845600).
+- 3.0.1
+
+-------------------------------------------------------------------
 Wed Jul 31 08:36:40 UTC 2013 - yast-devel@opensuse.org
 
 - converted from YCP to Ruby by YCP Killer

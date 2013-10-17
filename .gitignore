@@ -31,6 +31,7 @@ test-driver
 *.ami
 /Makefile.am
 /Makefile.am.common
+configure.ac
 configure.in
 doc/autodocs/*.html
 # pod to html
