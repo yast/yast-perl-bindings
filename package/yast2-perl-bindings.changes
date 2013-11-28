@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 16 10:43:20 CEST 2011 - ma@suse.de
+
+- Bump version to indicate SUSE Manager release
+- 2.13.1000
+
+-------------------------------------------------------------------
 Mon Oct  2 09:38:55 CEST 2006 - mvidner@suse.cz
 
 - Fixed LDFLAGS for a fix in automake-1.9b.
