@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun  4 16:49:55 CEST 2014 - mls@suse.de
+
+- Adapt to perl-5.20.0, where an integer can get encoded as an
+  NV without the PV flag being set
+- 3.1.2
+
+-------------------------------------------------------------------
 Thu Oct 17 14:13:21 UTC 2013 - mvidner@suse.com
 
 - Fix untranslated texts in yast2-users: call bindtextdomain

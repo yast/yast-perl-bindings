@@ -714,7 +714,7 @@ getInteger (SV *sv, YCPValue &out)
     else
     {
 	const char *pv = SvPV_nolen (sv);
-	if (SvPOK (sv))
+	if (SvPOK (sv) || SvNOK (sv))
 	{
 	    char *errptr;
 	    long long int lli = strtoll (pv, &errptr, 10);
