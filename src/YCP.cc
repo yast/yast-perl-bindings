@@ -34,6 +34,11 @@ getNs (const char * ns_name, const char * func_name)
     {
 	y2error ("... for a Perl call of %s", func_name);
     }
+    else if (isErrorNamespace(ns))
+    {
+        ns = NULL; // act like if it is error
+	y2error ("... runtime error for a Perl call of %s", func_name);
+    }
     else
     {
 	ns->initialize ();
