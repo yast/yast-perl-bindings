@@ -1,7 +1,7 @@
 #
 # spec file for package yast2-perl-bindings
 #
-# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2017 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -23,24 +23,27 @@ Release:        0
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
-Group:	        System/YaST
-License:        GPL-2.0+
-BuildRequires:	gcc-c++ yast2-core-devel yast2-ycp-ui-bindings-devel libtool
+BuildRequires:  gcc-c++
+BuildRequires:  libtool
+BuildRequires:  yast2-core-devel
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-ruby-bindings >= 1.0.0
+BuildRequires:  yast2-ycp-ui-bindings-devel
 
 # ErrorNamespace
-Requires:	yast2-core >= 3.2.1
+Requires:       yast2-core >= 3.2.1
 BuildRequires:  yast2-ycp-ui-bindings-devel >= 2.16.37
+Requires:       perl = %{perl_version}
 Requires:       yast2-ycp-ui-bindings       >= 2.16.37
-Requires:	perl = %{perl_version}
 %if 0%{?suse_version} < 1220
 BuildRequires:  libxcrypt-devel
 %endif
 # for YaPI.pm
-Requires:	perl(Locale::gettext)
+Requires:       perl(Locale::gettext)
 
-Summary:	YaST2 - Perl Bindings
+Summary:        YaST2 - Perl Bindings
+License:        GPL-2.0+
+Group:          System/YaST
 
 %description
 This adds an embedded Perl interpreter to YaST2 as a plug-in (in other
@@ -59,7 +62,6 @@ of calling Perl from within YaST2 YCP scripts.
 rm $RPM_BUILD_ROOT/%{yast_plugindir}/libpy2lang_perl.la
 rm $RPM_BUILD_ROOT/%{perl_vendorarch}/auto/YaST/YCP/libYCP.la
 
-
 %files
 %defattr (-, root, root)
 %{yast_plugindir}/libpy2lang_perl.so.*
@@ -75,3 +77,5 @@ rm $RPM_BUILD_ROOT/%{perl_vendorarch}/auto/YaST/YCP/libYCP.la
 %{yast_ydatadir}/devtools/pluglib-bindings
 %{yast_ydatadir}/devtools/admin/aminclude/pluglib-bindings.ami
 %doc %{yast_docdir}
+
+%changelog
