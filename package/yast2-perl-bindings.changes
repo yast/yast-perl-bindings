@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan  5 08:35:07 UTC 2017 - jreidinger@suse.com
+
+- Initial adaptation to new ErrorNamespace for failed imports 
+  which is already used by ruby-bindings (bsc#932331)
+- 3.2.0
+
+-------------------------------------------------------------------
 Wed Jun  4 16:49:55 CEST 2014 - mls@suse.de
 
 - Adapt to perl-5.20.0, where an integer can get encoded as an

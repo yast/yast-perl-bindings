@@ -17,7 +17,7 @@
 
 
 Name:           yast2-perl-bindings
-Version:        3.1.2
+Version:        3.2.0
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -29,8 +29,8 @@ BuildRequires:	gcc-c++ yast2-core-devel yast2-ycp-ui-bindings-devel libtool
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-ruby-bindings >= 1.0.0
 
-# YCPValue::valuetype_str()
-Requires:	yast2-core >= 2.16.37
+# ErrorNamespace
+Requires:	yast2-core >= 3.2.1
 BuildRequires:  yast2-ycp-ui-bindings-devel >= 2.16.37
 Requires:       yast2-ycp-ui-bindings       >= 2.16.37
 Requires:	perl = %{perl_version}
