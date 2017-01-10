@@ -1,11 +1,11 @@
 sudo: required
-language: ruby
+language: bash
 services:
   - docker
 
 before_install:
-  - docker build -t yast-pkg-bindings-image .
+  - docker build -t yast-perl-bindings-image .
 script:
-  # the "yast-travis-cpp" script is included in the base yastdevel/cpp-tw image
-  # see https://github.com/yast/docker-yast-cpp-tw/blob/master/yast-travis-cpp
-  - docker run -it yast-pkg-bindings-image yast-travis-cpp
+  # the "yast-travis-cpp" script is included in the base yastdevel/cpp image
+  # see https://github.com/yast/docker-yast-cpp/blob/master/yast-travis-cpp
+  - docker run -it -e TRAVIS=1 yast-perl-bindings-image yast-travis-cpp
