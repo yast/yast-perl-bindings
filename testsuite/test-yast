@@ -47,6 +47,8 @@ for SCRIPT in $TDIR/*.rb; do
     sed --in-place -e '/^<[0-9]> \[\(liby2\|wfm\|ui-component\)\] /d' tmp.err.$BASE
     # client call contains absolute path, ignore the line
     sed --in-place '/^<1> \[Ruby\] yast\/wfm.rb:XXX Call client /d' tmp.err.$BASE
+    # workaround for a jemalloc issue (bsc#1068883)
+    sed --in-place '/^<main>: warning: pthread_create failed for timer: .*$/d' tmp.err.$BASE
     diff -Nu $ERR tmp.err.$BASE || CASEOK=false
     diff -Nu $OUT tmp.out.$BASE || CASEOK=false
 
