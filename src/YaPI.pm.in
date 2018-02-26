@@ -26,6 +26,9 @@ our @EXPORT = qw(textdomain __);
 use YaST::YCP;
 use ycp;
 
+# FATE#323734
+y2warning("YaPI is deprecated. It will be .....d after ....");
+
 use Locale::gettext ("!textdomain");
 use POSIX ();     # Needed for setlocale()
 
