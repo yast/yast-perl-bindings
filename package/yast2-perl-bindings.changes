@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb 27 09:54:50 UTC 2018 - gsouza@suse.com
+
+- Added warning to inform user that YAPI is deprecated and should
+  not be used by any external program (fate#323734).
+- 4.0.1
+
+-------------------------------------------------------------------
 Thu Nov 30 09:40:36 UTC 2017 - lslezak@suse.cz
 
 - Fixed build failure caused by a jemalloc warning printed on
