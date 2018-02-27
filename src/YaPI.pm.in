@@ -27,7 +27,7 @@ use YaST::YCP;
 use ycp;
 
 # FATE#323734
-y2warning("YaPI is deprecated therefore this is not a stable API to be used by external resources anymore. It will be removed completely in a close future.");
+y2warning("YaPI is deprecated, do not use it anymore! It will be removed soon.");
 
 use Locale::gettext ("!textdomain");
 use POSIX ();     # Needed for setlocale()
