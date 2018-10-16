@@ -77,5 +77,6 @@ rm $RPM_BUILD_ROOT/%{perl_vendorarch}/auto/YaST/YCP/libYCP.la
 %{yast_ydatadir}/devtools/pluglib-bindings
 %{yast_ydatadir}/devtools/admin/aminclude/pluglib-bindings.ami
 %doc %{yast_docdir}
+%license COPYING
 
 %changelog
