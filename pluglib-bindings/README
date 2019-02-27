@@ -1,3 +1,9 @@
+NOTE: the pluglib-bindings library is obsolete and it will be dropped!
+
+DO NOT USE IT!!
+
+--
+
 Supported data types:
 ---------------------
 
