@@ -1,8 +1,0 @@
-The tests directory is currently excluded from automake SUBDIRS
-because
-1) it does not use automake
-2) the tests don't pass
-
-Anyway, work on (2) by iterating
-  make -C pluglib-bindings/tests all check
-  fix what is broken

@@ -6,5 +6,4 @@ Jenkins: [![Jenkins Build](http://img.shields.io/jenkins/s/https/ci.opensuse.org
 
 ### TODO
 
-- [ ] Remove the obsolete `pluglib-bindings` subdirectory
 - [ ] Enable the Perl syntax check at Travis
