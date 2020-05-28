@@ -2,6 +2,7 @@
 Wed May 27 14:52:31 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Dropped legacy testsuite (related to bsc#1138668).
+- Dropped obsolete pluglib-bindings.
 - 4.3.0
 
 -------------------------------------------------------------------
