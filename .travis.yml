@@ -6,9 +6,13 @@ services:
 before_install:
   - docker build -t yast-perl-bindings-image .
 script:
-  # the "yast-travis-cpp" script is included in the base yastdevel/cpp image
+  # The "yast-travis-cpp" script is included in the base yastdevel/cpp image
   # see https://github.com/yast/docker-yast-cpp/blob/master/yast-travis-cpp
-  # $TRAVIS_JOB_ID is not strictly required but be consistent with the other packages...
-  # skip the Perl syntax check, it fails in the pluglib-bindings testsuite
+  #
+  # $TRAVIS_JOB_ID is not strictly required but is included here to be consistent with the other
+  # packages.
+  #
+  # The Perl syntax check cannot be used because at the time to call it YCP.pm, which is compiled
+  # from YCP.cc, is not available yet.
   # FIXME: enable it after removing pluglib-bindings
-  - docker run -it -e TRAVIS=1 -e TRAVIS_JOB_ID="$TRAVIS_JOB_ID" yast-perl-bindings-image yast-travis-cpp -x perl_syntax
+  - docker run -it --privileged -e TRAVIS=1 -e TRAVIS_JOB_ID="$TRAVIS_JOB_ID" yast-perl-bindings-image yast-travis-cpp -x perl_syntax

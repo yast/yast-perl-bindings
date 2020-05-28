@@ -1,5 +1,0 @@
-- callbacks
-- two level hash/map
-- overloaded functions and functions with default values
-- typecheck (support for overloaded functions and methods)
-- const references and pointers (effective implementation)

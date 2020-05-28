@@ -1,3 +1,0 @@
-#! /usr/bin/perl -w
-# ensure that it parses correctly, duh!
-use YaST::YCP;
