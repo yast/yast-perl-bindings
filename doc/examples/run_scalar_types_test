@@ -1,0 +1,2 @@
+#!/bin/sh
+Y2DIR=.. /usr/lib/YaST2/bin/y2start ./scalar_types_test.ycp qt

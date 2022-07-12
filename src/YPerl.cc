@@ -259,14 +259,14 @@ YPerl::callInner (string module, string function, bool method,
     SAVETMPS;		// Save temporary variables
     PUSHMARK(SP);	// Save stack pointer
 
-    
+
     // For class method calls put the class name on the stack first
-    
+
     if (method)
     {
 	XPUSHs( sv_2mortal( newSVpv( module.c_str(), 0 ) ) );
     }
-    
+
 
     // Put arguments on the stack
     SV **svs = new SV*[argList->size()];
@@ -286,7 +286,7 @@ YPerl::callInner (string module, string function, bool method,
 
     string full_name = module + "::" + function;
     int ret_count = 0;
-    
+
     // G_EVAL: prevent errors from making Perl (and the rest of YaST) die
     // (FATE 412)
     // so far we use static methods, so call_pv is enough
@@ -397,7 +397,7 @@ SV *
 YPerl::newPerlScalar( const YCPValue & xval, bool composite )
 {
     EMBEDDED_PERL_DEFS;
-    
+
     YCPValue val = xval;
     if ( val->isReference()) {
 	val = val->asReference()->entry()->value();
@@ -671,7 +671,7 @@ void YPerl::fromPerlClassToExternal(const char *class_name, SV *sv, YCPValue &ou
 {
     SV * ref = SvRV(sv);
     SvREFCNT_inc(ref);
-    
+
     YCPExternal ex(ref, string(YCP_EXTERNAL_MAGIC), &perl_class_destructor);
     out = ex;
 }
@@ -895,12 +895,17 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	{
 	    if (SvROK(sv))
 		sv = SvRV(sv);
-	    // Perl relies on automatic coercion between strings and numbers
-	    // So to behave more like it,
-	    // instead of "if (SvXOK (sv)) SvXV (sv)"
-	    // we first SvXV (sv) and only then SvXOK.
+
 	    const char *pv = SvPV_nolen (sv);
-	    if (SvPOK (sv))
+
+	    // Perl uses automatic coercion between strings and numbers,
+            // but when we expect a string, we really want a string.
+            //
+            // bsc#1200990: From Perl 5.36.0 on, it no longer always sets
+            // SvPOK() if it's a numeric type (int or float), so we need to
+            // check those other two cases as well.
+
+            if ( SvPOK(sv) || SvIOK(sv) || SvNOK(sv) )
 	    {
 		val = YCPString (pv);
 	    }
@@ -959,6 +964,7 @@ YPerl::fromPerlScalar( SV * sv, constTypePtr wanted_type )
 	{
 	    // see isString
 	    const char *pv = SvPV_nolen (sv);
+
 	    if (SvPOK (sv))
 	    {
 		val = YCPSymbol (pv);
@@ -1153,7 +1159,7 @@ YPerl::callConstructor (const char * class_name, const char * full_method_name,
     {
 	sv_args[i] = sv_2mortal (newPerlScalar (args->value (i), false ));
     }
-    
+
     PUSHMARK (SP);
 
     // Class name
@@ -1211,7 +1217,8 @@ YPerl::fromPerlScalarToAny (SV * sv)
     // use the explicit data classes YaST::YCP::Integer.
 
     const char *pv = SvPV_nolen (sv);
-    if (SvPOK (sv))
+
+    if ( SvPOK(sv) || SvIOK(sv) || SvNOK(sv) ) // bsc#1200990
     {
 	val = YCPString (pv);
     }
