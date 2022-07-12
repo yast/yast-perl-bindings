@@ -9,6 +9,9 @@
 // framework where that Y2DIR is: One directory level up from here.
 //
 // This test uses the y2log for its output.
+//
+// For more details, see
+//   https://github.com/yast/yast-perl-bindings/pull/30
 
 {
     import "ScalarTypes";       // ../modules/ScalarTypes.pm
