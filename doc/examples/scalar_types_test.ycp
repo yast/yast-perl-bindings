@@ -1,0 +1,64 @@
+// Simple manual test for correct type conversions of Perl scalar values
+//
+// Start with
+//
+//    Y2DIR=.. /usr/lib/YaST2/bin/y2start ./scalar_types_test.ycp qt
+//
+// Since modules are imported from the $Y2DIR/modules directory, the Perl
+// module that we import is in ../modules, and we need to tell the YaST
+// framework where that Y2DIR is: One directory level up from here.
+//
+// This test uses the y2log for its output.
+
+{
+    import "ScalarTypes";       // ../modules/ScalarTypes.pm
+
+    void log_str( string test_name, string value )
+    {
+        y2milestone( "*** Result of test %1: %2", test_name, value );
+    }
+
+    
+    void log_any( string test_name, any value, boolean type_ok )
+    {
+        if ( type_ok )
+        {
+            y2milestone( "*** Result of test %1: %2", test_name, value );
+        }
+        else
+        {
+            y2error( "*** ERROR: Wrong result type in test %1: %2", test_name, value );
+        }
+    }
+
+
+    string hello  = ScalarTypes::hello();
+    log_str( "hello", hello );
+
+    string str_int = ScalarTypes::str_int();
+    log_str( "str_int", str_int );
+
+    string str_float = ScalarTypes::str_float();
+    log_str( "str_float", str_float );
+
+    
+    integer int_val = ScalarTypes::int_val();
+    log_any( "int_val", int_val, is( int_val, integer ) );
+    
+    float float_val = ScalarTypes::float_val();
+    log_any( "float_val", float_val, is( float_val, float ) );
+
+
+    any any_str = ScalarTypes::any_str();
+    log_any( "any_str", any_str, is( any_str, string ) );
+
+
+    // Our Perl bindings intentionally treat all YCP 'any' values as strings.
+    // See ../../src/YPerl.cc
+    
+    any any_int = ScalarTypes::any_int();
+    log_any( "any_int", any_int, is( any_int, string ) );
+    
+    any any_float = ScalarTypes::any_float();
+    log_any( "any_float", any_float, is( any_float, string ) );
+}
