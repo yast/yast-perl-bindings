@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 01 19:57:03 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Branch package for SP6 (bsc#1208913)
+
+-------------------------------------------------------------------
 Tue Jul 12 12:20:50 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Adapted to new Perl-5.36.0 API (bsc#1200990)
