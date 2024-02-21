@@ -155,7 +155,7 @@ void YPerl::fixupLocale()
     // Those functions only query the current values,
     // they don't change anything.
 
-    char * locale  = setlocale( LC_ALL, "" );
+    char * locale  = setlocale( LC_ALL, 0 );
     char * codeset = nl_langinfo( CODESET );
 
     y2milestone( "locale:  %s", locale  ? locale  : "<NULL>" );
