@@ -12,7 +12,7 @@
 
   File:	      YPerl.h
 
-  Author:     Stefan Hundhammer <sh@suse.de>
+  Author:     Stefan Hundhammer <shundhammer@suse.de>
   	      Martin Vidner <mvidner@suse.cz>
 /-*/
 
@@ -72,7 +72,7 @@ public:
      **/
     static YCPValue destroy();
 
-    
+
 protected:
 
     /**
@@ -93,6 +93,20 @@ protected:
     ~YPerl();
 
     /**
+     * Fix up the locale and encoding which may have been changed by internal
+     * functions in the embedded Perl interpreter in newer Perl versions
+     * (Perl 5.36 from mid-2023). See bsc#1216689.
+     *
+     * Basically, Perl switched back from UTF-8 to ANSI_X3.4-1968 (7-bit
+     * ASCII), so special characters like Japanese, German umlauts (ÄÖÜäöüß) or
+     * Czech accented characters were broken (replaced by '?').
+     *
+     * This affected translated messages read via gettext() as well as file
+     * output.
+     **/
+    void fixupLocale();
+
+    /**
      * Returns the internal embedded Perl interpreter.
      **/
     PerlInterpreter * internalPerlInterpreter() const
@@ -104,7 +118,7 @@ public:
      **/
     YCPValue callInner (string module, string function, bool method,
 			YCPList argList, constFunctionTypePtr function_type);
-    
+
     /**
      * Create a new Perl scalar value from a YCP value.
      * @param composite If an undef should go to an array/hash, it must be represented specially.
@@ -211,7 +225,7 @@ protected:
      * Convert a Perl array to a YCPList.
      **/
     YCPList fromPerlArray (AV * array, constTypePtr wanted_type);
-    
+
     /**
      * Convert a Perl hash to a YCPMap.
      **/

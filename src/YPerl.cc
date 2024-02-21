@@ -13,7 +13,7 @@
   File:	      YPerl.cc
 
   Maintainer: Martin Vidner <mvidner@suse.cz>
-  Author:     Stefan Hundhammer <sh@suse.de>
+  Author:     Stefan Hundhammer <shundhammer@suse.de>
 
   This is the common part, defining data type conversions.
 
@@ -26,6 +26,8 @@
 #include <sstream>
 #include <iomanip>
 #include <limits>
+#include <locale.h>
+#include <langinfo.h>
 
 // Perl stuff
 #define PERL_NO_GET_CONTEXT     /* we want efficiency, man perlguts */
@@ -114,6 +116,7 @@ YPerl::YPerl()
 		0 );	// env
 
     PrependModulePath (internalPerlInterpreter ());
+    fixupLocale();
 }
 
 YPerl::YPerl(pTHX)
@@ -141,6 +144,24 @@ YPerl::yPerl()
 
     return _yPerl;
 }
+
+
+void YPerl::fixupLocale()
+{
+    y2milestone( "Switching to the global locale" );
+
+    uselocale( LC_GLOBAL_LOCALE ); // bsc#1216689
+
+    // Those functions only query the current values,
+    // they don't change anything.
+
+    char * locale  = setlocale( LC_ALL, 0 );
+    char * codeset = nl_langinfo( CODESET );
+
+    y2milestone( "locale:  %s", locale  ? locale  : "<NULL>" );
+    y2milestone( "codeset: %s", codeset ? codeset : "<NULL>" );
+}
+
 
 void
 YPerl::acceptInterpreter (pTHX)
