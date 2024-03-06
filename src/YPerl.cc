@@ -148,9 +148,20 @@ YPerl::yPerl()
 
 void YPerl::fixupLocale()
 {
+#if 0
     y2milestone( "Switching to the global locale" );
 
     uselocale( LC_GLOBAL_LOCALE ); // bsc#1216689
+    // Unfortunately, while this fixed bsc#1216689 (broken special characters),
+    // it seems to have caused bsc#1220375 (yast2-users crashing with a
+    // Zypp-Main process in a busy loop), so we needed to revert this again.
+#else
+    // Some log output to be able to identify versions with and without the
+    // above fix/workaround.
+    //
+    // TO DO: Remove this whole #if 0 .. #endif block after a real fix.
+    y2milestone( "NOT switching to the global locale - leaving whatever Perl did" );
+#endif
 
     // Those functions only query the current values,
     // they don't change anything.
