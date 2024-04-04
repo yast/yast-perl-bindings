@@ -221,6 +221,7 @@ sub textdomain
     $textdomains{$package} = $domain;
     # substituted by configure
     Locale::gettext::bindtextdomain ($domain, "@yast2dir4perl@/locale");
+    Locale::gettext::bind_textdomain_locale ($domain, "UTF-8");
     return Locale::gettext::textdomain ($domain);
 }
 
