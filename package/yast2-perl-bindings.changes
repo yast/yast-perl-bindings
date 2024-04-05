@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  5 11:18:46 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- Fix downstream build failures caused by the previous change (bsc#1222375)
+- 5.0.4
+
+-------------------------------------------------------------------
 Wed Apr  3 09:46:46 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - Use UTF-8 for translated texts coming from our Perl code (bsc#1216689),
