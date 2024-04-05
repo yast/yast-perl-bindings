@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Apr  5 11:18:46 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
-- Fix an embarassing mistake in the previous change (bsc#1222375)
+- Fix downstream build failures caused by the previous change (bsc#1222375)
 - 5.0.4
 
 -------------------------------------------------------------------
